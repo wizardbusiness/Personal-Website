@@ -3,11 +3,12 @@ import SubHeader from "./components/SubHeader.tsx";
 import MainLayout from "../layouts/main-layout.astro"
 import Portfolio from "./Portfolio.astro";
 import About from "./About.astro";
+import Avatar from "./components/Avatar.astro";
 import Socials from "./Socials.astro";
 import Tech from "./Tech.astro"
 ---
 <MainLayout>
-  <About slot="about"/>
+  <About slot="about" />
   <Portfolio slot="portfolio" />
   <Tech slot="tech" />
   <Socials slot="socials" />
