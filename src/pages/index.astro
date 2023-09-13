@@ -1,15 +1,20 @@
 ---
 import SubHeader from "./components/SubHeader.tsx";
 import MainLayout from "../layouts/main-layout.astro"
+import SectionLayout from "../layouts/section-layout.astro"
 import Portfolio from "./Portfolio.astro";
 import About from "./About.astro";
-import Avatar from "./components/Avatar.astro";
 import Socials from "./Socials.astro";
 import Tech from "./Tech.astro"
 ---
 <MainLayout>
-  <About slot="about" />
-  <Portfolio slot="portfolio" />
-  <Tech slot="tech" />
+  <SectionLayout slot="about">
+    <About />
+  </SectionLayout>
+  <Portfolio  slot="portfolio"/>
+  <SectionLayout slot="tech">
+    <Tech />
+  </SectionLayout>
+  
   <Socials slot="socials" />
 </MainLayout>
