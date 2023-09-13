@@ -5,22 +5,12 @@ import MainLayout from "../layouts/main-layout.astro";
 import SectionLayout from "../layouts/section-layout.astro";
 import Portfolio from "./Portfolio.astro";
 import About from "./About.astro";
-import Socials from "./Socials.astro";
 import Tech from "./Tech.astro"
 ---
 <MainLayout>
   <Nav slot="nav"/>
   <SubHeader slot="subheader" msg="Dream it. Build it." client:load />
-  <SectionLayout slot="about">
-    <About />
-  </SectionLayout>
-  <SectionLayout slot="portfolio">
-    <Portfolio />
-  </SectionLayout>
-  <SectionLayout slot="tech">
-    <Tech />
-  </SectionLayout>
-  <SectionLayout slot="socials">
-    <Socials />
-  </SectionLayout>
+    <About slot="about"/>
+    <Portfolio slot="portfolio"/>
+    <Tech slot="tech"/>
 </MainLayout>
