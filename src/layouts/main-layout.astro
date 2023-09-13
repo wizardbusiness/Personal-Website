@@ -10,8 +10,9 @@ import Cursor from "../pages/components/Cursor.tsx";
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description" content="my personal site" />
   </head>
-  <body class="font-sans flex justify-center bg-gray-800 w-full">
-     <div class="flex-col items-center justify-center w-2/3 bg-gray-100 p-8 h-screen">
+  <body class="font-sans flex flex-grow justify-center bg-gray-800 w-full">
+     <div class="flex-col items-center justify-center w-2/3 bg-gray-100 p-8 pt-4 h-full">
+      <slot name="nav" />
       <header class="flex flex-col gap-8 items-center" >
         <div class="shadow-lg bg-white p-8">
           <h1 class="font-mono text-7xl text-center tracking-tighter p-3 pb-0">Gabriel Kime</h1>
@@ -20,7 +21,7 @@ import Cursor from "../pages/components/Cursor.tsx";
         <slot name="subheader" />
         <!-- <Avatar imgSrc="src/images/HeadShot.jpg"/> -->
       </header>
-      <main class="flex flex-col pt-8 bg-8 shadow-xl gap-8">
+      <main class="flex flex-col flex-grow pt-8 bg-8 gap-8">
         <slot name="about" />
         <slot name="portfolio" />   
         <slot name="tech" />
