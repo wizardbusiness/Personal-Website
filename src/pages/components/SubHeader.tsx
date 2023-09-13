@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import Cursor from './Cursor';
 
 export default function SubHeader({msg}) {
   const [ msgIndex, setMsgIndex ] = useState(0);
@@ -21,6 +22,7 @@ export default function SubHeader({msg}) {
   }, [msgIndex === msg.length])
 
   return (
+    <div className="flex translate-x-1">
     <h1 className="h-10 font-mono text-center text-4xl ">
           { 
             msgIndex === msg.length && text.split(" ").map((str, index) => {
@@ -31,6 +33,8 @@ export default function SubHeader({msg}) {
             ||
             text
           }
-        </h1>
+    </h1>
+    <Cursor animStart={msgIndex === msg.length} />
+    </div>
   )
 }
