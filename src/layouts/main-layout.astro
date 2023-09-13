@@ -12,10 +12,12 @@ import Cursor from "../pages/components/Cursor.tsx";
   </head>
   <body class="font-sans flex justify-center bg-gray-800">
      <div class="flex-col items-center justify-center w-2/3 bg-gray-100 p-8 h-screen">
-      <header class="flex flex-col bg-white shadow-lg p-8 items-center" >
-        <h1 class="font-mono text-7xl text-center tracking-tighter p-3 pb-0">Gabriel Kime</h1>
-        <h2 class="font-mono text-3xl text-center tracking-tighter p-3">Full-Stack Developer</h2>
-        <SubHeader msg="Dream it. Build it." client:load />
+      <header class="flex flex-col gap-8 items-center" >
+        <div class="shadow-lg bg-white p-8">
+          <h1 class="font-mono text-7xl text-center tracking-tighter p-3 pb-0">Gabriel Kime</h1>
+          <h2 class="font-mono text-3xl text-center tracking-tighter p-3">Full-Stack Developer</h2>
+        </div> 
+        <slot name="subheader" />
         <!-- <Avatar imgSrc="src/images/HeadShot.jpg"/> -->
       </header>
       <main class="flex flex-col pt-8 bg-8 shadow-xl gap-8">
