@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import Cursor from './Cursor';
+import React, {useEffect, useState} from "react";
+import Cursor from "./Cursor";
 
 export default function SubHeader({msg}) {
   const [ msgIndex, setMsgIndex ] = useState(0);
   const [ text, setText ] = useState(" ");
-  const [ bold, setBold ] = useState(false)
+  const [ bold, setBold ] = useState(false);
 
   useEffect(() => {
     if (!msg[msgIndex]) return;
@@ -18,23 +18,22 @@ export default function SubHeader({msg}) {
 
   useEffect(() => {
     setBold(true)
-    console.log('true')
   }, [msgIndex === msg.length])
 
   return (
     <div className="flex translate-x-1">
-    <h1 className="h-10 font-mono text-center text-4xl ">
-          { 
-            msgIndex === msg.length && text.split(" ").map((str, index) => {
-              const key = str + index
-              if (!str.includes(".")) return <span key={key} className="font-extrabold">{str + " "}</span>
-              else return str + " ";
-            })
-            ||
-            text
-          }
-    </h1>
-    <Cursor animStart={msgIndex === msg.length} />
+      <h1 className="h-10 font-mono text-center text-4xl ">
+            { 
+              msgIndex === msg.length && text.split(" ").map((str, index) => {
+                const key = str + index
+                if (!str.includes(".")) return <span key={key} className="font-extrabold">{str + " "}</span>
+                else return str + " ";
+              })
+              ||
+              text
+            }
+      </h1>
+      <Cursor animStart={msgIndex === msg.length} />
     </div>
-  )
+  );
 }
