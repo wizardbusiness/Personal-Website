@@ -11,10 +11,13 @@ import Tech from "./Tech.astro"
   <SectionLayout slot="about">
     <About />
   </SectionLayout>
-  <Portfolio  slot="portfolio"/>
+  <SectionLayout slot="portfolio">
+    <Portfolio />
+  </SectionLayout>
   <SectionLayout slot="tech">
     <Tech />
   </SectionLayout>
-  
-  <Socials slot="socials" />
+  <SectionLayout slot="socials">
+    <Socials />
+  </SectionLayout>
 </MainLayout>
