@@ -8,9 +8,7 @@ import Socials from "./Socials.astro";
 import Tech from "./Tech.astro"
 ---
 <MainLayout>
-  <SectionLayout slot="subheader">
-    <SubHeader msg="Dream it. Build it." client:load />
-  </SectionLayout>
+  <SubHeader slot="subheader" msg="Dream it. Build it." client:load />
   <SectionLayout slot="about">
     <About />
   </SectionLayout>

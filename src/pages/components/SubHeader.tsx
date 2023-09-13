@@ -16,7 +16,7 @@ export default function SubHeader({msg}) {
   }, [msgIndex])
 
   return (
-    <div className="flex translate-x-1">
+    <div className="flex justify-center items-center h-36 w-2/5 bg-white shadow-lg translate-x-1 ">
       <h1 className="h-10 font-mono text-center text-4xl ">
             { 
               msgIndex === msg.length && text.split(" ").map((str, index) => {
