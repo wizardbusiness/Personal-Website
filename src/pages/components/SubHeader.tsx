@@ -4,7 +4,6 @@ import Cursor from "./Cursor";
 export default function SubHeader({msg}) {
   const [ msgIndex, setMsgIndex ] = useState(0);
   const [ text, setText ] = useState(" ");
-  const [ bold, setBold ] = useState(false);
 
   useEffect(() => {
     if (!msg[msgIndex]) return;
@@ -15,10 +14,6 @@ export default function SubHeader({msg}) {
     }, interval);
     return () => clearInterval(typeChars);
   }, [msgIndex])
-
-  useEffect(() => {
-    setBold(true)
-  }, [msgIndex === msg.length])
 
   return (
     <div className="flex translate-x-1">
