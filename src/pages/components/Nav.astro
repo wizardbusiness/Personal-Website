@@ -1,14 +1,17 @@
 ---
 import { Icon } from 'astro-icon';
+import Avatar from './Avatar.astro';
 ---
-<nav class="flex w-full gap-1 justify-end pb-2">
-  <section class="text-2xl flex gap-8 pr-8">
-    <span>&gt; <a href="resume#" class="hover:underline decoration-double">Resume</a></span>
-    <a href="contact#" class="hover:underline decoration-double">Contact</a>
+<nav class="flex justify-between items-center w-full">
+  <div class="flex w-full gap-1 justify-end pb-2 text-gray-100">
+  <section class="text-2xl  flex gap-8 pr-8">
+    <span>&gt; <a href="contact#" class="hover:underline decoration-double">Contact</a></span>
+    <a href="resume#" class="hover:underline decoration-double">Resume</a>
   </section>
-  <section class="flex border-4 rounded-md border-black p-1">
+  <section class="flex border-4 rounded-md border-gray-100 p-1">
     <a class="flex p-1 hover:border-2" href="https://github.com/wizardbusiness"><Icon class="" pack="ant-design" name="github-outlined" width="35" height="35"/></a>
     <a class="flex p-1" href="https://www.linkedin.com/in/gabriel-kime/"><Icon pack="ant-design" name="linkedin-outlined" width="35" height="35"/></a>
   </section>
+  </div>
   
 </nav>

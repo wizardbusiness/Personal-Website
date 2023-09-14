@@ -2,7 +2,7 @@ import React from 'react'
 
 const Cursor = ({animStart}) => {
   return (
-    <div className={`h-8 w-4 bg-black ${animStart && 'animate-blinking-cursor'}`} />
+    <div className={`h-8 w-4 bg-gray-100 ${animStart && 'animate-blinking-cursor'}`} />
   )
 }
 

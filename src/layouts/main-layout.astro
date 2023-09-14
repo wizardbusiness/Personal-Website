@@ -1,34 +1,18 @@
----
-import Avatar from "../pages/components/Avatar.astro";
-import SubHeader from "../pages/components/SubHeader";
-import Cursor from "../pages/components/Cursor.tsx";
----
-
 <html class="w-full">
   <head>
     <meta charset = "utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="description" content="my personal site" />
   </head>
-  <body class="font-sans flex flex-grow justify-center bg-gray-800 w-full">
-     <div class="flex-col items-center justify-center w-2/3 bg-gray-100 p-8 pt-4 h-full">
-      <slot name="nav" />
-      <header class="flex flex-col gap-8 items-center" >
-        <div class="shadow-lg bg-white p-8">
-          <h1 class="font-mono text-7xl text-center tracking-tighter p-3 pb-0">Gabriel Kime</h1>
-          <h2 class="font-mono text-3xl text-center tracking-tighter p-3">Full-Stack Developer</h2>
-        </div> 
-        <slot name="subheader" />
-        <!-- <Avatar imgSrc="src/images/HeadShot.jpg"/> -->
-      </header>
-      <main class="flex flex-col flex-grow pt-8 bg-8 gap-8">
+  <body class="font-sans flex flex-grow justify-center bg-gray-800 h-screen w-full">
+      <slot name="landingpage">
+      <!-- <main class="flex flex-col flex-grow pt-8 bg-8 gap-8">
         <div class="flex flex-col bg-white shadow-xl p-8 gap-8">
           <slot name="about" />
           <slot name="portfolio" />   
           <slot name="tech" />
         </div>
         
-      </main>
-    </div>
+      </main> -->
   </body>
 </html>
