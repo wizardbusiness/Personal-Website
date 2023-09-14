@@ -4,8 +4,12 @@ module.exports = {
 	theme: {
 		extend: {
       colors: {
-        'foggy-glass': '#E5E7EB50'
+        'foggy-glass': '#E5E7EB50',
+        'moon-shine': '#F3F3F330'
       },
+      spacing: {
+          '84': '21rem'
+      }, 
       keyframes: {
         blink: {
           '50%': {opacity: '0'},
