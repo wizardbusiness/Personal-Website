@@ -1,18 +1,9 @@
+---
+import CommonHead from "./CommonHead.astro";
+---
 <html class="w-full">
-  <head>
-    <meta charset = "utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="description" content="my personal site" />
-  </head>
+  <CommonHead />
   <body class="font-sans flex flex-grow justify-center bg-gray-800 h-screen w-full">
-      <slot name="landingpage">
-      <!-- <main class="flex flex-col flex-grow pt-8 bg-8 gap-8">
-        <div class="flex flex-col bg-white shadow-xl p-8 gap-8">
-          <slot name="about" />
-          <slot name="portfolio" />   
-          <slot name="tech" />
-        </div>
-        
-      </main> -->
+      <slot name="page">
   </body>
 </html>
