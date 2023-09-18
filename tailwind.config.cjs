@@ -14,11 +14,22 @@ module.exports = {
         blink: {
           '50%': {opacity: '0'},
           '100%': {opacity: '1'},
-        }
+        },
+        fall: {
+          '0%': {transform: 'translateY(-20vh)'},
+          '100%': {transform: 'translateY(2.5rem)'}
+        },
+        rise: {
+          '0%': {transform: 'translateY(3rem)'},
+          '100%': {transform: 'translateY(0)'}
+        },
       },
       animation: {
-        'blinking-cursor': 'blink 1.5s steps(1) 6 forwards'
-      }
+        'blinking-cursor': 'blink 1.5s steps(1) 6 forwards',
+        'falldown': 'fall 0.2s forwards ease-in',
+        'riseup': 'rise 1.5s forwards'
+      },
+        
     },
 	},
 	plugins: [],
