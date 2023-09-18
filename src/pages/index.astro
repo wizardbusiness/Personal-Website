@@ -1,24 +1,10 @@
 ---
-import Nav from "./components/Nav.astro";
-import SubHeader from "./components/SubHeader";
 import MainLayout from "../layouts/main-layout.astro";
-import SectionLayout from "../layouts/section-layout.astro";
-import Portfolio from "./Portfolio.astro";
-import About from "./About.astro";
-import Tech from "./Tech.astro"
-import LandingPgLayout from "../layouts/landing-pg-layout.astro";
-import SwipeDown from "./components/SwipeDown.astro";
-import Avatar from "./components/Avatar.astro";
+import LandingPage from "./LandingPage.astro";
 ---
 <MainLayout>
-  <LandingPgLayout slot="landingpage">
-    <Nav slot="nav" />
-    <Avatar slot="avatar" imgSrc="src/images/BeachHeadshotB&W.png"/>
-    <SubHeader slot="subheader" msg="Dream it. Build it." client:load/>
-    <SwipeDown slot="swipedown"/>
-  </LandingPgLayout>
-  <Nav slot="nav"/>
-    <About slot="about"/>
-    <Portfolio slot="portfolio"/>
-    <Tech slot="tech"/>
+  <LandingPage slot="page"/>
+  <script src="../scripts/navigateUtility.ts" />
 </MainLayout>
+
+
