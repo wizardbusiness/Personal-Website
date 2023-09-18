@@ -6,5 +6,5 @@ const Cursor = ({animStart}) => {
   )
 }
 
-export default Cursor
+export default Cursor;
 
