@@ -1,0 +1,23 @@
+---
+import MainLayout from "../layouts/main-layout.astro";
+import ContentLayout from "../layouts/content-layout.astro";
+import About from "./components/About.astro";
+import Portfolio from "./components/Portfolio.astro";
+import Tech from "./components/Tech.astro";
+import SubHeader from "./components/SubHeader";
+import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
+---
+<MainLayout>
+  <ContentLayout slot="page">
+    <div class="-translate-y-7" slot="scroll-up">
+      <ScrollToPageBtn url="/" scrollDirection="up"  />
+    </div>
+    <div data-subheader-main class="flex relative h-32 w-2/3 justify-center animate-fall-to z-10" slot="subheader">
+      <SubHeader msg="Dream it. Build it" client:load transition:persist="subheader" />
+    </div>
+    <About slot="about"/>
+    <Portfolio slot="portfolio"/>
+    <Tech slot="tech"/>
+  </ContentLayout>
+  <script src="../scripts/navigateUtility.ts" />
+</MainLayout>
