@@ -1,6 +1,13 @@
 import React, {useEffect, useState} from "react";
 import Cursor from "./Cursor";
 
+
+function skylineModule({height, width, clip}) {
+  return (
+    <div className={`fixed h=${height} w=${width}`} />
+  )
+}
+
 export default function SubHeader({msg}) {
   const [ msgIndex, setMsgIndex ] = useState(0);
   const [ text, setText ] = useState(" ");
