@@ -1,37 +1,50 @@
 ---
-import LandingPgLayout from "../layouts/landing-pg-layout.astro";
-import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
-import Nav from "./components/Nav.astro";
-import SubHeader from "./components/SubHeader";
-import Avatar from "./components/Avatar.astro";
+import LandingPgLayout from '../layouts/landing-pg-layout.astro'
+import ScrollToPageBtn from './components/ScrollToPageBtn.astro'
+import Nav from './components/Nav.astro'
+import SubHeader from './components/SubHeader'
+import Avatar from './components/Avatar.astro'
 
 const anim = {
   old: {
     name: 'riseto',
     duration: '0.5s',
-    easing: 'ease',
-    fillMode: 'forwards'
+    easing: 'ease-out',
+    fillMode: 'forwards',
   },
   new: {
     name: 'riseto',
     duration: '0.5s',
-    easing: 'ease',
+    easing: 'ease-out',
     fillMode: 'forwards',
-  }
+  },
 }
 
 const rise = {
   forwards: anim,
-  backwards: anim
+  backwards: anim,
 }
 ---
+
 <LandingPgLayout>
   <Nav slot="nav" />
-  <Avatar slot="avatar" imgSrc="src/images/BeachHeadshotB&W.png"/>
+  <Avatar slot="avatar" imgSrc="src/images/BeachHeadshotB&W.png" />
   <!-- this is so dumb -->
   <div class="animate-rise-to"></div>
-  <div data-subheader-landing class="flex h-32 w-2/3 justify-center" transition:animate={rise} slot="subheader">
-    <SubHeader msg="Dream it. Build it." client:load transition:persist="subheader" />
+  <div
+    data-subheader-landing
+    class="flex h-32 w-2/3 justify-center"
+    transition:animate={rise}
+    slot="subheader"
+  >
+    <SubHeader
+      msg="Dream it. Build it."
+      client:only
+      transition:persist="subheader"
+      renderSkyline={false}
+    />
   </div>
-  <div class="translate-y-32" slot="scroll-down"><ScrollToPageBtn url="/MainContent" scrollDirection="down" /></div>
+  <div class="translate-y-32" slot="scroll-down">
+    <ScrollToPageBtn url="/MainContent" scrollDirection="down" />
+  </div>
 </LandingPgLayout>
