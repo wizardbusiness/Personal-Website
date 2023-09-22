@@ -1,14 +1,38 @@
 ---
-import { Icon } from 'astro-icon';
+import { Icon } from 'astro-icon'
 ---
-<nav class="flex justify-end items-center h-16 w-full text-gray-100">
-  <section class="text-2xl  flex gap-8">
-    <span>&gt; <a href="#" class="hover:underline decoration-double">Contact</a></span>
-    <a href="resume#" class="hover:underline decoration-double">Resume</a>
+
+<nav class="flex h-16 w-full items-center justify-end text-gray-100">
+  <section class="flex gap-8 text-2xl">
+    <span
+      >&gt; <a href="#" class="decoration-double hover:underline">Contact</a
+      ></span
+    >
+    <a href="resume#" class="decoration-double hover:underline">Resume</a>
   </section>
-  <div class="text-3xl p-8">|</div>
+  <div class="p-8 text-3xl">|</div>
   <section class="flex">
-    <a class="flex p-1 pl-0 group hover:bg-gray-100 rounded-md" href="https://github.com/wizardbusiness"><Icon class="group-hover:text-gray-800" pack="ant-design" name="github-outlined" width="35" height="35"/></a>
-    <a class="flex p-1 group hover:bg-gray-100 rounded-md" href="https://www.linkedin.com/in/gabriel-kime/"><Icon class="group-hover:text-gray-600" pack="ant-design" name="linkedin-outlined" width="35" height="35"/></a>
+    <a
+      class="group flex rounded-md p-1 pl-0 hover:bg-gray-100"
+      href="https://github.com/wizardbusiness"
+      ><Icon
+        class="group-hover:text-gray-800"
+        pack="ant-design"
+        name="github-outlined"
+        width="35"
+        height="35"
+      /></a
+    >
+    <a
+      class="group flex rounded-md p-1 hover:bg-gray-100"
+      href="https://www.linkedin.com/in/gabriel-kime/"
+      ><Icon
+        class="group-hover:text-gray-600"
+        pack="ant-design"
+        name="linkedin-outlined"
+        width="35"
+        height="35"
+      /></a
+    >
   </section>
 </nav>
