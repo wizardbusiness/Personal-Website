@@ -1,36 +1,45 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
-	theme: {
-		extend: {
+  content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
+  theme: {
+    extend: {
       colors: {
-        'foggy-glass': '#E5E7EB50',
-        'moon-shine': '#F3F3F330'
+        "foggy-glass": "#E5E7EB50",
+        "moon-shine": "#F3F3F330",
       },
       spacing: {
-          '84': '21rem'
-      }, 
+        84: "21rem",
+      },
       keyframes: {
         blink: {
-          '50%': {opacity: '0'},
-          '100%': {opacity: '1'},
+          "50%": { opacity: "0" },
+          "100%": { opacity: "1" },
         },
-        fall: {
-          '0%': {transform: 'translateY(-20vh)'},
-          '100%': {transform: 'translateY(2.5rem)'}
+        fallfrom: {
+          "0%": { transform: "translateY(0vh)" },
+          "100%": { transform: "translateY(50vh)" },
         },
-        rise: {
-          '0%': {transform: 'translateY(3rem)'},
-          '100%': {transform: 'translateY(0)'}
+        fallto: {
+          "0%": { transform: "translateY(-20vh)" },
+          "100%": { transform: "translateY(4vh)" },
+        },
+        risefrom: {
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-30vh)" },
+        },
+        riseto: {
+          "0%": { transform: "translateY(30vh)" },
+          "100%": { transform: "translateY(0vh)" },
         },
       },
       animation: {
-        'blinking-cursor': 'blink 1.5s steps(1) 6 forwards',
-        'falldown': 'fall 0.2s forwards ease-in',
-        'riseup': 'rise 1.5s forwards'
+        "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
+        "fall-to": "fallto 0.3s forwards",
+        "fall-from": "fallfrom 0.3s forwards ease-in",
+        "rise-to": "riseto 0.5s forwards",
+        "rise-from": "risefrom 0.5s forwards",
       },
-        
     },
-	},
-	plugins: [],
-}
+  },
+  plugins: [],
+};
