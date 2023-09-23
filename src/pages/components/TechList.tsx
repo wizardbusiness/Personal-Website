@@ -1,21 +1,13 @@
 import React, { forwardRef, type MutableRefObject } from "react";
 import * as Accordion from '@radix-ui/react-accordion';
 
-interface AccordionList {
-  items: string[];
-}
-
-const AccordionList = ({items}: AccordionList) => (
-  items.map((item, index) => 
-    <AccordionContent key={`${item}${index}`}>{item}</AccordionContent>)
-);
   
 const TechList = ({ categories }) => {
-  const list = categories.map((category: string, index: number) => (
+  const list = Object.keys(categories).map((category: string, index: number) => (
     <Accordion.Root key={category + index} className="text-2xl" type="multiple">
       <Accordion.Item value={category}>
         <AccordionTrigger>{category}</AccordionTrigger>
-        <AccordionList items={['react', 'javascript', 'typescript']}></AccordionList>
+          <AccordionList items={categories[category]}></AccordionList>
       </Accordion.Item>
       {" "}
     </Accordion.Root>
@@ -24,8 +16,10 @@ const TechList = ({ categories }) => {
 };
 
 interface AccordionI {
+  lastItem?: boolean,
   children: string,
 }
+
 
 const AccordionTrigger = forwardRef(({ children, ...props }: AccordionI, forwardedRef: MutableRefObject<HTMLButtonElement>) => (
   <Accordion.Header>
@@ -39,15 +33,33 @@ const AccordionTrigger = forwardRef(({ children, ...props }: AccordionI, forward
   </Accordion.Header>
 ));
 
+interface AccordionList {
+  items: string[];
+}
 
-const AccordionContent = forwardRef(({ children, ...props}: AccordionI, forwardRef: MutableRefObject<HTMLDivElement>) => (
+
+const AccordionList = ({items}: AccordionList) => (
+  items.map((item, index) => {
+    const lastItem = index === items.length - 1 ? true : false;
+    return (
+      <AccordionContent lastItem={lastItem} key={`${item}${index}`}>
+        {item}
+      </AccordionContent>
+    )
+      
+  })
+);
+
+const AccordionContent = forwardRef(({ children, lastItem, ...props}: AccordionI, forwardRef: MutableRefObject<HTMLDivElement>) => (
   <Accordion.Content
     {...props}
     ref={forwardRef}
   >
-    <div>{children}</div>
+    <div className={`text-lg text-gray-600 flex items-center border-l-2 border-gray-300 ${lastItem ? 'before:absolute  before:w-1 before:z-10 before:h-4 before:translate-y-[56%] before:-translate-x-1 before:bg-white' : ''} translate-x-4`}><div className="h-0.5 w-8 bg-gray-300" />&nbsp;{children}</div>
   </Accordion.Content>
 ))
+
+
 
 
 
