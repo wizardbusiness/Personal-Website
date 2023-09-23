@@ -1,12 +1,13 @@
 ---
-import { Image  } from "astro:assets";
-const { imgSrc } = Astro.props
+import { Image } from "astro:assets";
+const { imgSrc } = Astro.props;
+
 ---
 <div class="relative">
   <div class="absolute -top-4 -left-4 h-72 w-72 bg-moon-shine rounded-full"/>
   <div class="absolute -top-10 -left-10 h-84 w-84 bg-moon-shine rounded-full blur-sm"/>
   <div class=" min-w-64 w-64 min-h-64 h-64 rounded-full border-4 border-gray-400 overflow-hidden" >
-    <img src={imgSrc} class="-translate-y-10"/>
+    <Image src={imgSrc} class="-translate-y-10" alt="Picture of me." width={256} height={256}/>
   </div>
 </div>
 
