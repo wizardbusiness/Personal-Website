@@ -2,7 +2,7 @@ import React from "react";
 
 const TechList = ({ categories }) => {
   const list = categories.map((category: string, index: number) => (
-    <li key={category + index} className="text-xl">
+    <li key={category + index} className="text-2xl">
       {" "}
       + {category}
     </li>
