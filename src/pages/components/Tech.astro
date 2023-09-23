@@ -1,7 +1,14 @@
 ---
 import TechList from "./TechList.tsx"
+
+const categories = {
+  'Languages': ['Typescript', 'Javascript ES6+', 'Python', 'SQL', 'HTML/CSS'],
+  'Runtimes': ['Node.js', 'Electron.js'],
+  'Frameworks/Libraries': ['React.js', 'Redux', 'Astro', 'MaterialUI', 'RadixUI', 'Express.js'],
+  'Testing': ['Jest', 'Testing Library', 'Selenium', 'Puppeteer']
+}
 ---
 <div>
   <h2 class="font-mono font-semibold text-3xl pb-3">Tech I Use</h2>
-  <TechList client:load categories={['Languages', 'Runtime', 'Frameworks/Libraries', 'Testing', 'Deployment']}/>
+  <TechList client:load categories={categories}/>
 </div>
