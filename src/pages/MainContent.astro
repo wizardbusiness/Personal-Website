@@ -15,7 +15,7 @@ import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
     </div>
     <div data-subheader-main class="flex relative h-32 w-2/3 justify-center animate-fall-to z-10" slot="subheader">
       <Skyline />
-      <SubHeader renderSkyline={true} msg="Dream it. Build it." client:load transition:persist="subheader" />
+      <SubHeader msg="Dream it. Build it." client:load transition:persist="subheader" />
     </div>
     <About slot="about"/>
     <Portfolio slot="portfolio"/>
@@ -23,3 +23,12 @@ import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
   </ContentLayout>
 </MainLayout>
 <script src="../scripts/navigateUtility.ts" />
+<script>
+  const effectContainer = document.querySelectorAll('[data-subheader]')[0];
+  console.log(effectContainer)
+  const renderEffect = () => {
+    const effects = document.querySelectorAll('[data-effect]');
+    effects.forEach(effect => effect.classList.remove('hidden'))
+  }
+  effectContainer.addEventListener("animationend", () => renderEffect())
+</script>
