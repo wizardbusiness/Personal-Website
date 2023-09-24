@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@utilities {
+  .h-radix-accordion {
+    height: var(--radix-accordion-content-height);
+  }
+
+  .w-radix-accordion {
+    width: var(--radix-accordion-content-width);
+  }
+}
