@@ -56,6 +56,22 @@ module.exports = {
             transform: "scaleY(100%)",
           },
         },
+        open: {
+          "0%": {
+            height: "0",
+          },
+          "100%": {
+            height: "var(--radix-accordion-content-height)",
+          },
+        },
+        close: {
+          "0%": {
+            height: "var(--radix-accordion-content-height)",
+          },
+          "100%": {
+            height: "0",
+          },
+        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
@@ -65,8 +81,10 @@ module.exports = {
         "rise-from": "risefrom 0.5s forwards",
         "squish-down": "squish 0.2s 0.2s forwards ease-out",
         grow: "grow 0.5s forwards ease-out",
+        "open-accordion": "open 0.2s forwards ease-in",
+        "close-accordion": "close 0.2s forwards ease-out",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-radix")],
 };
