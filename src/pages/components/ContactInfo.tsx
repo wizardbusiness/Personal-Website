@@ -13,6 +13,7 @@ const ContactInfo = () => {
   return (
     <Toast.Provider duration={700} swipeDirection="right">
       <button
+        data-copy-info
         className="relative select-none decoration-double hover:underline"
         onClick={() => {
           setOpen(false);

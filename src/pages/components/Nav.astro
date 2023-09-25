@@ -1,12 +1,15 @@
 ---
-import { Icon } from 'astro-icon'
+import { Icon } from "astro-icon";
+import ContactInfo from "./ContactInfo";
 ---
 
 <nav class="flex h-16 w-full items-center justify-end text-gray-100">
   <section class="flex gap-8 text-2xl">
+    <ContactInfo client:load />
     <span
-      >&gt; <a href="#" class="decoration-double hover:underline">Contact</a
-      ></span
+      data-contact-info
+      class="position: fixed -z-10 h-0 w-0 text-transparent"
+      >gabrieljkime@gmail.com</span
     >
     <a href="resume#" class="decoration-double hover:underline">Resume</a>
   </section>
@@ -36,3 +39,11 @@ import { Icon } from 'astro-icon'
     >
   </section>
 </nav>
+<script>
+  const contactInfo = document.querySelector("[data-contact-info]").textContent;
+  const selectContactInfoBtn = document.querySelector("[data-copy-info]");
+  const copyInfo = () => {
+    navigator.clipboard.writeText(contactInfo);
+  };
+  selectContactInfoBtn.addEventListener("click", () => copyInfo());
+</script>
