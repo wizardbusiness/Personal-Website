@@ -26,6 +26,7 @@ const AccordionedList = ({ items, open }: AccordionList) => {
     const lastItem = index === items.length - 1 ? true : false;
     return (
       <div
+        key={`item${index}`}
         className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-600 ${
           lastItem
             ? "before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%] before:bg-white"
