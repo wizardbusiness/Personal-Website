@@ -72,6 +72,22 @@ module.exports = {
             height: "0",
           },
         },
+        fadein: {
+          "0%": {
+            opacity: "0%",
+          },
+          "100%": {
+            opacity: "100%",
+          },
+        },
+        fadeout: {
+          "0%": {
+            opacity: "100%",
+          },
+          "100%": {
+            opacity: "0%",
+          },
+        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
@@ -83,6 +99,8 @@ module.exports = {
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
+        "fade-in": "fadein 0.2s forwards ease",
+        "fade-out": "fadeout 0.2s forwards ease",
       },
     },
   },
