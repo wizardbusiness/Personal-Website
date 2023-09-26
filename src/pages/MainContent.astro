@@ -1,34 +1,45 @@
 ---
 import MainLayout from "../layouts/main-layout.astro";
 import ContentLayout from "../layouts/content-layout.astro";
+import Nav from "./components/Nav.astro";
+import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
+import SubHeader from "./components/SubHeader";
+import Skyline from "./components/Skyline";
 import About from "./components/About.astro";
 import Portfolio from "./components/Portfolio.astro";
 import Tech from "./components/Tech.astro";
-import SubHeader from "./components/SubHeader";
-import Skyline from "./components/Skyline"
-import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
 ---
+
 <MainLayout>
   <ContentLayout slot="page">
-    <div class="-translate-y-7" slot="scroll-up">
-      <ScrollToPageBtn url="/" scrollDirection="up"  />
-    </div>
-    <div data-subheader-main class="flex relative h-32 w-2/3 justify-center animate-fall-to z-10" slot="subheader">
+    <Nav slot="nav">
+      <div class="h-1/2 w-fit self-center justify-self-center">
+        <ScrollToPageBtn scrollDirection="up" url="/" />
+      </div>
+    </Nav>
+    <div
+      data-subheader-main
+      class="relative z-10 flex h-32 w-2/3 animate-fall-to justify-center"
+      slot="subheader"
+    >
       <Skyline />
-      <SubHeader msg="Dream it. Build it." client:load transition:persist="subheader" />
+      <SubHeader
+        msg="Dream it. Build it."
+        client:load
+        transition:persist="subheader"
+      />
     </div>
-    <About slot="about"/>
-    <Portfolio slot="portfolio"/>
-    <Tech slot="tech"/>
+    <About slot="about" />
+    <Portfolio slot="portfolio" />
+    <Tech slot="tech" />
   </ContentLayout>
 </MainLayout>
-<script src="../scripts/navigateUtility.ts" />
+<script src="../scripts/navigateUtility.ts"></script>
 <script>
-  const effectContainer = document.querySelectorAll('[data-subheader]')[0];
-  console.log(effectContainer)
+  const effectContainer = document.querySelectorAll("[data-subheader]")[0];
   const renderEffect = () => {
-    const effects = document.querySelectorAll('[data-effect]');
-    effects.forEach(effect => effect.classList.remove('hidden'))
-  }
-  effectContainer.addEventListener("animationend", () => renderEffect())
+    const effects = document.querySelectorAll("[data-effect]");
+    effects.forEach((effect) => effect.classList.remove("hidden"));
+  };
+  effectContainer.addEventListener("animationend", () => renderEffect());
 </script>

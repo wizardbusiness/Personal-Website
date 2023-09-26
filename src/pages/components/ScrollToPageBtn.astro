@@ -1,14 +1,14 @@
 ---
-import { Icon } from 'astro-icon'
-const { url, scrollDirection } = Astro.props
+import { Icon } from "astro-icon";
+const { url, scrollDirection } = Astro.props;
 ---
 
 <a
   href={url}
   data-scroll-btn={scrollDirection}
-  class="flex flex-col text-center items-center text-gray-400 w-20 hover:animate-none cursor-pointer"
+  class="flex w-20 animate-pulse cursor-pointer flex-col items-center justify-self-start text-gray-400 hover:animate-none"
 >
-  <span class="translate-y-3 text-lg">Scroll</span>
+  <span class="m-0 translate-y-3 text-lg">Scroll</span>
   <Icon
     pack="ph"
     name={`caret-${scrollDirection}`}

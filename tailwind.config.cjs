@@ -102,6 +102,9 @@ module.exports = {
         "fade-in": "fadein 0.2s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
       },
+      gridTemplateColumns: {
+        "nav-lg": "40% 20% 33% 2% 5%",
+      },
     },
   },
   plugins: [require("tailwindcss-radix")],
