@@ -21,7 +21,7 @@ module.exports = {
         },
         fallto: {
           "0%": { transform: "translateY(-20vh)" },
-          "100%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(5px)" },
         },
         risefrom: {
           "0%": { transform: "translateY(0)" },
@@ -88,10 +88,26 @@ module.exports = {
             opacity: "0%",
           },
         },
+        impact: {
+          "0%": {
+            transform: "translateY(0px)",
+          },
+          "100%": {
+            transform: "translateY(5px)",
+          },
+        },
+        buoy: {
+          "0%": {
+            transform: "translateY(5px)",
+          },
+          "100%": {
+            transform: "translateY(0)",
+          },
+        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
-        "fall-to": "fallto 0.3s forwards",
+        "fall-to": "fallto 0.3s forwards ease-in",
         "fall-from": "fallfrom 0.3s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.5s forwards",
@@ -101,6 +117,8 @@ module.exports = {
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.2s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
+        impact: "impact 0.05s 0.3s forwards",
+        buoy: "buoy 0.1s 0.2s fowards ease-in",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
