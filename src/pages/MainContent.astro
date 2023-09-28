@@ -11,7 +11,7 @@ import Tech from "./components/Tech.astro";
 ---
 
 <MainLayout>
-  <ContentLayout slot="page">
+  <ContentLayout data-info-page slot="page">
     <Nav slot="nav">
       <div class="h-1/2 w-fit self-center justify-self-center">
         <ScrollToPageBtn scrollDirection="up" url="/" />
@@ -32,14 +32,24 @@ import Tech from "./components/Tech.astro";
     <About slot="about" />
     <Portfolio slot="portfolio" />
     <Tech slot="tech" />
+    <script src="../scripts/navigateUtility.ts"></script>
+    <script>
+      document.addEventListener("astro:page-load", () => {
+        console.log("script ran");
+        const infoContainer = document.querySelector("[data-info-container]");
+        if (infoContainer) {
+          const effectContainer =
+            document.querySelectorAll("[data-subheader]")[0];
+          const renderEffect = () => {
+            const effects = document.querySelectorAll("[data-effect]");
+            effects.forEach((effect) => effect.classList.remove("hidden"));
+          };
+          effectContainer.addEventListener("animationend", () =>
+            renderEffect(),
+          );
+          infoContainer.addEventListener("wheel", (e) => e.stopPropagation());
+        }
+      });
+    </script>
   </ContentLayout>
 </MainLayout>
-<script src="../scripts/navigateUtility.ts"></script>
-<script>
-  const effectContainer = document.querySelectorAll("[data-subheader]")[0];
-  const renderEffect = () => {
-    const effects = document.querySelectorAll("[data-effect]");
-    effects.forEach((effect) => effect.classList.remove("hidden"));
-  };
-  effectContainer.addEventListener("animationend", () => renderEffect());
-</script>
