@@ -2,12 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@utilities {
+@layer utilities {
   .h-radix-accordion {
     height: var(--radix-accordion-content-height);
   }
 
   .w-radix-accordion {
     width: var(--radix-accordion-content-width);
+  }
+}
+
+@layer components {
+  .structure {
+    transform: scaleY(0%);
+  }
+
+  .structure.build {
+    transform: scaleY(100%);
+    transform-origin: bottom;
+    transition: transform 500ms;
   }
 }
