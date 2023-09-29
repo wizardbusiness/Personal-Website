@@ -15,11 +15,12 @@
 @layer components {
   .structure {
     transform: scaleY(0%);
+    transform-origin: bottom;
+    transition: transform 500ms;
   }
 
   .structure.build {
     transform: scaleY(100%);
     transform-origin: bottom;
-    transition: transform 500ms;
   }
 }
