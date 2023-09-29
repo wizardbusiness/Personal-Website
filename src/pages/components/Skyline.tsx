@@ -33,9 +33,9 @@ function SkylineShape({ delay, direction }) {
   const shapeStyles = {
     height: height,
     width: width,
-    clipPath: `polygon(100% 0, 100% 0, 100% 100%, 0 100%, 0 100)`,
+    clipPath: `polygon(12% 0, 92% 0, 92% 50%, 92% 100%, 12% 100%, 12% 50%);`,
     transitionDelay:
-      direction === "right" ? `${300 - delay * 100}ms` : `${delay * 100}ms`,
+      direction === "right" ? `${400 - delay * 200}ms` : `${delay * 200}ms`,
   };
   return (
     <div data-effect style={shapeStyles} className={`structure bg-slate-100`} />
