@@ -46,7 +46,7 @@ const Skyline = () => {
   const skylineLeft = useMemo(() => createSkylineBg(3, "left"), []);
   const skylineRight = useMemo(() => createSkylineBg(3, "right"), []);
   return (
-    <div className="absolute h-32 w-1/2">
+    <div data-effect-container className="absolute h-32 w-1/2">
       <div className="absolute bottom-0 left-2 flex items-end gap-2 self-end">
         {skylineLeft}
       </div>

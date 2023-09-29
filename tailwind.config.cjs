@@ -24,7 +24,7 @@ module.exports = {
           "100%": { transform: "translateY(5px)" },
         },
         risefrom: {
-          "0%": { transform: "translateY(0)" },
+          "0%": { transform: "translateY(5px)" },
           "100%": { transform: "translateY(-30vh)" },
         },
         riseto: {
@@ -110,7 +110,7 @@ module.exports = {
         "fall-to": "fallto 0.3s forwards ease-in",
         "fall-from": "fallfrom 0.3s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
-        "rise-from": "risefrom 0.5s forwards",
+        "rise-from": "risefrom 0.5s 0.5s forwards",
         "squish-down": "squish 0.2s 0.2s forwards ease-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",

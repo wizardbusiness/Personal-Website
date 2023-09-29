@@ -16,7 +16,20 @@ const scrollToPage = (e: WheelEvent) => {
   }
   if (direction === "up" && e.deltaY > 0) {
     const subheaderMain = document.querySelectorAll("[data-subheader-main]")[0];
-    subheaderMain.classList.add("animate-rise-from");
+
+    const effectContainer = document.querySelector("[data-effect-container]");
+
+    const effects = document.querySelectorAll("[data-effect]");
+    effects.forEach((effect) => effect.classList.remove("build"));
+    const done = _.after(effects.length, () => {
+      // subheaderMain.classList.remove("animate-fall-to");
+      subheaderMain.classList.add("animate-rise-from", "translate-y-[5px]");
+    });
+    effectContainer.addEventListener("transitionend", () => {
+      console.log("transition");
+      done();
+    });
+
     subheaderMain.addEventListener("animationend", () => {
       scrollBtn.click();
     });
