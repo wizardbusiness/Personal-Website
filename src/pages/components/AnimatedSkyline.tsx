@@ -47,7 +47,7 @@ function Polygon({ delay, baseHeight }) {
   );
 }
 
-const SkylineEffect = () => {
+const AnimatedSkyline = () => {
   const skylineLeft = useMemo(() => createSkylineEffect(5, "left"), []);
   const skylineRight = useMemo(() => createSkylineEffect(5, "right"), []);
   return (
@@ -62,4 +62,4 @@ const SkylineEffect = () => {
   );
 };
 
-export default SkylineEffect;
+export default AnimatedSkyline;

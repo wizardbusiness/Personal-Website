@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Cursor from "./Cursor";
-import Skyline from "./Skyline";
 
 export default function SubHeader({ msg, blinkCursor }) {
   const [msgIndex, setMsgIndex] = useState(0);
