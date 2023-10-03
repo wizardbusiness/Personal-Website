@@ -13,7 +13,7 @@ import Tech from "./components/Tech.astro";
 <MainLayout>
   <ContentLayout data-info-page slot="page">
     <Nav slot="nav">
-      <div class="h-1/2 w-fit self-center justify-self-center">
+      <div data-scrollable class="h-1/2 w-fit self-center justify-self-center">
         <ScrollToPageBtn scrollDirection="up" url="/" />
       </div>
     </Nav>
@@ -24,6 +24,7 @@ import Tech from "./components/Tech.astro";
     >
       <Skyline />
       <SubHeader
+        blinkCursor={false}
         msg="Dream it. Build it."
         client:load
         transition:persist="subheader"
@@ -36,18 +37,20 @@ import Tech from "./components/Tech.astro";
     <script>
       document.addEventListener("astro:page-load", () => {
         const infoContainer = document.querySelector("[data-info-container]");
+        const scrollableArea = document.querySelector("[data-scrollable]");
         if (infoContainer) {
-          const effectContainer =
-            document.querySelectorAll("[data-subheader]")[0];
-          const renderEffect = () => {
-            const effects = document.querySelectorAll("[data-effect]");
+          const subheader = document.querySelectorAll("[data-subheader]")[0];
+          const effects = document.querySelectorAll("[data-effect]");
+          const renderEffect = (effects) => {
             effects.forEach((effect) => {
               effect.classList.add("build");
             });
           };
-          effectContainer.addEventListener("animationend", () =>
-            renderEffect(),
+
+          subheader.addEventListener("animationend", () =>
+            renderEffect(effects),
           );
+
           infoContainer.addEventListener("wheel", (e) => e.stopPropagation());
         }
       });
