@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import Cursor from "./Cursor";
 import Skyline from "./Skyline";
 
-export default function SubHeader({ msg }) {
+export default function SubHeader({ msg, blinkCursor }) {
   const [msgIndex, setMsgIndex] = useState(0);
   const [text, setText] = useState(" ");
 
@@ -36,7 +36,7 @@ export default function SubHeader({ msg }) {
             })) ||
             text}
         </h1>
-        <Cursor animStart={msgIndex === msg.length} />
+        <Cursor animStart={blinkCursor && msgIndex === msg.length} />
       </div>
     </div>
   );
