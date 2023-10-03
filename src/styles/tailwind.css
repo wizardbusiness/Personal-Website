@@ -16,7 +16,7 @@
   .structure {
     transform: scaleY(0%);
     transform-origin: bottom;
-    transition: transform 500ms;
+    transition: transform 200ms;
   }
 
   .structure.build {
