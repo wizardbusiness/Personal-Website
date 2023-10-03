@@ -1,12 +1,12 @@
 import React, { useState, useMemo, useEffect } from "react";
 import "../../styles/tailwind.css";
 
-const createSkylineBg = (numStructs: number, direction: string) => {
+const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
   let i = 0;
   while (i < numStructs) {
     structs.push(
-      <SkylineShape
+      <Polygon
         delay={i}
         baseHeight={(i % 2) * 10 + i * 5}
         key={`struct${i}`}
@@ -19,7 +19,7 @@ const createSkylineBg = (numStructs: number, direction: string) => {
     : structs;
 };
 
-function SkylineShape({ delay, baseHeight }) {
+function Polygon({ delay, baseHeight }) {
   const [, setAddedClass] = useState("");
   useEffect(() => {
     setAddedClass("build");
@@ -47,9 +47,9 @@ function SkylineShape({ delay, baseHeight }) {
   );
 }
 
-const Skyline = () => {
-  const skylineLeft = useMemo(() => createSkylineBg(5, "left"), []);
-  const skylineRight = useMemo(() => createSkylineBg(5, "right"), []);
+const SkylineEffect = () => {
+  const skylineLeft = useMemo(() => createSkylineEffect(5, "left"), []);
+  const skylineRight = useMemo(() => createSkylineEffect(5, "right"), []);
   return (
     <div data-effect-container className="absolute h-32 w-1/2">
       <div className="absolute bottom-0 left-2 flex items-end gap-2 self-end">
@@ -62,4 +62,4 @@ const Skyline = () => {
   );
 };
 
-export default Skyline;
+export default SkylineEffect;
