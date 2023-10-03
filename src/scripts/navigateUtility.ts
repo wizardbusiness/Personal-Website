@@ -21,13 +21,24 @@ const scrollToPage = (e: WheelEvent) => {
   return;
 };
 
+const checkUserInterupt = (e: WheelEvent, subheader: HTMLElement) => {
+  if (e.deltaY > 0) {
+    const effects = document.querySelectorAll("[data-effect]");
+    effects.forEach((effect) => effect.classList.remove("build"));
+    subheader.addEventListener("animationend", () => {});
+    subheader.classList.add("animate-rise-from", "translate-y-[5px]");
+  }
+};
+
 // controls transitions and animations when scrolling from landing page to info page
 const scrollDown = (scrollBtn: HTMLElement) => {
-  const subheader = document.querySelectorAll("[data-subheader-landing]")[0];
+  const subheader = document.querySelector("[data-subheader-landing]");
   subheader.classList.add("animate-fall-from");
   subheader.addEventListener("animationend", () => {
     scrollBtn.click();
   });
+
+  const awaitViewTransition = async () => {};
 };
 
 // controls transitions and animations when scrolling from info page to landing page
@@ -38,11 +49,14 @@ const scrollUp = (scrollBtn: HTMLElement) => {
 
   const effects = document.querySelectorAll("[data-effect]");
   effects.forEach((effect) => effect.classList.remove("build"));
-  const done = _.after(effects.length, () => {
+
+  const transitionDone = _.after(effects.length, () => {
     subheaderMain.classList.add("animate-rise-from", "translate-y-[5px]");
   });
+
+  let ready = false;
   effectContainer.addEventListener("transitionend", () => {
-    done();
+    transitionDone();
   });
 
   subheaderMain.addEventListener("animationend", () => {
