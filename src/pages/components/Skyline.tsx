@@ -39,7 +39,7 @@ function SkylineShape({ delay, baseHeight }) {
   const shapeStyles = {
     height: height,
     width: width,
-    clipPath: `polygon(12% 0, 92% 0, 92% 50%, 92% 100%, 12% 100%, 12% 50%)`,
+    clipPath: `polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%)`,
     transitionDelay: `${400 - delay * 200}ms`,
   };
   return (
