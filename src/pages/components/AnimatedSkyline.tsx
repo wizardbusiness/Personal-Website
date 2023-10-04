@@ -7,8 +7,10 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
   while (i < numStructs) {
     structs.push(
       <Polygon
+        numStructs={numStructs}
         delay={i}
-        baseHeight={(i % 2) * 10 + i * 5}
+        index={i}
+        baseHeight={10 + i}
         key={`struct${i}`}
       />,
     );
@@ -19,16 +21,22 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
     : structs;
 };
 
-function Polygon({ delay, baseHeight }) {
+function Polygon({ delay, numStructs, baseHeight, index }) {
   const [, setAddedClass] = useState("");
+  const calcHeightMod = (i: number) => {
+    const noise = 1.5 + Math.random();
+    const randomAmplitude = 3 * Math.cos(noise * baseHeight);
+    return baseHeight * 2 + randomAmplitude * 3;
+  };
+
   useEffect(() => {
     setAddedClass("build");
   }, []);
   const randomIntFromInterval = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
-  const width = `${randomIntFromInterval(10, 20)}px`;
-  const height = `${randomIntFromInterval(20, 30) + baseHeight}px`;
+  const width = `${randomIntFromInterval(15, 25)}px`;
+  const height = `${calcHeightMod(baseHeight)}px`;
   const pNodes = [];
   let i = 0;
   while (i <= 4) {
@@ -39,8 +47,8 @@ function Polygon({ delay, baseHeight }) {
   const shapeStyles = {
     height: height,
     width: width,
-    clipPath: `polygon(0 0, 100% 0, 100% 50%, 100% 100%, 0 100%, 0 50%)`,
-    transitionDelay: `${400 - delay * 200}ms`,
+    clipPath: `polygon(0 ${0}%, ${100}% ${0}%, 100% 60%, ${100}% 100%, 0 100%, 0 50%)`,
+    transitionDelay: `${numStructs * 100 - delay * 200}ms`,
   };
   return (
     <div data-effect style={shapeStyles} className={`structure bg-slate-100`} />
@@ -48,11 +56,11 @@ function Polygon({ delay, baseHeight }) {
 }
 
 const AnimatedSkyline = () => {
-  const skylineLeft = useMemo(() => createSkylineEffect(5, "left"), []);
-  const skylineRight = useMemo(() => createSkylineEffect(5, "right"), []);
+  const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
+  const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
   return (
     <div data-effect-container className="absolute h-32 w-1/2">
-      <div className="absolute bottom-0 left-2 flex items-end gap-2 self-end">
+      <div className="absolute bottom-0 left-0 flex items-end gap-2 self-end">
         {skylineLeft}
       </div>
       <div className="absolute bottom-0 right-2 flex items-end gap-2 self-end">
