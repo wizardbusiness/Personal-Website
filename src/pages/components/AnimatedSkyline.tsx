@@ -24,9 +24,9 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
 function Polygon({ delay, numStructs, baseHeight, index }) {
   const [, setAddedClass] = useState("");
   const calcHeightMod = (i: number) => {
-    const noise = 1.5 + Math.random();
-    const randomAmplitude = 3 * Math.cos(noise * baseHeight);
-    return baseHeight * 2 + randomAmplitude * 3;
+    const noise = Math.random();
+    const randomAmplitude = 15 * Math.cos(baseHeight * noise + noise * 100);
+    return baseHeight ** 1.4 + randomAmplitude;
   };
 
   useEffect(() => {
@@ -35,19 +35,24 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   const randomIntFromInterval = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
+  const initialNodeVals = [0, 0, 100, 0, 100, 50]; // customizable node values
+  const setPNodes = (initalVals: number[]) => {
+    // map over pNodes, choose a random value to modify.
+    const modifyValAtIndex = randomIntFromInterval(0, initalVals.length - 1);
+    const modCheckPass = Math.random() > 0.7 ? true : false;
+    return initalVals.map((nodeVal, index) => {
+      if (index === modifyValAtIndex && modCheckPass)
+        return randomIntFromInterval(50, 100);
+      return nodeVal;
+    });
+  };
+  const pNodeVals = setPNodes(initialNodeVals);
   const width = `${randomIntFromInterval(15, 25)}px`;
   const height = `${calcHeightMod(baseHeight)}px`;
-  const pNodes = [];
-  let i = 0;
-  while (i <= 4) {
-    const slant = randomIntFromInterval(0, 100);
-    pNodes.push(`${slant}%`);
-    i++;
-  }
   const shapeStyles = {
     height: height,
     width: width,
-    clipPath: `polygon(0 ${0}%, ${100}% ${0}%, 100% 60%, ${100}% 100%, 0 100%, 0 50%)`,
+    clipPath: `polygon(${pNodeVals[0]}% ${pNodeVals[1]}%, ${pNodeVals[2]}% ${pNodeVals[3]}%, 100% 50%, ${pNodeVals[4]}% 100%, 0 100%, 0 ${pNodeVals[5]}%)`,
     transitionDelay: `${numStructs * 100 - delay * 200}ms`,
   };
   return (
