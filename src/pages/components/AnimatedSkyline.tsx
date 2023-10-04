@@ -25,8 +25,10 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   const [, setAddedClass] = useState("");
   const calcHeightMod = (i: number) => {
     const noise = Math.random();
-    const randomAmplitude = 15 * Math.cos(baseHeight * noise + noise * 100);
-    return baseHeight ** 1.4 + randomAmplitude;
+    const amplitude = 12 * Math.cos(baseHeight);
+    return index % 2 === 0
+      ? baseHeight ** 1.5 + noise * 10 + amplitude
+      : baseHeight ** 1.4 + amplitude;
   };
 
   useEffect(() => {
