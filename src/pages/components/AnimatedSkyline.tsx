@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import "../../styles/tailwind.css";
+import { initial } from "lodash";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
@@ -37,30 +38,88 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   const randomIntFromInterval = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
-  const initialNodeVals = [0, 0, 100, 0, 100, 50]; // customizable node values
-  const setPNodes = (initalVals: number[]) => {
-    // map over pNodes, choose a random value to modify.
-    const modifyValAtIndex = randomIntFromInterval(0, initalVals.length - 1);
-    const modCheckPass = Math.random() > 0.7 ? true : false;
-    return initalVals.map((nodeVal, index) => {
-      if (index === modifyValAtIndex && modCheckPass)
-        return randomIntFromInterval(50, 100);
-      return nodeVal;
-    });
+  // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
+  // css polygons have a percentage based scale where
+  // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
+  const initialNodeValPairs = [
+    // upper left, lower left
+    [0, 50],
+    [50, 100],
+    // upper right, lower right
+    [100, 50],
+    [50, 100],
+  ];
+
+  const chooseNodeValues = (nodeValPairs: number[][]) => {
+    const targetIndex = randomIntFromInterval(0, nodeValPairs.length - 1); // will randomly select index to modify values at.
+    return targetIndex;
   };
-  const pNodeVals = setPNodes(initialNodeVals);
-  const width = `${randomIntFromInterval(15, 25)}px`;
-  const height = `${calcHeightMod(baseHeight)}px`;
+  // customizable node values
+  const setNodeVals = (
+    targetIndex: number,
+    nodeValuePairs: number[][],
+    probability: number = 0.3,
+  ) => {
+    // set the probability that a modification will take place. currently 30%
+    const modCheckPass = Math.random() <= probability ? true : false;
+    // if check doesn't pass dont modify any node values
+    if (modCheckPass === false) return nodeValuePairs;
+    // choose modded values
+    const moddedValues = nodeValuePairs.map((valPair: number[], index) => {
+      if (index === targetIndex) {
+        // modify the values;
+        return valPair.map((value: number) => {
+          return randomIntFromInterval(0, 80);
+        });
+      } else {
+        // otherwise leave them alone
+        return valPair;
+      }
+    });
+    return moddedValues;
+  };
+
+  const targetIndex = chooseNodeValues(initialNodeValPairs);
+  const nodeVals = setNodeVals(targetIndex, initialNodeValPairs, 0.4);
+  const width = randomIntFromInterval(15, 25);
+  const height = Math.floor(calcHeightMod(baseHeight));
   const shapeStyles = {
-    height: height,
-    width: width,
-    clipPath: `polygon(${pNodeVals[0]}% ${pNodeVals[1]}%, ${pNodeVals[2]}% ${pNodeVals[3]}%, 100% 50%, ${pNodeVals[4]}% 100%, 0 100%, 0 ${pNodeVals[5]}%)`,
+    height: `${height}px`,
+    width: `${width}px`,
+    clipPath: `polygon(${nodeVals[0][0]}% 0, ${nodeVals[2][0]}% 0, 100% ${nodeVals[2][1]}%, 100% 100%, 0 100%, 0 ${nodeVals[0][1]}%)`,
     transitionDelay: `${numStructs * 100 - delay * 200}ms`,
   };
   return (
-    <div data-effect style={shapeStyles} className={`structure bg-slate-100`} />
+    <div
+      data-effect
+      style={shapeStyles}
+      className={`structure flex flex-wrap place-content-evenly bg-slate-100`}
+    >
+      <Windows shapeH={height} shapeW={width} />
+    </div>
   );
 }
+
+const Windows = ({ shapeH, shapeW }) => {
+  const windows = [];
+  const rows = Math.floor(shapeH / 15);
+  const columns = Math.floor(shapeW / 7.5);
+  let total = rows * columns;
+  while (total > 0) {
+    windows.push(<Window index={total} key={`window${total}`} />);
+    total--;
+  }
+  return windows;
+};
+
+const Window = ({ index }) => {
+  const style = {
+    backgroundColor: index % 3 === 0 ? "rgb(100 116 139)" : "transparent",
+  };
+  return (
+    <div style={style} className="m-[1px] h-[10px] w-[5px] bg-slate-500" />
+  );
+};
 
 const AnimatedSkyline = () => {
   const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
