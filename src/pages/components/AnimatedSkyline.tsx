@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
 import "../../styles/tailwind.css";
-import { initial, random } from "lodash";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
