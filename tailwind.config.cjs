@@ -42,7 +42,7 @@ module.exports = {
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scaleY(10%) scaleX(120%)",
+            transform: "scaleY(5%) scaleX(120%)",
             backgroundColor: "white",
           },
         },
