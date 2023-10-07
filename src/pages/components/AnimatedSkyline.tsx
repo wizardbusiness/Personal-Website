@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import "../../styles/tailwind.css";
-import { initial } from "lodash";
+import { initial, random } from "lodash";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
@@ -35,9 +35,6 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   useEffect(() => {
     setAddedClass("build");
   }, []);
-  const randomIntFromInterval = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
   // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
@@ -93,7 +90,7 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
     <div
       data-effect
       style={shapeStyles}
-      className={`structure flex flex-wrap place-content-evenly bg-slate-100`}
+      className={`structure flex flex-wrap place-content-evenly gap-[2px] bg-slate-100`}
     >
       <Windows shapeH={height} shapeW={width} />
     </div>
@@ -101,24 +98,44 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
 }
 
 const Windows = ({ shapeH, shapeW }) => {
-  const windows = [];
-  const rows = Math.floor(shapeH / 15);
+  const rows = Math.floor(shapeH / 7.5);
   const columns = Math.floor(shapeW / 7.5);
-  let total = rows * columns;
-  while (total > 0) {
-    windows.push(<Window index={total} key={`window${total}`} />);
-    total--;
+  const totalWindows = rows * columns;
+  const windows = [];
+  let i = 0;
+  let showWindow = Math.random() <= 0.5 ? true : false;
+  let intervalCounter = 0;
+  while (i < totalWindows) {
+    if (showWindow === true) {
+      let incrementBy = randomIntFromInterval(1, 2);
+      intervalCounter += incrementBy;
+      if (intervalCounter > 4) {
+        showWindow = false;
+        intervalCounter = 0;
+      }
+    } else if (showWindow === false) {
+      let incrementBy = randomIntFromInterval(1, 2);
+      intervalCounter += incrementBy;
+      if (intervalCounter > 2) {
+        showWindow = true;
+        intervalCounter = 0;
+      }
+    }
+    windows.push(<Window key={`window${i}`} showWindow={showWindow} />);
+    i++;
   }
   return windows;
 };
 
-const Window = ({ index }) => {
+const Window = ({ showWindow }) => {
   const style = {
-    backgroundColor: index % 3 === 0 ? "rgb(100 116 139)" : "transparent",
+    backgroundColor: showWindow ? "rgb(100 116 139)" : "transparent",
   };
-  return (
-    <div style={style} className="m-[1px] h-[10px] w-[5px] bg-slate-500" />
-  );
+  return <div style={style} className=" h-[5px] w-[5px]" />;
+};
+
+const randomIntFromInterval = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 };
 
 const AnimatedSkyline = () => {
