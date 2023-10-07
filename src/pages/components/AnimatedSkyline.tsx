@@ -84,7 +84,7 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
     height: `${height}px`,
     width: `${width}px`,
     clipPath: `polygon(${nodeVals[0][0]}% 0, ${nodeVals[2][0]}% 0, 100% ${nodeVals[2][1]}%, 100% 100%, 0 100%, 0 ${nodeVals[0][1]}%)`,
-    transitionDelay: `${numStructs * 100 - delay * 200}ms`,
+    transitionDelay: `${numStructs * 100 - delay * 120}ms`,
   };
   return (
     <div
