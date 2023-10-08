@@ -24,12 +24,7 @@ import Tech from "./components/Tech.astro";
       slot="subheader"
     >
       <AnimatedSkyline client:load />
-      <TaglineContainer
-        repositTxt={true}
-        animateBg
-        client:load
-        transition:persist="subheader"
-      >
+      <TaglineContainer repositTxt={true} animateBg client:load>
         <TaglineMsg
           msg="Dream it. Build it."
           blinkCursor={false}
