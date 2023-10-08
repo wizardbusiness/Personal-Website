@@ -178,10 +178,10 @@ const AnimatedSkyline = () => {
   const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
   return (
     <div data-effect-container className="absolute h-32 w-1/2">
-      <div className="absolute bottom-0 left-0 flex items-end gap-2 self-end">
+      <div className="absolute bottom-2 left-4 flex items-end gap-2 self-end">
         {skylineLeft}
       </div>
-      <div className="absolute bottom-0 right-2 flex items-end gap-2 self-end">
+      <div className="absolute bottom-2 right-2 flex items-end gap-2 self-end">
         {skylineRight}
       </div>
     </div>
