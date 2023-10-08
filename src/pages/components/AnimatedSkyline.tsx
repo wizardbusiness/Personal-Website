@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import "../../styles/tailwind.css";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
@@ -22,8 +28,15 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
 };
 
 function Polygon({ delay, numStructs, baseHeight, index }) {
-  const [, setAddedClass] = useState("");
-  const calcHeightMod = (i: number) => {
+  const [build, setBuild] = useState(false);
+  const [transitionEnd, setTransitionEnd] = useState(false);
+  const shapeRef = useRef(null);
+
+  const handleTransitionEnd = () => {
+    setTransitionEnd(true);
+  };
+
+  const calcHeightMod = () => {
     const noise = Math.random();
     const amplitude = 12 * Math.cos(baseHeight);
     return index % 2 === 0
@@ -32,7 +45,7 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   };
 
   useEffect(() => {
-    setAddedClass("build");
+    setBuild(true);
   }, []);
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
@@ -60,7 +73,7 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
     const modCheckPass = Math.random() <= probability ? true : false;
     // if check doesn't pass dont modify any node values
     if (modCheckPass === false) return nodeValuePairs;
-    // choose modded values
+    // choose values to modify by target index
     const moddedValues = nodeValuePairs.map((valPair: number[], index) => {
       if (index === targetIndex) {
         // modify the values;
@@ -68,17 +81,20 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
           return randomIntFromInterval(0, 80);
         });
       } else {
-        // otherwise leave them alone
+        // leave untargeted indexes alone.
         return valPair;
       }
     });
     return moddedValues;
   };
-
-  const targetIndex = chooseNodeValues(initialNodeValPairs);
-  const nodeVals = setNodeVals(targetIndex, initialNodeValPairs, 0.4);
-  const width = randomIntFromInterval(15, 25);
-  const height = Math.floor(calcHeightMod(baseHeight));
+  // memoize all to avoid values changing in non deterministic way during rerendering due to random values.
+  const targetIndex = useMemo(() => chooseNodeValues(initialNodeValPairs), []);
+  const nodeVals = useMemo(
+    () => setNodeVals(targetIndex, initialNodeValPairs, 0.4),
+    [],
+  );
+  const width = useMemo(() => randomIntFromInterval(15, 25), []);
+  const height = useMemo(() => Math.floor(calcHeightMod()), []);
   const shapeStyles = {
     height: `${height}px`,
     width: `${width}px`,
@@ -87,16 +103,20 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   };
   return (
     <div
+      ref={shapeRef}
       data-effect
       style={shapeStyles}
-      className={`structure flex flex-wrap place-content-evenly gap-[2px] bg-slate-100`}
+      className={`structure ${
+        build && "build"
+      } flex flex-wrap place-content-evenly gap-[2px] border border-slate-600 bg-slate-600`}
+      onTransitionEnd={handleTransitionEnd}
     >
-      <Windows shapeH={height} shapeW={width} />
+      <Windows shapeH={height} shapeW={width} delay={delay} />
     </div>
   );
 }
 
-const Windows = ({ shapeH, shapeW }) => {
+const Windows = ({ shapeH, shapeW, delay }) => {
   const rows = Math.floor(shapeH / 7.5);
   const columns = Math.floor(shapeW / 7.5);
   const totalWindows = rows * columns;
@@ -123,14 +143,30 @@ const Windows = ({ shapeH, shapeW }) => {
     windows.push(<Window key={`window${i}`} showWindow={showWindow} />);
     i++;
   }
-  return windows;
+  return windows.sort((a, b) => (a < b ? 1 : -1));
 };
 
 const Window = ({ showWindow }) => {
-  const style = {
-    backgroundColor: showWindow ? "rgb(100 116 139)" : "transparent",
-  };
-  return <div style={style} className=" h-[5px] w-[5px]" />;
+  const [lightOn, setLightOn] = useState(showWindow);
+  const [frequency, setFrequency] = useState(
+    randomIntFromInterval(5000, 150000),
+  );
+
+  useEffect(() => {
+    const cycleLight = setInterval(() => {
+      console.log(frequency);
+      setFrequency(randomIntFromInterval(10000, 150000));
+      setLightOn(!lightOn);
+    }, frequency);
+
+    return () => clearInterval(cycleLight);
+  }, [lightOn, frequency]);
+
+  return (
+    <div
+      className={`window ${lightOn && "show"} h-[5px] w-[5px] bg-gray-100`}
+    />
+  );
 };
 
 const randomIntFromInterval = (min: number, max: number) => {
