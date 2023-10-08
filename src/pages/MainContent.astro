@@ -4,7 +4,7 @@ import ContentLayout from "../layouts/content-layout.astro";
 import Nav from "./components/Nav.astro";
 import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
 import SubHeader from "./components/SubHeader";
-import Skyline from "./components/Skyline";
+import AnimatedSkyline from "./components/AnimatedSkyline";
 import About from "./components/About.astro";
 import Portfolio from "./components/Portfolio.astro";
 import Tech from "./components/Tech.astro";
@@ -22,9 +22,10 @@ import Tech from "./components/Tech.astro";
       class="relative z-10 flex h-32 w-2/3 animate-fall-to justify-center"
       slot="subheader"
     >
-      <Skyline />
+      <AnimatedSkyline client:only />
       <SubHeader
         blinkCursor={false}
+        repositTxt={true}
         msg="Dream it. Build it."
         client:load
         transition:persist="subheader"
@@ -40,16 +41,22 @@ import Tech from "./components/Tech.astro";
         const scrollableArea = document.querySelector("[data-scrollable]");
         if (infoContainer) {
           const subheader = document.querySelectorAll("[data-subheader]")[0];
-          const effects = document.querySelectorAll("[data-effect]");
-          const renderEffect = (effects) => {
-            effects.forEach((effect) => {
-              effect.classList.add("build");
-            });
-          };
+          // const effects = document.querySelectorAll("[data-effect]");
+          // const renderEffect = (effects) => {
+          //   effects.forEach((effect) => {
+          //     effect.classList.add("build");
+          //     effect.addEventListener("transitionend", (e) => {
+          //       const windows = Array.from(effect.children);
+          //       windows.forEach((window) => {
+          //         window.classList.add("show");
+          //       });
+          //     });
+          //   });
+          // };
 
-          subheader.addEventListener("animationend", () =>
-            renderEffect(effects),
-          );
+          // subheader.addEventListener("animationend", () =>
+          //   renderEffect(effects),
+          // );
 
           infoContainer.addEventListener("wheel", (e) => e.stopPropagation());
         }
