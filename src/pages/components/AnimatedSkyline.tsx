@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-  useRef,
-  useCallback,
-} from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import "../../styles/tailwind.css";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
@@ -29,6 +23,7 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
 
 function Polygon({ delay, numStructs, baseHeight, index }) {
   const [build, setBuild] = useState(false);
+  const [render, setRender] = useState(false);
   const [transitionEnd, setTransitionEnd] = useState(false);
   const shapeRef = useRef(null);
 
@@ -45,8 +40,14 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   };
 
   useEffect(() => {
-    setBuild(true);
-  }, []);
+    setRender(true);
+    const delayBuild = setTimeout(() => {
+      setBuild(true);
+    }, 375);
+    return () => {
+      clearTimeout(delayBuild);
+    };
+  }, [render]);
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
   // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
@@ -102,17 +103,21 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
     transitionDelay: `${numStructs * 100 - delay * 120}ms`,
   };
   return (
-    <div
-      ref={shapeRef}
-      data-effect
-      style={shapeStyles}
-      className={`structure ${
-        build && "build"
-      } flex flex-wrap place-content-evenly gap-[2px] border border-slate-600 bg-slate-600`}
-      onTransitionEnd={handleTransitionEnd}
-    >
-      <Windows shapeH={height} shapeW={width} delay={delay} />
-    </div>
+    <>
+      {render && (
+        <div
+          ref={shapeRef}
+          data-effect
+          style={shapeStyles}
+          className={`structure ${
+            build && "build"
+          } flex flex-wrap place-content-evenly gap-[2px] border border-slate-600 bg-slate-600`}
+          onTransitionEnd={handleTransitionEnd}
+        >
+          <Windows shapeH={height} shapeW={width} delay={delay} />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -149,7 +154,7 @@ const Windows = ({ shapeH, shapeW, delay }) => {
 const Window = ({ showWindow }) => {
   const [lightOn, setLightOn] = useState(showWindow);
   const [frequency, setFrequency] = useState(
-    randomIntFromInterval(5000, 150000),
+    randomIntFromInterval(3000, 150000),
   );
 
   useEffect(() => {
