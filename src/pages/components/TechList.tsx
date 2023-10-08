@@ -17,7 +17,7 @@ const TechList = ({ categories }: TechList) => {
     (category: string, index: number) => (
       <Accordion.Root
         key={category + index}
-        className="text-2xl"
+        className="text-2xl leading-relaxed"
         type="multiple"
       >
         <AccordionedList categories={categories} category={category} />{" "}
@@ -63,7 +63,7 @@ const AccordionTrigger = forwardRef(
         {...props}
         ref={forwardedRef}
       >
-        +{children}
+        + {children}
       </Accordion.Trigger>
     </Accordion.Header>
   ),
@@ -79,9 +79,9 @@ const AccordionedListItems = ({ items }: AccordionedListItemsProps) => {
     return (
       <div
         key={`item${index}`}
-        className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-600 ${
+        className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-200 ${
           lastItem
-            ? "before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%] before:bg-white"
+            ? "before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%] before:bg-slate-600"
             : ""
         } translate-x-4`}
       >
@@ -104,7 +104,7 @@ const AccordionContent = forwardRef(
   ) => {
     return (
       <Accordion.Content
-        className="overflow:hidden radix-state-open:animate-open-accordion radix-state-closed:animate-close-accordion"
+        className="overflow:hidden radix-state-closed:animate-close-accordion radix-state-open:animate-open-accordion"
         {...props}
         ref={forwardRef}
       >
