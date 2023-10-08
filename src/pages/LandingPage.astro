@@ -2,7 +2,8 @@
 import LandingPgLayout from "../layouts/landing-pg-layout.astro";
 import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
 import Nav from "./components/Nav.astro";
-import SubHeader from "./components/SubHeader";
+import TaglineContainer from "./components/TaglineContainer";
+import TaglineMsg from "./components/TaglineMsg";
 import Avatar from "./components/Avatar.astro";
 
 const anim = {
@@ -37,12 +38,14 @@ const rise = {
     transition:animate={rise}
     slot="subheader"
   >
-    <SubHeader
-      blinkCursor
-      msg="Dream it. Build it."
-      client:only
-      transition:persist="subheader"
-    />
+    <TaglineContainer repositTxt={false} animateBg={false} client:load>
+      <TaglineMsg
+        msg="Dream it. Build it."
+        blinkCursor
+        transition:persist="taglineMsg"
+        client:load
+      />
+    </TaglineContainer>
   </div>
   <div class="translate-y-32" slot="scroll-down">
     <ScrollToPageBtn url="/MainContent" scrollDirection="down" />

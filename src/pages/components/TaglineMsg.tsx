@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Cursor from "./Cursor";
 
-const SubheaderText = ({ msg, blinkCursor }) => {
+const TaglineMsg = ({ msg, blinkCursor }) => {
   const [text, setText] = useState(" ");
   const [msgIndex, setMsgIndex] = useState(0);
 
@@ -36,4 +36,4 @@ const SubheaderText = ({ msg, blinkCursor }) => {
   );
 };
 
-export default SubheaderText;
+export default TaglineMsg;

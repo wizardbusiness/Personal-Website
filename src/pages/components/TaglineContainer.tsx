@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import Cursor from "./Cursor";
 
-export default function SubHeader({ repositTxt, children, animateBg }) {
+export default function Tagline({ repositTxt, children, animateBg }) {
   return (
     <div
       data-subheader
