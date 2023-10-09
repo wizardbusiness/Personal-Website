@@ -6,6 +6,8 @@ module.exports = {
       colors: {
         "foggy-glass": "#E5E7EB50",
         "moon-shine": "#F3F3F330",
+        "blue-smoke": "#223249",
+        dusk: "#1d2a44",
       },
       spacing: {
         84: "21rem",
