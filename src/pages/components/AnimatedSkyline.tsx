@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
+import { randomIntFromInterval } from "../../scripts/randomIntFromInterval";
+import AnimatedForest from "./AnimatedForest";
 import "../../styles/tailwind.css";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
@@ -32,11 +34,11 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
   };
 
   const calcHeightMod = () => {
-    const noise = Math.random();
-    const amplitude = 12 * Math.cos(baseHeight);
+    const noise = Math.floor(Math.max(Math.random() * 10, 30));
+    const amplitude = 16 * Math.cos(baseHeight);
     return index % 2 === 0
-      ? baseHeight ** 1.5 + noise * 10 + amplitude
-      : baseHeight ** 1.4 + amplitude;
+      ? Math.log(baseHeight ** randomIntFromInterval(1, 3)) + noise + amplitude
+      : baseHeight ** 1.2 + noise + amplitude;
   };
 
   useEffect(() => {
@@ -159,7 +161,6 @@ const Window = ({ showWindow }) => {
 
   useEffect(() => {
     const cycleLight = setInterval(() => {
-      console.log(frequency);
       setFrequency(randomIntFromInterval(10000, 150000));
       setLightOn(!lightOn);
     }, frequency);
@@ -174,20 +175,24 @@ const Window = ({ showWindow }) => {
   );
 };
 
-const randomIntFromInterval = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-};
-
 const AnimatedSkyline = () => {
   const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
   const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
   return (
-    <div data-effect-container className="absolute h-32 w-1/2">
-      <div className="absolute bottom-2 left-4 flex items-end gap-2 self-end">
-        {skylineLeft}
+    <div className="absolute flex w-full justify-center">
+      <div className="absolute -left-14 flex h-32 w-1/4 items-end">
+        <AnimatedForest trees={35} direction={"left"} />
       </div>
-      <div className="absolute bottom-2 right-2 flex items-end gap-2 self-end">
-        {skylineRight}
+      <div data-effect-container className="absolute flex h-32 w-1/2">
+        <div className="2 absolute bottom-1 flex items-end gap-2">
+          {skylineLeft}
+        </div>
+        <div className="absolute bottom-1 right-2 flex items-end gap-2">
+          {skylineRight}
+        </div>
+      </div>
+      <div className="absolute right-0 flex h-32 w-1/4 items-end">
+        <AnimatedForest trees={35} direction={"right"} />
       </div>
     </div>
   );

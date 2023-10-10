@@ -23,4 +23,24 @@
     transform: scaleY(100%);
     transform-origin: bottom;
   }
+
+  .window {
+    visibility: hidden;
+    transition: visibility 100ms;
+  }
+
+  .window.show {
+    visibility: visible;
+  }
+
+  .tree {
+    fill: rgb(51, 69, 101);
+    transform: scale(0, 0);
+    transform-origin: bottom;
+    transition: transform 10s;
+  }
+
+  .tree.grow {
+    transform: scale(100%, 100%);
+  }
 }
