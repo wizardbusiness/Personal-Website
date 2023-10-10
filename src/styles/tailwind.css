@@ -35,12 +35,15 @@
 
   .tree {
     fill: rgb(51, 69, 101);
-    transform: scale(0, 0);
+    transform: scale(20%, 0);
+    transform-box: fill-box;
     transform-origin: bottom;
-    transition: transform 10s;
+    transition: transform 0.5s ease-in;
   }
 
   .tree.grow {
+    transform-box: fill-box;
+    transform-origin: bottom;
     transform: scale(100%, 100%);
   }
 }
