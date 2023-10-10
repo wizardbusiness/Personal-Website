@@ -170,7 +170,7 @@ const Window = ({ showWindow }) => {
 
   return (
     <div
-      className={`window ${lightOn && "show"} h-[5px] w-[5px] bg-gray-100`}
+      className={`window ${lightOn && "show"} h-[3px] w-[3px] bg-gray-100`}
     />
   );
 };
