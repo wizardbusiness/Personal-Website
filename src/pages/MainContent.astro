@@ -9,6 +9,7 @@ import AnimatedSkyline from "./components/AnimatedSkyline";
 import About from "./components/About.astro";
 import Portfolio from "./components/Portfolio.astro";
 import Tech from "./components/Tech.astro";
+import Slogan from "./components/Slogan.astro";
 ---
 
 <MainLayout>
@@ -36,6 +37,7 @@ import Tech from "./components/Tech.astro";
     <About slot="about" />
     <Portfolio slot="portfolio" />
     <Tech slot="tech" />
+    <Slogan slot="slogan" />
     <script src="../scripts/navigateUtility.ts"></script>
     <script>
       document.addEventListener("astro:page-load", () => {
