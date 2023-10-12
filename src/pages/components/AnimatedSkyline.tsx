@@ -176,23 +176,35 @@ const Window = ({ showWindow }) => {
 };
 
 const AnimatedSkyline = () => {
+  const [forestWidth, setAvailableWidth] = useState(0);
+  const widthRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const width = Math.floor(widthRef.current?.getBoundingClientRect().width);
+    setAvailableWidth(width);
+  }, [widthRef]);
   const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
   const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
   return (
-    <div className="absolute flex w-full justify-center">
-      <div className="absolute -left-14 flex h-32 w-1/4 items-end">
-        <AnimatedForest trees={35} direction={"left"} />
+    <div className="absolute flex h-32 w-[70vw] items-end justify-center">
+      <div
+        ref={widthRef}
+        className="absolute left-0 flex h-full w-1/4 items-end"
+      >
+        <AnimatedForest chunkWidth={forestWidth} direction={"left"} />
       </div>
-      <div data-effect-container className="absolute flex h-32 w-1/2">
+      <div data-effect-container className="absolute flex w-1/2">
         <div className="2 absolute bottom-1 flex items-end gap-2">
           {skylineLeft}
+          {/* {skylineRight} */}
         </div>
         <div className="absolute bottom-1 right-2 flex items-end gap-2">
           {skylineRight}
+          {/* {skylineLeft} */}
         </div>
       </div>
-      <div className="absolute right-0 flex h-32 w-1/4 items-end">
-        <AnimatedForest trees={35} direction={"right"} />
+      <div className="absolute -right-2 flex h-full w-1/4 items-end">
+        <AnimatedForest chunkWidth={forestWidth} direction={"right"} />
       </div>
     </div>
   );
