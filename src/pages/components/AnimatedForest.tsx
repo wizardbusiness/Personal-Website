@@ -1,45 +1,47 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   randomIntFromInterval,
   randomDecNumFromInterval,
 } from "../../scripts/randomIntFromInterval";
 import Tree from "./Tree";
 
-const AnimatedForest = ({ trees, direction }) => {
-  const createForestChunk = (trees: number) => {
+const AnimatedForest = ({ chunkWidth, direction }) => {
+  const createForestChunk = () => {
     const chunk = [];
-    let i = 0;
-
-    while (i < trees) {
-      const height = 30;
-      const scaleX = randomDecNumFromInterval(0.7, 1.1, 2);
-      const scaleY = randomDecNumFromInterval(0.98, 3, 2);
+    let treeOffset = 0;
+    const boxSize = 40;
+    while (treeOffset < chunkWidth - boxSize) {
+      const delayRandom = randomIntFromInterval(1, 3);
       const style = {
-        left: `${i * randomDecNumFromInterval(10, 10.7, 2)}px`,
+        [direction === "left" ? "right" : "left"]: `${treeOffset}px`,
+        transitionDelay: `${320 + delayRandom * treeOffset}ms`,
       };
+      const scaleX = randomDecNumFromInterval(0.7, 1.4, 2);
+      const scaleY = randomDecNumFromInterval(0.98, 2.2, 2);
+      treeOffset += boxSize / randomIntFromInterval(2, 3);
       chunk.push(
-        <div style={style} className="absolute">
-          <Tree
-            transDelay={
-              direction === "left"
-                ? trees * 50 - randomIntFromInterval(0, 50) * i
-                : i * randomIntFromInterval(75, 125)
-            }
-            height={height}
-            scaleX={scaleX}
-            scaleY={scaleY}
-          />
-        </div>,
+        <Tree
+          key={`tree${treeOffset}`}
+          style={style}
+          transDelay={
+            direction === "left"
+              ? treeOffset * delayRandom - treeOffset * delayRandom
+              : treeOffset * delayRandom
+          }
+          height={boxSize}
+          width={boxSize}
+          scaleX={scaleX}
+          scaleY={scaleY}
+        />,
       );
-      i++;
     }
     return direction === "left"
       ? chunk.sort((a, b) => (b < a ? 1 : -1))
       : chunk;
   };
 
-  const forest = createForestChunk(trees);
-  return <div className="relative flex items-end">{forest}</div>;
+  const forestChunk = createForestChunk();
+  return <>{forestChunk}</>;
 };
 
 export default AnimatedForest;
