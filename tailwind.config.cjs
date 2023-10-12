@@ -23,7 +23,7 @@ module.exports = {
         },
         fallto: {
           "0%": { transform: "translateY(-20vh)" },
-          "100%": { transform: "translateY(5px)" },
+          "100%": { transform: "translateY(10px)" },
         },
         risefrom: {
           "0%": { transform: "translateY(5px)" },
@@ -44,8 +44,8 @@ module.exports = {
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scaleY(5%) scaleX(120%)",
-            backgroundColor: "white",
+            transform: "scaleY(4%) scaleX(271%)",
+            backgroundColor: "rgb(71 85 105)",
           },
         },
         grow: {
@@ -106,6 +106,16 @@ module.exports = {
             transform: "translateY(0)",
           },
         },
+        spread: {
+          "0%": {
+            transformOrigin: "center",
+            transform: "scaleX(0)",
+          },
+          "100%": {
+            transform: "scaleY(4%) scaleX(200%)",
+            backgroundColor: "rgb(71 85 105)",
+          },
+        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
@@ -113,7 +123,7 @@ module.exports = {
         "fall-from": "fallfrom 0.3s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.5s forwards",
-        "squish-down": "squish 0.2s 0.2s forwards ease-out",
+        "squish-down": "squish 0.2s 0.2s forwards ease-in",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
@@ -121,6 +131,7 @@ module.exports = {
         "fade-out": "fadeout 0.2s forwards ease",
         impact: "impact 0.05s 0.3s forwards",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
+        spread: "spread 0.2s forwards ease-out",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
