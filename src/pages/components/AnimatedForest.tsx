@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import {
   randomIntFromInterval,
   randomDecNumFromInterval,
-} from "../../scripts/randomIntFromInterval";
+} from "../../scripts/randomFromInterval";
 import Tree from "./Tree";
 
 const AnimatedForest = ({ chunkWidth, direction }) => {
