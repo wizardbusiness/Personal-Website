@@ -11,10 +11,9 @@ const AnimatedForest = ({ chunkWidth, direction }) => {
     let treeOffset = 0;
     const boxSize = 40;
     while (treeOffset < chunkWidth - boxSize) {
-      const delayRandom = randomIntFromInterval(1, 3);
       const style = {
         [direction === "left" ? "right" : "left"]: `${treeOffset}px`,
-        transitionDelay: `${1 + treeOffset * 10}ms`,
+        transitionDelay: `${270 + treeOffset * 4}ms`,
       };
       const scaleX = randomDecNumFromInterval(0.7, 1.4, 2);
       const scaleY = randomDecNumFromInterval(0.98, 2.2, 2);
