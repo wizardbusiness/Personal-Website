@@ -1,15 +1,14 @@
-import React, { useState, useEffect, forwardRef } from "react";
+import React, { useState, useEffect } from "react";
 
 type Props = {
   height: number;
   width: number;
   scaleX: number;
   scaleY: number;
-  transDelay: number;
   style: {};
 };
 
-const Tree = ({ height, width, scaleX, scaleY, transDelay, style }: Props) => {
+const Tree = ({ height, width, scaleX, scaleY, style }: Props) => {
   const [grow, setGrow] = useState("");
   useEffect(() => {
     setGrow("grow");
