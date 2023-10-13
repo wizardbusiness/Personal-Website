@@ -1,45 +1,89 @@
-import React, { useState, forwardRef, type MutableRefObject } from "react";
+import React, {
+  useState,
+  forwardRef,
+  useEffect,
+  type MutableRefObject,
+} from "react";
 import * as Accordion from "@radix-ui/react-accordion";
-
-type category = string;
-type categoryItems = string[];
-
-interface categories {
-  [name: category]: categoryItems;
-}
+import AccordionBtnIcon from "./AccordionBtn";
 
 interface TechList {
   categories: categories;
 }
 
+interface categories {
+  [name: category]: categoryItems;
+}
+
+type category = string;
+type categoryItems = string[];
+
 const TechList = ({ categories }: TechList) => {
+  const [openItems, setOpenItems] = useState([]);
+  const [openAll, setOpenAll] = useState(false);
+
+  useEffect(() => {
+    openAll === true ? setOpenItems(allValues) : setOpenItems([]);
+  }, [openAll]);
+
+  useEffect(() => {
+    if (openItems.length === allValues.length) setOpenAll(true);
+    else if (openItems.length === 0) setOpenAll(false);
+  }, [openItems]);
+
+  const allValues = Object.keys(categories);
+
+  const handleSetOpenAll = () => {
+    setOpenAll(!openAll);
+    // setOpenItems((prev) => (prev.length === 0 ? allValues : []));
+  };
   const list = Object.keys(categories).map(
     (category: string, index: number) => (
-      <Accordion.Root
+      <AccordionedList
+        value={category}
         key={category + index}
+        categories={categories}
+        category={category}
+        openItems={openItems}
+        openAll={openAll}
+      />
+    ),
+  );
+
+  return (
+    <div className="pt-6">
+      <button onClick={handleSetOpenAll} className="text-4xl">
+        <AccordionBtnIcon height={20} width={20} active={openAll} />
+      </button>
+      <Accordion.Root
+        value={openItems}
+        onValueChange={setOpenItems}
         className="text-2xl leading-relaxed"
         type="multiple"
       >
-        <AccordionedList categories={categories} category={category} />{" "}
+        {list}
       </Accordion.Root>
-    ),
+    </div>
   );
-  return <ul>{list}</ul>;
 };
 
-interface AccordionedListProps {
+interface AccordionedList {
   categories: categories;
   category: category;
+  openAll: boolean;
+  openItems: string[];
+  value: string;
 }
 
-const AccordionedList = ({ categories, category }: AccordionedListProps) => {
-  const [open, setOpen] = useState(false);
-  const handleSetOpen = () => {
-    open ? setOpen(false) : setOpen(true);
-  };
+const AccordionedList = ({
+  categories,
+  category,
+  openItems,
+  value,
+}: AccordionedList) => {
   return (
-    <Accordion.Item className="overflow-hidden" value={category}>
-      <AccordionTrigger handleSetOpen={handleSetOpen}>
+    <Accordion.Item className="overflow-hidden pl-1" value={value}>
+      <AccordionTrigger open={openItems.includes(value)}>
         {category}
       </AccordionTrigger>
       <AccordionedListItems items={categories[category]}></AccordionedListItems>
@@ -48,22 +92,21 @@ const AccordionedList = ({ categories, category }: AccordionedListProps) => {
 };
 
 interface AccordionTrigger {
-  handleSetOpen: () => void;
+  open: boolean;
   children: string;
 }
 
 const AccordionTrigger = forwardRef(
   (
-    { children, handleSetOpen, ...props }: AccordionTrigger,
+    { children, open, ...props }: AccordionTrigger,
     forwardedRef: MutableRefObject<HTMLButtonElement>,
   ) => (
     <Accordion.Header>
-      <Accordion.Trigger
-        onClick={() => handleSetOpen()}
-        {...props}
-        ref={forwardedRef}
-      >
-        + {children}
+      <Accordion.Trigger {...props} ref={forwardedRef}>
+        <span className="flex items-center gap-2">
+          <AccordionBtnIcon height={15} width={15} active={open} />
+          {children}
+        </span>
       </Accordion.Trigger>
     </Accordion.Header>
   ),
@@ -81,7 +124,7 @@ const AccordionedListItems = ({ items }: AccordionedListItemsProps) => {
         key={`item${index}`}
         className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-200 ${
           lastItem
-            ? "before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%] before:bg-slate-600"
+            ? "before:bg-blue-smoke before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%]"
             : ""
         } translate-x-4`}
       >
