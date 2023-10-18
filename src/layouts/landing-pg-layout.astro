@@ -1,10 +1,44 @@
+---
+const anim = {
+  old: {
+    name: "riseto",
+    duration: "0.5s",
+    easing: "ease-out",
+    fillMode: "forwards",
+  },
+  new: {
+    name: "riseto",
+    duration: "0.5s",
+    easing: "ease-out",
+    fillMode: "forwards",
+  },
+};
+
+const rise = {
+  forwards: anim,
+  backwards: anim,
+};
+---
+
 <main class="flex flex-col items-center w-full p-8 pt-4 h-full">
-  <slot name="nav" />
+  <div class="h-fit w-full">
+    <slot name="nav" />
+  </div>
   <slot name="avatar" />
-  <div class="text-gray-200 p-8">
+  <div class="text-gray-200 p-8 h-fit">
     <h1 class="font-mono text-9xl text-center tracking-tighter p-3">Gabriel Kime</h1>
     <h2 class="font-mono text-4xl text-center tracking-tighter p-3">Full-Stack Developer</h2>
-  </div> 
-  <slot name="subheader" />
-  <slot name="scroll-down" />
+  </div>
+  <div  
+    data-subheader-landing
+    class="flex h-fit w-2/3 justify-center"
+    transition:animate={rise}
+  >
+    <!-- this is so dumb -->
+    <div class="animate-rise-to"></div>
+    <slot name="subheader" />
+    </div>
+  <div class="h-full">
+    <slot class="bg-white" name="scroll-down" />
+  </div>
 </main>

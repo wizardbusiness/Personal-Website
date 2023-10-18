@@ -5,49 +5,19 @@ import Nav from "./components/Nav.astro";
 import TaglineContainer from "./components/TaglineContainer";
 import TaglineMsg from "./components/TaglineMsg";
 import Avatar from "./components/Avatar.astro";
-
-const anim = {
-  old: {
-    name: "riseto",
-    duration: "0.5s",
-    easing: "ease-out",
-    fillMode: "forwards",
-  },
-  new: {
-    name: "riseto",
-    duration: "0.5s",
-    easing: "ease-out",
-    fillMode: "forwards",
-  },
-};
-
-const rise = {
-  forwards: anim,
-  backwards: anim,
-};
+import avatarImg from "../images/BeachHeadshotB&W.png";
 ---
 
 <LandingPgLayout>
   <Nav slot="nav" />
-  <Avatar slot="avatar" imgSrc="src/images/BeachHeadshotB&W.png" />
-  <!-- this is so dumb -->
-  <div class="animate-rise-to"></div>
-  <div
-    data-subheader-landing
-    class="flex h-32 w-2/3 justify-center"
-    transition:animate={rise}
-    slot="subheader"
-  >
-    <TaglineContainer repositTxt={false} animateBg={false}>
-      <TaglineMsg
-        msg="Dream it. Build it."
-        blinkCursor
-        transition:persist="taglineMsg"
-        client:load
-      />
-    </TaglineContainer>
-  </div>
-  <div class="translate-y-32" slot="scroll-down">
-    <ScrollToPageBtn url="/MainContent" scrollDirection="down" />
-  </div>
+  <Avatar slot="avatar" imgSrc={avatarImg} />
+  <TaglineContainer slot="subheader" repositTxt={false} animateBg={false}>
+  <TaglineMsg
+    msg="Dream it. Build it."
+    blinkCursor
+    transition:persist="taglineMsg"
+    client:load
+  />
+  </TaglineContainer>
+  <ScrollToPageBtn url="/MainContent" scrollDirection="down" slot="scroll-down" />
 </LandingPgLayout>
