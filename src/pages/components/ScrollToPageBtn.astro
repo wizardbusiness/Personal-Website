@@ -1,14 +1,14 @@
 ---
 import { Icon } from "astro-icon";
 const { url, scrollDirection } = Astro.props;
+import "../../styles/tailwind.css"
 ---
-
 <a
   href={url}
   data-scroll-btn={scrollDirection}
   class="flex w-20 animate-pulse cursor-pointer flex-col items-center justify-self-start text-gray-400 hover:animate-none"
 >
-  <span class="m-0 translate-y-3 text-lg">Scroll</span>
+  <span class="scroll-btn m-0 translate-y-3 text-lg">Scroll</span>
   <Icon
     pack="ph"
     name={`caret-${scrollDirection}`}
@@ -17,3 +17,49 @@ const { url, scrollDirection } = Astro.props;
     class="text-gray-100"
   />
 </a>
+<script>
+const monitorScrollAction = (element: HTMLElement) => {
+  let moveDistance = 0;
+  let scrollDistance = 0; 
+  let msSinceVelocityChanged = 0;
+  let allowClick = true;
+  const monitoringInterval = setInterval(() => {
+    msSinceVelocityChanged += 200;
+    if (msSinceVelocityChanged > 200) {
+      moveDistance = 0;
+      scrollDistance = 0;
+      element.style = `transform: translateY(${moveDistance})`;
+    };
+  }, 200);
+  const taglineContainer = document.querySelector('[data-subheader]');
+  const content = document.querySelector('main');
+  return (e) => {
+    const resetMsSinceVelocityChanged = setTimeout(() => {
+      msSinceVelocityChanged = 0;
+    }, 100);
+  const contentLowerBound = content.getBoundingClientRect().bottom;
+    const scrollBtnRect = scrollBtn.getBoundingClientRect();
+    const scrollBtnPosit = scrollBtnRect.top;
+    if (scrollBtnPosit < contentLowerBound && msSinceVelocityChanged < 200) {
+      scrollDistance += 1;
+      moveDistance += scrollDistance;
+      element.style = `transform: translateY(${moveDistance}px)`;
+    } else if (scrollBtnPosit >= contentLowerBound && allowClick === true) {
+      taglineContainer.classList.add('animate-fall-from');
+      content.classList.add('animate-fade-out')
+      taglineContainer.addEventListener('animationend', () => {
+        console.log('click')
+        scrollBtn.click()
+      });
+      allowClick = false;
+      clearTimeout(resetMsSinceVelocityChanged);
+    };
+  };
+};
+const scrollBtn = document.querySelector('[data-scroll-btn]') as HTMLElement;
+  
+const moveScrollIndicator = monitorScrollAction(scrollBtn);
+const scrollListener = document.addEventListener('wheel', (e) => {
+  moveScrollIndicator(e);
+});
+</script>
