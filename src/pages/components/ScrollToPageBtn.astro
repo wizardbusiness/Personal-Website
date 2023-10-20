@@ -38,7 +38,7 @@ const monitorScrollAction = (element: HTMLElement) => {
       msSinceVelocityChanged = 0;
     }, 100);
   const contentLowerBound = content.getBoundingClientRect().bottom;
-    const scrollBtnRect = scrollBtn.getBoundingClientRect();
+    const scrollBtnRect = element.getBoundingClientRect();
     const scrollBtnPosit = scrollBtnRect.top;
     if (scrollBtnPosit < contentLowerBound && msSinceVelocityChanged < 200) {
       scrollDistance += 1;
@@ -48,18 +48,20 @@ const monitorScrollAction = (element: HTMLElement) => {
       taglineContainer.classList.add('animate-fall-from');
       content.classList.add('animate-fade-out')
       taglineContainer.addEventListener('animationend', () => {
-        console.log('click')
-        scrollBtn.click()
+        element.click()
       });
       allowClick = false;
       clearTimeout(resetMsSinceVelocityChanged);
     };
   };
 };
-const scrollBtn = document.querySelector('[data-scroll-btn]') as HTMLElement;
   
-const moveScrollIndicator = monitorScrollAction(scrollBtn);
-const scrollListener = document.addEventListener('wheel', (e) => {
+document.addEventListener("astro:page-load", ()=>{
+  const scrollBtn = document.querySelector('[data-scroll-btn]') as HTMLElement;
+  const moveScrollIndicator = monitorScrollAction(scrollBtn);
+  document.addEventListener('wheel', (e) => {
   moveScrollIndicator(e);
 });
+})
+
 </script>
