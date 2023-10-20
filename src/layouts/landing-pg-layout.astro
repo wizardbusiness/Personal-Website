@@ -10,7 +10,7 @@ const anim = {
     name: "riseto",
     duration: "0.5s",
     easing: "ease-out",
-    fillMode: "forwards",
+    fillMode: "backwards",
   },
 };
 
@@ -35,10 +35,10 @@ const rise = {
     transition:animate={rise}
   >
     <!-- this is so dumb -->
-    <div class="animate-rise-to"></div>
+    <div class="animate-rise-to" />
     <slot name="subheader" />
-    </div>
-  <div class="h-full flex items-end">
-    <slot class="bg-white" name="scroll-down" />
   </div>
+  <div class="h-full flex items-center">
+    <slot name="scroll-down" />
+  </div>  
 </main>
