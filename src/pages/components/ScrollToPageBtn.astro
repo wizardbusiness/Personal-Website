@@ -56,12 +56,18 @@ const monitorScrollAction = (element: HTMLElement) => {
   };
 };
   
-document.addEventListener("astro:page-load", ()=>{
+document.addEventListener("astro:page-load", () => {
   const scrollBtn = document.querySelector('[data-scroll-btn]') as HTMLElement;
   const moveScrollIndicator = monitorScrollAction(scrollBtn);
   document.addEventListener('wheel', (e) => {
   moveScrollIndicator(e);
 });
+document.addEventListener("astro:after-swap", () => {
+  document.removeEventListener('wheel', (e) => {
+    moveScrollIndicator(e);
+  });
 })
+})
+
 
 </script>
