@@ -1,11 +1,11 @@
 <main class="flex h-full w-full flex-col items-center p-8 pb-0 pt-4">
-  <header class="flex flex-col items-center w-full">
+  <header class="scrollheader flex flex-col items-center w-full">
     <slot name="nav" />
     <slot name="subheader" />
   </header>
   <div
     data-info-container
-    class="bg-blue-smoke flex h-full w-[70vw] animate-impact flex-col gap-8 overflow-scroll p-8 text-gray-200 shadow-xl"
+    class="content bg-blue-smoke flex w-[70vw] animate-impact flex-col gap-8 p-8 text-gray-200 overflow-hidden shadow-xl"
   >
     <slot name="about" />
     <slot name="portfolio" />
@@ -13,3 +13,32 @@
     <slot name="slogan" />
   </div>
 </main>
+<script>
+  const header = document.querySelector('header');
+  const info = document.querySelector('[data-info-container]');
+  console.log(info)
+  // const headerHeight = header.getBoundingClientRect().height;
+  const handleShowHeader = (e, header, content) => {
+    if (header.classList.contains('hide')) {
+      header.classList.remove('hide')
+      content.classList.remove('expand')
+    };
+    header.classList.add('show');
+    content.classList.add('contract');
+  };
+
+  const handleHideHeader = (e, header, content) => {
+    content.classList.remove('animate-impact')
+    
+    if (header.classList.contains('show')) {
+      header.classList.remove('show')
+      content.classList.remove('contract');
+    };
+    header.classList.add('hide');
+    content.classList.add('expand');
+
+  }
+  info.addEventListener('wheel', (e: WheelEvent) => {
+    e.deltaY < 0 ? handleShowHeader(e, header, info) : handleHideHeader(e, header, info); 
+  })
+</script>
