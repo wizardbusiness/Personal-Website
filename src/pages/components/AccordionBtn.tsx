@@ -1,7 +1,6 @@
 import React from "react";
 
 const AccordionBtnIcon = ({ height, width, active }) => {
-  console.log(active);
   return (
     <svg height={height} width={width} viewBox={`0 0 ${width} ${height}`}>
       <rect
