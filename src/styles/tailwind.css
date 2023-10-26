@@ -46,4 +46,38 @@
     transform-origin: bottom;
     transform: scale(100%, 100%);
   }
+
+  .scroll-btn {
+    transform: translateY(0px);
+    transition: transform 0.5s ease-out;
+  }
+
+  .scroll-btn.reset-position {
+    transform: translateY(0px);
+  }
+
+  .scrollheader {
+    /* transform-origin: top; */
+    transition: transform 0.5s;
+  }
+  .scrollheader.hide {
+    transform: translateY(-10vh);
+  }
+
+  .scrollheader.show {
+    transform: translateY(0%);
+  }
+
+  .content {
+    transition: all 0.5s;
+  }
+
+  .content.expand {
+    transform: translateY(-10vh);
+  }
+
+  .content.contract {
+    transform: translateY(0%);
+    /* height: 100%; */
+  }
 }
