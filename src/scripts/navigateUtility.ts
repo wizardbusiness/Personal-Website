@@ -38,7 +38,7 @@ const scrollDown = (scrollBtn: HTMLElement) => {
     scrollBtn.click();
   });
 
-  const awaitViewTransition = async () => {};
+  // const awaitViewTransition = async () => {};
 };
 
 // controls transitions and animations when scrolling from info page to landing page
@@ -54,7 +54,7 @@ const scrollUp = (scrollBtn: HTMLElement) => {
     subheaderMain.classList.add("animate-rise-from", "translate-y-[5px]");
   });
 
-  let ready = false;
+  let transitionCount = 0;
   effectContainer.addEventListener("transitionend", () => {
     transitionDone();
   });
@@ -65,6 +65,6 @@ const scrollUp = (scrollBtn: HTMLElement) => {
 };
 
 // throttles interaction to prevent performance drain and visual artefacts caused by aggressive or velocity enabled scrolling / gestures.
-const navigateWithThrottle = _.throttle(scrollToPage, 600, { leading: true });
+// const navigateWithThrottle = _.throttle(scrollToPage, 1500, { leading: true });
 const scrollContainer = document.querySelector("html");
-scrollContainer.addEventListener("wheel", (e) => navigateWithThrottle(e));
+// scrollContainer.addEventListener("wheel", (e) => navigateWithThrottle(e));
