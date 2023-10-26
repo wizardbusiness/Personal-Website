@@ -19,7 +19,7 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
     i++;
   }
   return direction === "left"
-    ? structs.sort((a, b) => (a < b ? 1 : -1))
+    ? structs.sort((a, b) => (a < b ? -1 : 1))
     : structs;
 };
 
