@@ -1,6 +1,6 @@
 ---
 import LandingPgLayout from "../layouts/landing-pg-layout.astro";
-import ScrollToPageBtn from "./components/ScrollToPageBtn.astro";
+import ScrollToPageBtn from "./components/ScrollToPageUtility.astro";
 import Nav from "./components/Nav.astro";
 import TaglineContainer from "./components/TaglineContainer";
 import TaglineMsg from "./components/TaglineMsg";
@@ -12,12 +12,16 @@ import avatarImg from "../images/BeachHeadshotB&W.png";
   <Nav slot="nav" />
   <Avatar slot="avatar" imgSrc={avatarImg} />
   <TaglineContainer slot="subheader" repositTxt={false} animateBg={false}>
-  <TaglineMsg
-    msg="Dream it. Build it."
-    blinkCursor
-    transition:persist="taglineMsg"
-    client:load
-  />
+    <TaglineMsg
+      msg="Dream it. Build it."
+      blinkCursor
+      transition:persist="taglineMsg"
+      client:load
+    />
   </TaglineContainer>
-  <ScrollToPageBtn url="/MainContent" scrollDirection="down" slot="scroll-down" />
+  <ScrollToPageBtn
+    url="/MainContent"
+    scrollDirection="down"
+    slot="scroll-down"
+  />
 </LandingPgLayout>
