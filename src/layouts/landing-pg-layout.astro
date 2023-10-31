@@ -20,25 +20,24 @@ const rise = {
 };
 ---
 
-<main class="flex flex-col items-center w-full p-8 pt-4 h-full">
-  <div class="h-fit w-full">
-    <slot name="nav" />
+<main class="flex h-full w-full flex-col items-center p-8 pt-4">
+  <div class="flex h-[70%] w-full flex-col">
+    <div class="h-fit w-full">
+      <slot name="nav" />
+    </div>
+    <slot name="avatar" />
+    <slot name="title" />
   </div>
-  <slot name="avatar" />
-  <div class="text-gray-200 p-8 h-fit">
-    <h1 class="font-mono text-9xl text-center tracking-tighter p-3">Gabriel Kime</h1>
-    <h2 class="font-mono text-4xl text-center tracking-tighter p-3">Full-Stack Developer</h2>
-  </div>
-  <div  
+  <div
     data-subheader-landing
     class="flex h-fit w-2/3 justify-center"
     transition:animate={rise}
   >
     <!-- this is so dumb -->
-    <div class="animate-rise-to" />
+    <div class="animate-rise-to"></div>
     <slot name="subheader" />
   </div>
-  <div class="h-full flex items-center">
+  <div class="flex h-fit items-center">
     <slot name="scroll-down" />
-  </div>  
+  </div>
 </main>
