@@ -24,23 +24,9 @@ import _ from "lodash";
   import _ from "lodash";
   import Tagline from "./TaglineContainer";
 
-  // document.addEventListener("astro:page-load", () => {
-  //   const scrollBtn = document.querySelector(
-  //     "[data-scroll-btn]",
-  //   ) as HTMLElement;
-  //   const moveScrollIndicator = monitorScrollAction(scrollBtn);
-  //   document.addEventListener("wheel", (e) => {
-  //     console.log("hi");
-  //     moveScrollIndicator(e);
-  //   });
-  //   document.addEventListener("astro:after-swap", () => {
-  //     document.removeEventListener("wheel", (e) => {
-  //       moveScrollIndicator(e);
-  //     });
-  //   });
-  // });
   const listenForScrollEventCluster = () => {
-    const scrollWidget = document.querySelector("[data-scroll-btn]");
+    const scrollWidget: HTMLElement =
+      document.querySelector("[data-scroll-btn]");
     const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
     let msSinceLastScrollEvent = 0;
@@ -56,13 +42,11 @@ import _ from "lodash";
         transitionGroup.classList.add("transition");
         taglineContainer.classList.add("animate-fall-from");
         taglineContainer.addEventListener("animationend", () => {
+          scrollWidget.classList.remove("move-down");
+          transitionGroup.classList.remove("transition");
           clearInterval(scrollListener);
           scrollWidget.click();
         });
-      } else if (done && !initial) {
-        scrollWidget.classList.remove("move-down");
-        taglineContainer.classList.remove("move-down");
-        transitionGroup.classList.remove("transition");
       }
       msSinceLastScrollEvent += 100;
     }, 100);
@@ -75,12 +59,6 @@ import _ from "lodash";
 
   document.addEventListener("astro:page-load", () => {
     const scroll = listenForScrollEventCluster();
-    document.addEventListener("wheel", (e) => {
-      scroll(e);
-    });
-  });
-
-  document.addEventListener("astro:after-swap", () => {
     document.addEventListener("wheel", (e) => {
       scroll(e);
     });
