@@ -58,7 +58,7 @@
   }
 
   [data-transition-group].transition {
-    opacity: 0.1;
+    opacity: 0;
     transform: translateY(-55%);
   }
 
