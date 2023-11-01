@@ -72,9 +72,9 @@ import _ from "lodash";
       deltaY = e.deltaY;
     };
   };
-  const scroll = listenForScrollEventCluster();
 
   document.addEventListener("astro:page-load", () => {
+    const scroll = listenForScrollEventCluster();
     document.addEventListener("wheel", (e) => {
       scroll(e);
     });
