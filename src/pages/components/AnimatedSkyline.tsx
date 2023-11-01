@@ -19,8 +19,8 @@ const createSkylineEffect = (numStructs: number, direction: string) => {
     i++;
   }
   return direction === "left"
-    ? structs.sort((a, b) => (a < b ? -1 : 1))
-    : structs;
+    ? structs.sort((a, b) => (a.props.index < b.props.index ? 1 : -1))
+    : structs.sort((a, b) => (a.props.index < b.props.index ? -1 : 1));
 };
 
 function Polygon({ delay, numStructs, baseHeight, index }) {
