@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --scroll-dist: 0;
+}
+
 @layer utilities {
   .h-radix-accordion {
     height: var(--radix-accordion-content-height);
@@ -47,13 +51,28 @@
     transform: scale(100%, 100%);
   }
 
-  .scroll-btn {
-    transform: translateY(0px);
-    transition: transform 0.5s ease-out;
+  [data-transition-group] {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.8s cubic-bezier(0.5, 0, 0.75, 1);
   }
 
-  .scroll-btn.reset-position {
-    transform: translateY(0px);
+  [data-transition-group].transition {
+    opacity: 0.1;
+    transform: translateY(-55%);
+  }
+
+  .scroll-btn {
+    transform: translateY(0%);
+    transition: transform 0.3s ease-out;
+  }
+
+  .scroll-btn.move-down {
+    transform: translateY(200%);
+  }
+
+  .scroll-btn.navigate-down {
+    transform: translateY(20vh);
   }
 
   .scrollheader {

@@ -1,12 +1,14 @@
 ---
 import { Icon } from "astro-icon";
 const { url, scrollDirection } = Astro.props;
-import "../../styles/tailwind.css"
+import "../../styles/tailwind.css";
+import _ from "lodash";
 ---
+
 <a
   href={url}
   data-scroll-btn={scrollDirection}
-  class="flex w-20 animate-pulse cursor-pointer flex-col items-center justify-self-start text-gray-400 hover:animate-none"
+  class="scroll-btn flex w-20 animate-pulse cursor-pointer flex-col items-center justify-self-start text-gray-400 hover:animate-none"
 >
   <span class="scroll-btn m-0 translate-y-3 text-lg">Scroll</span>
   <Icon
@@ -18,54 +20,69 @@ import "../../styles/tailwind.css"
   />
 </a>
 <script>
-const monitorScrollAction = (element: HTMLElement) => {
-  let moveDistance = 0;
-  let scrollDistance = 0; 
-  let msSinceVelocityChanged = 0;
-  let allowClick = true;
-  const monitoringInterval = setInterval(() => {
-    msSinceVelocityChanged += 200;
-    if (msSinceVelocityChanged > 200) {
-      moveDistance = 0;
-      scrollDistance = 0;
-      element.style = `transform: translateY(${moveDistance})`;
-    };
-  }, 200);
-  const taglineContainer = document.querySelector('[data-subheader]');
-  const content = document.querySelector('main');
-  return (e) => {
-    const resetMsSinceVelocityChanged = setTimeout(() => {
-      msSinceVelocityChanged = 0;
+  import { fade } from "astro:transitions";
+  import _ from "lodash";
+  import Tagline from "./TaglineContainer";
+
+  // document.addEventListener("astro:page-load", () => {
+  //   const scrollBtn = document.querySelector(
+  //     "[data-scroll-btn]",
+  //   ) as HTMLElement;
+  //   const moveScrollIndicator = monitorScrollAction(scrollBtn);
+  //   document.addEventListener("wheel", (e) => {
+  //     console.log("hi");
+  //     moveScrollIndicator(e);
+  //   });
+  //   document.addEventListener("astro:after-swap", () => {
+  //     document.removeEventListener("wheel", (e) => {
+  //       moveScrollIndicator(e);
+  //     });
+  //   });
+  // });
+  const listenForScrollEventCluster = () => {
+    const scrollWidget = document.querySelector("[data-scroll-btn]");
+    const taglineContainer = document.querySelector("[data-subheader]");
+    const transitionGroup = document.querySelector("[data-transition-group]");
+    let msSinceLastScrollEvent = 0;
+    let done = false;
+    let initial = true;
+    let deltaY = 0;
+    const scrollListener = setInterval(() => {
+      if (msSinceLastScrollEvent > 100) deltaY = 0;
+      if (deltaY < 0) done = false;
+      else done = true;
+      if (!done && !initial) {
+        scrollWidget.classList.add("move-down");
+        transitionGroup.classList.add("transition");
+        scrollWidget.addEventListener("transitionend", () => {
+          taglineContainer.classList.add("animate-fall-from");
+        });
+        taglineContainer.addEventListener("animationend", () => {
+          clearInterval(scrollListener);
+          scrollWidget.click();
+        });
+      } else if (done && !initial) {
+        scrollWidget.classList.remove("move-down");
+        taglineContainer.classList.remove("move-down");
+        transitionGroup.classList.remove("transition");
+      }
+      msSinceLastScrollEvent += 100;
     }, 100);
-  const contentLowerBound = content.getBoundingClientRect().bottom;
-    const scrollBtnRect = element.getBoundingClientRect();
-    const scrollBtnPosit = scrollBtnRect.top;
-    if (scrollBtnPosit < contentLowerBound && msSinceVelocityChanged < 200) {
-      scrollDistance += 1;
-      moveDistance += scrollDistance;
-      element.style = `transform: translateY(${moveDistance}px)`;
-    } else if (scrollBtnPosit >= contentLowerBound && allowClick === true) {
-      taglineContainer.classList.add('animate-fall-from');
-      content.classList.add('animate-fade-out')
-      taglineContainer.addEventListener('animationend', () => {
-        element.click()
-      });
-      allowClick = false;
-      clearTimeout(resetMsSinceVelocityChanged);
+    return (e) => {
+      initial = false;
+      msSinceLastScrollEvent = 0;
+      deltaY = e.deltaY;
     };
   };
-};
-  
-document.addEventListener("astro:page-load", () => {
-  const scrollBtn = document.querySelector('[data-scroll-btn]') as HTMLElement;
-  const moveScrollIndicator = monitorScrollAction(scrollBtn);
-  document.addEventListener('wheel', (e) => {
-  moveScrollIndicator(e);
-});
-document.addEventListener("astro:after-swap", () => {
-  document.removeEventListener('wheel', (e) => {
-    moveScrollIndicator(e);
+  const scroll = listenForScrollEventCluster();
+
+  document.addEventListener("astro:page-load", () => {
+    document.addEventListener("wheel", (e) => {
+      scroll(e);
+    });
   });
-});
-});
+
+  // document.addEventListener("astro:after-swap", () => {
+  //   document.removeEventListener("wheel", (e) => scroll(e));
+  // });
 </script>

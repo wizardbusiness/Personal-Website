@@ -19,10 +19,10 @@ module.exports = {
         },
         fallfrom: {
           "0%": { transform: "translateY(0vh)" },
-          "100%": { transform: "translateY(50vh)" },
+          "100%": { transform: "translateY(40vh)" },
         },
         fallto: {
-          "0%": { transform: "translateY(-20vh)" },
+          "0%": { transform: "translateY(-25vh)" },
           "100%": { transform: "translateY(10px)" },
         },
         risefrom: {
