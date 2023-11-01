@@ -80,7 +80,9 @@ import _ from "lodash";
     });
   });
 
-  // document.addEventListener("astro:after-swap", () => {
-  //   document.removeEventListener("wheel", (e) => scroll(e));
-  // });
+  document.addEventListener("astro:after-swap", () => {
+    document.addEventListener("wheel", (e) => {
+      scroll(e);
+    });
+  });
 </script>
