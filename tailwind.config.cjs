@@ -19,6 +19,8 @@ module.exports = {
         },
         fallfrom: {
           "0%": { transform: "translateY(0vh)" },
+          "30%": { transform: "translateY(-20vh)" },
+          "60%": { transform: "translateY(-20vh)" },
           "100%": { transform: "translateY(40vh)" },
         },
         fallto: {
@@ -119,11 +121,11 @@ module.exports = {
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
-        "fall-to": "fallto 0.3s forwards ease-in",
-        "fall-from": "fallfrom 0.3s forwards ease-out",
+        "fall-to": "fallto 0.2s forwards ease-in",
+        "fall-from": "fallfrom 0.6s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.5s forwards",
-        "squish-down": "squish 0.2s 0.2s forwards ease-in",
+        "squish-down": "squish 0.2s 0.1s forwards ease-in",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",

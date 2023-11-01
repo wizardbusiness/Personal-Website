@@ -54,9 +54,7 @@ import _ from "lodash";
       if (!done && !initial) {
         scrollWidget.classList.add("move-down");
         transitionGroup.classList.add("transition");
-        scrollWidget.addEventListener("transitionend", () => {
-          taglineContainer.classList.add("animate-fall-from");
-        });
+        taglineContainer.classList.add("animate-fall-from");
         taglineContainer.addEventListener("animationend", () => {
           clearInterval(scrollListener);
           scrollWidget.click();
