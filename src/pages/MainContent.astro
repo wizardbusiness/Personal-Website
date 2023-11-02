@@ -41,11 +41,11 @@ import Slogan from "./components/Slogan.astro";
   </ContentLayout>
 </MainLayout>
 <script>
-  const header = document.querySelector("header");
-  const subHeader = document.querySelector("[data-subheader-main]");
-  const content = document.querySelector("[data-info-container]");
-  const mainContainer = document.querySelector("main");
   document.addEventListener("astro:page-load", () => {
+    const header = document.querySelector("header");
+    const subHeader = document.querySelector("[data-subheader-main]");
+    const content = document.querySelector("[data-info-container]");
+    const mainContainer = document.querySelector("main");
     let disableScroll = true;
     const handleExpandContent = (e, header, content) => {
       header.classList.add("hide");
