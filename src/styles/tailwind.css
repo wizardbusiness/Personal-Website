@@ -75,28 +75,34 @@
     transform: translateY(20vh);
   }
 
-  .scrollheader {
+  .header,
+  [data-subheader-main] {
     /* transform-origin: top; */
     transition: transform 0.5s;
   }
-  .scrollheader.hide {
+  .header.hide,
+  [data-subheader-main].hide {
     transform: translateY(-10vh);
   }
 
-  .scrollheader.show {
+  [data-info-container] {
+    height: 100%;
     transform: translateY(0%);
-  }
-
-  .content {
     transition: all 0.5s;
   }
 
-  .content.expand {
-    transform: translateY(-10vh);
+  [data-info-container].expand {
+    height: 100%;
+    transform: translateY(-9vh);
   }
 
-  .content.contract {
-    transform: translateY(0%);
-    /* height: 100%; */
+  main {
+    height: 100%;
+    transition: height 0.5s;
+  }
+
+  main.expand {
+    height: 105%;
+    overflow: hidden;
   }
 }

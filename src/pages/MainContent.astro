@@ -16,7 +16,7 @@ import Slogan from "./components/Slogan.astro";
   <ContentLayout data-info-page slot="page">
     <Nav slot="nav">
       <div data-scrollable class="h-1/2 w-fit self-center justify-self-center">
-        <ScrollToPageBtn scrollDirection="up" url="/" />
+        <!-- <ScrollToPageBtn scrollDirection="up" url="/" /> -->
       </div>
     </Nav>
     <div
@@ -38,34 +38,37 @@ import Slogan from "./components/Slogan.astro";
     <Portfolio slot="portfolio" />
     <Tech slot="tech" />
     <Slogan slot="slogan" />
-    <script>
-      const header = document.querySelector("header");
-      const info = document.querySelector("[data-info-container]");
-      // const headerHeight = header.getBoundingClientRect().height;
-      const handleShowHeader = (e, header, content) => {
-        if (header.classList.contains("hide")) {
-          header.classList.remove("hide");
-          content.classList.remove("expand");
-        }
-        header.classList.add("show");
-        content.classList.add("contract");
-      };
-
-      const handleHideHeader = (e, header, content) => {
-        content.classList.remove("animate-impact");
-
-        if (header.classList.contains("show")) {
-          header.classList.remove("show");
-          content.classList.remove("contract");
-        }
-        header.classList.add("hide");
-        content.classList.add("expand");
-      };
-      info.addEventListener("wheel", (e: WheelEvent) => {
-        e.deltaY < 0
-          ? handleShowHeader(e, header, info)
-          : handleHideHeader(e, header, info);
-      });
-    </script>
   </ContentLayout>
 </MainLayout>
+<script>
+  const header = document.querySelector("header");
+  const subHeader = document.querySelector("[data-subheader-main]");
+  const content = document.querySelector("[data-info-container]");
+  const mainContainer = document.querySelector("main");
+  document.addEventListener("astro:page-load", () => {
+    let disableScroll = true;
+    const handleExpandContent = (e, header, content) => {
+      header.classList.add("hide");
+      subHeader.classList.add("hide");
+      content.classList.add("expand");
+      mainContainer.classList.add("expand");
+      if (disableScroll) e.preventDefault();
+    };
+
+    const handleShowHeader = (e, header, content) => {
+      header.classList.remove("hide");
+      subHeader.classList.remove("hide");
+      content.classList.remove("expand");
+      mainContainer.classList.remove("expand");
+    };
+    header.addEventListener("transitionend", (e) => {
+      disableScroll = disableScroll === true ? false : true;
+    });
+
+    content.addEventListener("wheel", (e: WheelEvent) => {
+      e.deltaY > 0
+        ? handleExpandContent(e, header, content)
+        : handleShowHeader(e, header, content);
+    });
+  });
+</script>

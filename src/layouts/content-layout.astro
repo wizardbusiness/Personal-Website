@@ -1,11 +1,13 @@
-<main class="flex h-full w-full flex-col items-center p-8 pb-0 pt-4">
-  <header class="scrollheader flex w-full flex-col items-center">
+<main
+  class="flex h-full w-full flex-col items-center overflow-hidden p-8 pb-0 pt-4"
+>
+  <header class="header flex w-full flex-col items-center">
     <slot name="nav" />
     <slot name="subheader" />
   </header>
   <div
     data-info-container
-    class="content flex w-[70vw] animate-impact flex-col gap-8 overflow-hidden bg-blue-smoke p-8 text-gray-200 shadow-xl"
+    class="flex w-[70vw] flex-col gap-8 overflow-scroll bg-blue-smoke p-8 text-gray-200 shadow-xl"
   >
     <slot name="about" />
     <slot name="portfolio" />
