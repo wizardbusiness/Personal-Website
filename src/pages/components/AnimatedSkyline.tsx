@@ -186,7 +186,10 @@ const AnimatedSkyline = () => {
   const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
   const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
   return (
-    <div className="absolute flex h-32 w-[70vw] items-end justify-center">
+    <div
+      onTransitionEnd={(e) => e.stopPropagation()}
+      className="absolute flex h-32 w-[70vw] items-end justify-center"
+    >
       <div
         ref={widthRef}
         className="absolute left-0 flex h-full w-1/4 items-end"
