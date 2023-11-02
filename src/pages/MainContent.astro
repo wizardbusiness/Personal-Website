@@ -38,14 +38,33 @@ import Slogan from "./components/Slogan.astro";
     <Portfolio slot="portfolio" />
     <Tech slot="tech" />
     <Slogan slot="slogan" />
-    <script src="../scripts/navigateUtility.ts"></script>
     <script>
-      document.addEventListener("astro:page-load", () => {
-        const infoContainer = document.querySelector("[data-info-container]");
-        const scrollableArea = document.querySelector("[data-scrollable]");
-        if (infoContainer) {
-          infoContainer.addEventListener("wheel", (e) => e.stopPropagation());
+      const header = document.querySelector("header");
+      const info = document.querySelector("[data-info-container]");
+      // const headerHeight = header.getBoundingClientRect().height;
+      const handleShowHeader = (e, header, content) => {
+        if (header.classList.contains("hide")) {
+          header.classList.remove("hide");
+          content.classList.remove("expand");
         }
+        header.classList.add("show");
+        content.classList.add("contract");
+      };
+
+      const handleHideHeader = (e, header, content) => {
+        content.classList.remove("animate-impact");
+
+        if (header.classList.contains("show")) {
+          header.classList.remove("show");
+          content.classList.remove("contract");
+        }
+        header.classList.add("hide");
+        content.classList.add("expand");
+      };
+      info.addEventListener("wheel", (e: WheelEvent) => {
+        e.deltaY < 0
+          ? handleShowHeader(e, header, info)
+          : handleHideHeader(e, header, info);
       });
     </script>
   </ContentLayout>
