@@ -17,7 +17,7 @@ const categories = {
 };
 ---
 
-<div>
+<div id="tech-section">
   <h2
     class="pb-3 font-mono text-5xl underline decoration-slate-400 underline-offset-[10px]"
   >
@@ -25,3 +25,19 @@ const categories = {
   </h2>
   <TechList client:load categories={categories} />
 </div>
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const techContainer = document.querySelector("#tech-section");
+    const header = document.querySelector("header");
+    const subHeader = document.querySelector("[data-subheader-main]");
+    const content = document.querySelector("[data-info-container]");
+    const mainContainer = document.querySelector("main");
+    techContainer.addEventListener("animationend", () => {
+      techContainer.scrollIntoView({ behavior: "smooth", block: "end" });
+      header.classList.add("hide");
+      subHeader.classList.add("hide");
+      content.classList.add("expand");
+      mainContainer.classList.add("expand");
+    });
+  });
+</script>
