@@ -35,7 +35,7 @@ module.exports = {
         },
         risefrom: {
           "0%": { transform: "translateY(5px)" },
-          "100%": { transform: "translateY(-30vh)" },
+          "100%": { transform: "translateY(-10vh)" },
         },
         riseto: {
           "0%": { transform: "translateY(30vh)" },
