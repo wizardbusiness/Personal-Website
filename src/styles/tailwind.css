@@ -105,4 +105,14 @@
     height: 105%;
     overflow: hidden;
   }
+
+  .nav-scroll:hover {
+    /* z-index: 10; */
+    background: radial-gradient(
+        farthest-side at 50% 0,
+        rgba(255, 255, 255, 0.1),
+        rgba(0, 0, 0, 0)
+      )
+      center top;
+  }
 }
