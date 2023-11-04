@@ -27,12 +27,27 @@ import "../../styles/tailwind.css";
   </span>
 </a>
 <script>
-  const handleScrollNavOnMain = () => {};
+  document.addEventListener("astro:page-load", () => {
+    const main = document.querySelector("main");
+    const url = location.href;
+    if (url.includes("MainContent")) {
+      const scrollTargetArea: HTMLElement =
+        document.querySelector("[data-scroll-halo]");
+      const scrollUp = handleScrollUp(scrollTargetArea);
+      scrollTargetArea.addEventListener("wheel", (e) => {
+        scrollUp(e);
+      });
+    } else {
+      const scrollDown = handleScrollDown();
+      main.addEventListener("wheel", (e) => {
+        scrollDown(e);
+      });
+    }
+  });
 
-  const listenForScrollEventCluster = () => {
+  const handleScrollDown = () => {
     const scrollWidget: HTMLElement =
       document.querySelector("[data-scroll-btn]");
-    // handleScrollNavOnMain();
 
     const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
@@ -61,7 +76,9 @@ import "../../styles/tailwind.css";
     };
   };
 
-  const handleScrollUp = (icon: Element, scrollElement: Element) => {
+  const handleScrollUp = (scrollTargetArea) => {
+    const scrollIcon = document.querySelector("[data-scroll-icon]");
+    handleScrollAreaInteraction(scrollTargetArea, scrollIcon);
     let msSinceLastScrollEvent = 0;
     let initial = true;
     let deltaY = 0;
@@ -69,9 +86,11 @@ import "../../styles/tailwind.css";
       if (msSinceLastScrollEvent > 100) deltaY = 0;
       if (deltaY > 0 && !initial) {
         clearInterval(scrollListener);
-        icon.classList.remove("animate-scooch-up&pulse");
-        icon.classList.add("animate-rise-from");
-        icon.addEventListener("animationend", () => scrollElement.click());
+        scrollIcon.classList.remove("animate-scooch-up&pulse");
+        scrollIcon.classList.add("animate-rise-from");
+        scrollIcon.addEventListener("animationend", () =>
+          scrollTargetArea.click(),
+        );
       }
       msSinceLastScrollEvent += 100;
     }, 100);
@@ -82,35 +101,17 @@ import "../../styles/tailwind.css";
     };
   };
 
-  const handleEnterScrollArea = () => {
-    const scrollToPrevPageTargArea =
-      document.querySelector("[data-scroll-halo]");
-    const scrollToPrevPageIcon = document.querySelector("[data-scroll-icon]");
-    scrollToPrevPageTargArea.addEventListener("mouseenter", () =>
-      scrollToPrevPageIcon.classList.add("animate-scooch-up&pulse"),
-    );
-    scrollToPrevPageTargArea.addEventListener("mouseleave", () => {
-      scrollToPrevPageIcon.classList.remove("animate-scooch-up&pulse");
-      scrollToPrevPageIcon.classList.add("animate-pulse");
+  const handleScrollAreaInteraction = (
+    scrollableArea: HTMLElement,
+    scrollIcon: Element,
+  ) => {
+    scrollableArea.addEventListener("mouseenter", () => {
+      scrollIcon.classList.remove("animate-pulse");
+      scrollIcon.classList.add("animate-scooch-up&pulse");
     });
-    const scrollUpListener = handleScrollUp(
-      scrollToPrevPageIcon,
-      scrollToPrevPageTargArea,
-    );
-    scrollToPrevPageTargArea.addEventListener("wheel", (e) => {
-      scrollUpListener(e);
+    scrollableArea.addEventListener("mouseleave", () => {
+      scrollIcon.classList.remove("animate-scooch-up&pulse");
+      scrollIcon.classList.add("animate-pulse");
     });
   };
-
-  document.addEventListener("astro:page-load", () => {
-    const url = location.href;
-    if (url.includes("MainContent")) {
-      handleEnterScrollArea();
-    } else {
-      const scroll = listenForScrollEventCluster();
-      document.addEventListener("wheel", (e) => {
-        scroll(e);
-      });
-    }
-  });
 </script>
