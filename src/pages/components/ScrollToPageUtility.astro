@@ -37,14 +37,11 @@ import "../../styles/tailwind.css";
     const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
     let msSinceLastScrollEvent = 0;
-    let done = false;
     let initial = true;
     let deltaY = 0;
     const scrollListener = setInterval(() => {
       if (msSinceLastScrollEvent > 100) deltaY = 0;
-      if (deltaY < 0) done = false;
-      else done = true;
-      if (!done && !initial) {
+      if (deltaY < 0 && !initial) {
         scrollWidget.classList.add("move-down");
         transitionGroup.classList.add("transition");
         taglineContainer.classList.add("animate-fall-from");
@@ -64,22 +61,52 @@ import "../../styles/tailwind.css";
     };
   };
 
+  const handleScrollUp = (icon: Element, scrollElement: Element) => {
+    let msSinceLastScrollEvent = 0;
+    let initial = true;
+    let deltaY = 0;
+    const scrollListener = setInterval(() => {
+      if (msSinceLastScrollEvent > 100) deltaY = 0;
+      if (deltaY > 0 && !initial) {
+        clearInterval(scrollListener);
+        icon.classList.remove("animate-scooch-up&pulse");
+        icon.classList.add("animate-rise-from");
+        icon.addEventListener("animationend", () => scrollElement.click());
+      }
+      msSinceLastScrollEvent += 100;
+    }, 100);
+    return (e) => {
+      initial = false;
+      msSinceLastScrollEvent = 0;
+      deltaY = e.deltaY;
+    };
+  };
+
   const handleEnterScrollArea = () => {
     const scrollToPrevPageTargArea =
       document.querySelector("[data-scroll-halo]");
     const scrollToPrevPageIcon = document.querySelector("[data-scroll-icon]");
-    scrollToPrevPageTargArea.addEventListener("mouseover", () =>
+    scrollToPrevPageTargArea.addEventListener("mouseenter", () =>
       scrollToPrevPageIcon.classList.add("animate-scooch-up&pulse"),
     );
     scrollToPrevPageTargArea.addEventListener("mouseleave", () => {
       scrollToPrevPageIcon.classList.remove("animate-scooch-up&pulse");
+      scrollToPrevPageIcon.classList.add("animate-pulse");
+    });
+    const scrollUpListener = handleScrollUp(
+      scrollToPrevPageIcon,
+      scrollToPrevPageTargArea,
+    );
+    scrollToPrevPageTargArea.addEventListener("wheel", (e) => {
+      scrollUpListener(e);
     });
   };
 
   document.addEventListener("astro:page-load", () => {
     const url = location.href;
-    if (url.includes("MainContent")) handleEnterScrollArea();
-    else {
+    if (url.includes("MainContent")) {
+      handleEnterScrollArea();
+    } else {
       const scroll = listenForScrollEventCluster();
       document.addEventListener("wheel", (e) => {
         scroll(e);
