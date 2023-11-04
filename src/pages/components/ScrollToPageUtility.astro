@@ -2,31 +2,38 @@
 import { Icon } from "astro-icon";
 const { url, scrollDirection } = Astro.props;
 import "../../styles/tailwind.css";
-import _ from "lodash";
 ---
 
 <a
   href={url}
   data-scroll-btn={scrollDirection}
-  class="scroll-btn flex w-20 animate-pulse cursor-pointer flex-col items-center justify-self-start text-gray-400 hover:animate-none"
+  class=`cursor-default h-fit scroll-btn flex w-20 ${scrollDirection === "down" && "translate-y-1/2"} flex-col items-center text-gray-400 `
 >
-  <span class="scroll-btn m-0 translate-y-3 text-lg">Scroll</span>
-  <Icon
-    pack="ph"
-    name={`caret-${scrollDirection}`}
-    height="60"
-    width="60"
-    class="text-gray-100"
-  />
+  <span
+    data-scroll-halo
+    class={scrollDirection === "up"
+      ? "flex nav-scroll m-0 h-[10vh] items-center justify-center w-[40vw] -translate-y-1/4 text-lg"
+      : "translate-y-4"}
+  >
+    {scrollDirection === "down" && <div class="text-center">Scroll</div>}
+    <Icon
+      pack="ph"
+      name={`caret-${scrollDirection}`}
+      height="60"
+      width="60"
+      data-scroll-icon
+      class="animate-pulse cursor-pointer text-gray-100"
+    />
+  </span>
 </a>
 <script>
-  import { fade } from "astro:transitions";
-  import _ from "lodash";
-  import Tagline from "./TaglineContainer";
+  const handleScrollNavOnMain = () => {};
 
   const listenForScrollEventCluster = () => {
     const scrollWidget: HTMLElement =
       document.querySelector("[data-scroll-btn]");
+    // handleScrollNavOnMain();
+
     const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
     let msSinceLastScrollEvent = 0;
@@ -57,10 +64,26 @@ import _ from "lodash";
     };
   };
 
-  document.addEventListener("astro:page-load", () => {
-    const scroll = listenForScrollEventCluster();
-    document.addEventListener("wheel", (e) => {
-      scroll(e);
+  const handleEnterScrollArea = () => {
+    const scrollToPrevPageTargArea =
+      document.querySelector("[data-scroll-halo]");
+    const scrollToPrevPageIcon = document.querySelector("[data-scroll-icon]");
+    scrollToPrevPageTargArea.addEventListener("mouseover", () =>
+      scrollToPrevPageIcon.classList.add("animate-scooch-up&pulse"),
+    );
+    scrollToPrevPageTargArea.addEventListener("mouseleave", () => {
+      scrollToPrevPageIcon.classList.remove("animate-scooch-up&pulse");
     });
+  };
+
+  document.addEventListener("astro:page-load", () => {
+    const url = location.href;
+    if (url.includes("MainContent")) handleEnterScrollArea();
+    else {
+      const scroll = listenForScrollEventCluster();
+      document.addEventListener("wheel", (e) => {
+        scroll(e);
+      });
+    }
   });
 </script>
