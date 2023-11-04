@@ -19,15 +19,15 @@ module.exports = {
         },
         fallfrom: {
           "0%": { transform: "translateY(0vh)" },
-          "30%": {
-            transform: "translateY(-20vh)",
-            opacity: 0.5,
+          "40%": {
+            transform: "translateY(-30vh) scale(110%)",
+            opacity: 0.8,
           },
-          "60%": {
-            transform: "translateY(-20vh)",
-            opacity: 0.5,
+          "70%": {
+            transform: "translateY(-30vh) scale(110%)",
+            opacity: 0.8,
           },
-          "100%": { transform: "translateY(40vh)" },
+          "100%": { transform: "translateY(40vh) scale(100%)" },
         },
         fallto: {
           "0%": { transform: "translateY(-25vh)" },
@@ -40,6 +40,11 @@ module.exports = {
         riseto: {
           "0%": { transform: "translateY(30vh)" },
           "100%": { transform: "translateY(0vh)" },
+        },
+        scoochup: {
+          "0%": { transform: "translateY(0)", opacity: "0.5" },
+          "50%": { opacity: "0.8" },
+          "100%": { transform: "translateY(-10px)", opacity: "0.5" },
         },
         squish: {
           "0%": {
@@ -140,6 +145,7 @@ module.exports = {
         impact: "impact 0.05s 0.3s forwards",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
+        "scooch-up&pulse": "scoochup 1.2s infinite",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
