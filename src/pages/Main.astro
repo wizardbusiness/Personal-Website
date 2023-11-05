@@ -1,6 +1,6 @@
 ---
+import CommonLayout from "../layouts/common-layout.astro";
 import MainLayout from "../layouts/main-layout.astro";
-import ContentLayout from "../layouts/content-layout.astro";
 import Nav from "../components/Nav.astro";
 import ScrollToPageBtn from "../components/PageScroll.astro";
 import TaglineContainer from "../components/TaglineContainer";
@@ -12,8 +12,8 @@ import Tech from "../components/Tech.astro";
 import Slogan from "../components/Slogan.astro";
 ---
 
-<MainLayout>
-  <ContentLayout data-info-page slot="page">
+<CommonLayout>
+  <MainLayout data-info-page slot="page">
     <Nav slot="nav">
       <ScrollToPageBtn scrollDirection="up" url="/" />
     </Nav>
@@ -36,8 +36,8 @@ import Slogan from "../components/Slogan.astro";
     <Portfolio slot="portfolio" />
     <Tech slot="tech" />
     <Slogan slot="slogan" />
-  </ContentLayout>
-</MainLayout>
+  </MainLayout>
+</CommonLayout>
 <script>
   document.addEventListener("astro:page-load", () => {
     const header = document.querySelector("header");

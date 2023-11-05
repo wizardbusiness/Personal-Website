@@ -1,10 +1,10 @@
 ---
-import CommonHead from "./CommonHead.astro";
+import CommonHead from "./common-head-layout.astro";
 ---
 
 <html class="w-full">
   <CommonHead />
-  <body class="bg-dusk flex h-screen w-full flex-grow justify-center font-sans">
+  <body class="flex h-screen w-full flex-grow justify-center bg-dusk font-sans">
     <slot name="page" />
   </body>
 </html>

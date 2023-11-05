@@ -30,7 +30,7 @@ import "../styles/tailwind.css";
   document.addEventListener("astro:page-load", () => {
     const main = document.querySelector("main");
     const url = location.href;
-    if (url.includes("MainContent")) {
+    if (url.includes("Main")) {
       const scrollTargetArea: HTMLElement =
         document.querySelector("[data-scroll-halo]");
       const scrollUp = handleScrollUp(scrollTargetArea);
