@@ -5,7 +5,7 @@ import Nav from "../components/Nav.astro";
 import ScrollToPageBtn from "../components/PageScroll.astro";
 import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
-import AnimatedSkyline from "../components/AnimatedSkyline";
+import Skyline from "../components/bgEffects/Skyline";
 import About from "../components/About.astro";
 import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
@@ -22,7 +22,7 @@ import Slogan from "../components/Slogan.astro";
       class="relative z-10 flex h-32 w-2/3 animate-fall-to justify-center"
       slot="subheader"
     >
-      <AnimatedSkyline client:load />
+      <Skyline client:load />
       <TaglineContainer repositTxt={true} animateBg client:load>
         <TaglineMsg
           msg="Dream it. Build it."

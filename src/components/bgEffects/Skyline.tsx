@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { randomIntFromInterval } from "../scripts/randomFromInterval";
-import AnimatedForest from "./AnimatedForest";
-import "../styles/tailwind.css";
+import { randomIntFromInterval } from "../../scripts/randomFromInterval";
+import Forest from "./Forest";
+import "../../styles/tailwind.css";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
@@ -194,7 +194,7 @@ const AnimatedSkyline = () => {
         ref={widthRef}
         className="absolute left-0 flex h-full w-1/4 items-end"
       >
-        <AnimatedForest chunkWidth={forestWidth} direction={"left"} />
+        <Forest chunkWidth={forestWidth} direction={"left"} />
       </div>
       <div data-effect-container className="absolute flex w-1/2">
         <div className="2 absolute bottom-1 flex items-end gap-2">
@@ -207,7 +207,7 @@ const AnimatedSkyline = () => {
         </div>
       </div>
       <div className="absolute -right-2 flex h-full w-1/4 items-end">
-        <AnimatedForest chunkWidth={forestWidth} direction={"right"} />
+        <Forest chunkWidth={forestWidth} direction={"right"} />
       </div>
     </div>
   );

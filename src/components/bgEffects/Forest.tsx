@@ -2,8 +2,8 @@ import React from "react";
 import {
   randomIntFromInterval,
   randomDecNumFromInterval,
-} from "../scripts/randomFromInterval";
-import Tree from "./Tree";
+} from "../../scripts/randomFromInterval";
+import FirTree from "./FirTree";
 
 const AnimatedForest = ({ chunkWidth, direction }) => {
   const createForestChunk = () => {
@@ -19,7 +19,7 @@ const AnimatedForest = ({ chunkWidth, direction }) => {
       const scaleY = randomDecNumFromInterval(0.98, 2.2, 2);
       treeOffset += boxSize / randomIntFromInterval(2, 3);
       chunk.push(
-        <Tree
+        <FirTree
           key={`tree${treeOffset}`}
           style={style}
           height={boxSize}
