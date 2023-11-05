@@ -5,7 +5,7 @@ import {
 } from "../../scripts/randomFromInterval";
 import FirTree from "./FirTree";
 
-const AnimatedForest = ({ chunkWidth, direction }) => {
+const Forest = ({ chunkWidth, direction }) => {
   const createForestChunk = () => {
     const chunk = [];
     let treeOffset = 0;
@@ -38,4 +38,4 @@ const AnimatedForest = ({ chunkWidth, direction }) => {
   return <>{forestChunk}</>;
 };
 
-export default AnimatedForest;
+export default Forest;

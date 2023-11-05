@@ -8,7 +8,7 @@ type Props = {
   style: {};
 };
 
-const Tree = ({ height, width, scaleX, scaleY, style }: Props) => {
+const FirTree = ({ height, width, scaleX, scaleY, style }: Props) => {
   const [grow, setGrow] = useState("");
   useEffect(() => {
     setGrow("grow");
@@ -56,4 +56,4 @@ const Tree = ({ height, width, scaleX, scaleY, style }: Props) => {
   );
 };
 
-export default Tree;
+export default FirTree;

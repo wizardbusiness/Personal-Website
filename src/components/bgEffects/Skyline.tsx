@@ -175,7 +175,7 @@ const Window = ({ showWindow }) => {
   );
 };
 
-const AnimatedSkyline = () => {
+const Skyline = () => {
   const [forestWidth, setAvailableWidth] = useState(0);
   const widthRef = useRef<HTMLDivElement>(null);
 
@@ -213,4 +213,4 @@ const AnimatedSkyline = () => {
   );
 };
 
-export default AnimatedSkyline;
+export default Skyline;
