@@ -27,17 +27,20 @@ const categories = {
 </div>
 <script>
   document.addEventListener("astro:page-load", () => {
-    const techContainer = document.querySelector("#tech-section");
-    const header = document.querySelector("header");
-    const subHeader = document.querySelector("[data-subheader-main]");
-    const content = document.querySelector("[data-info-container]");
-    const mainContainer = document.querySelector("main");
-    techContainer.addEventListener("animationend", () => {
-      techContainer.scrollIntoView({ behavior: "smooth", block: "end" });
-      header.classList.add("hide");
-      subHeader.classList.add("hide");
-      content.classList.add("expand");
-      mainContainer.classList.add("expand");
-    });
+    const url = location.href;
+    if (url.includes("Main")) {
+      const techContainer = document.querySelector("#tech-section");
+      const header = document.querySelector("header");
+      const subHeader = document.querySelector("[data-subheader-main]");
+      const content = document.querySelector("[data-info-container]");
+      const mainContainer = document.querySelector("main");
+      techContainer.addEventListener("animationend", () => {
+        techContainer.scrollIntoView({ behavior: "smooth", block: "end" });
+        header.classList.add("hide");
+        subHeader.classList.add("hide");
+        content.classList.add("expand");
+        mainContainer.classList.add("expand");
+      });
+    }
   });
 </script>
