@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { randomIntFromInterval } from "../../scripts/randomFromInterval";
+import { randomIntFromInterval } from "../scripts/randomFromInterval";
 import AnimatedForest from "./AnimatedForest";
-import "../../styles/tailwind.css";
+import "../styles/tailwind.css";
 
 const createSkylineEffect = (numStructs: number, direction: string) => {
   const structs = [];
