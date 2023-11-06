@@ -188,7 +188,7 @@ const Skyline = () => {
   return (
     <div
       onTransitionEnd={(e) => e.stopPropagation()}
-      className="absolute flex h-32 w-[70vw] items-end justify-center"
+      className="absolute bottom-2 flex h-32 w-[70vw] items-end justify-center"
     >
       <div
         ref={widthRef}
@@ -197,7 +197,7 @@ const Skyline = () => {
         <Forest chunkWidth={forestWidth} direction={"left"} />
       </div>
       <div data-effect-container className="absolute flex w-1/2">
-        <div className="2 absolute bottom-1 flex items-end gap-2">
+        <div className="absolute bottom-1 flex items-end gap-2">
           {skylineLeft}
           {/* {skylineRight} */}
         </div>
