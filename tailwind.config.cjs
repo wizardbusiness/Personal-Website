@@ -149,6 +149,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
+        "nav-mobile": "40% 10% 40%",
       },
     },
   },
