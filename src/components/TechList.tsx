@@ -51,14 +51,14 @@ const TechList = ({ categories }: TechList) => {
   );
 
   return (
-    <div className="pt-6">
-      <button onClick={handleSetOpenAll} className="text-4xl">
+    <div className="p-2 pt-6">
+      <button onClick={handleSetOpenAll} className="lg:text-4xl">
         <AccordionBtnIcon height={20} width={20} active={openAll} />
       </button>
       <Accordion.Root
         value={openItems}
         onValueChange={setOpenItems}
-        className="text-2xl leading-relaxed"
+        className="leading-relaxed lg:text-2xl"
         type="multiple"
       >
         {list}
