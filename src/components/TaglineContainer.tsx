@@ -5,7 +5,7 @@ export default function Tagline({ repositTxt, children, animateBg }) {
   return (
     <div
       data-subheader
-      className={`relative flex h-32 w-2/5 items-center justify-center gap-2 whitespace-nowrap text-gray-100 before:h-32 before:w-full ${
+      className={`relative flex items-center justify-center gap-2 whitespace-nowrap text-gray-100 before:h-28  before:w-[70vw] lg:h-32 lg:w-2/5 before:lg:h-32 ${
         animateBg && "before:animate-squish-down"
       } before:rounded-md before:bg-foggy-glass`}
     >
