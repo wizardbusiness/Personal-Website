@@ -155,10 +155,9 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
   const renderStructures = (direction: "left" | "right") => {
     const calcHeightMod = (index: number, min: number, max: number) => {
       const noise = randomIntFromInterval(-10, 10);
-      console.log(noise);
       const height = 10 * index + 30 * Math.cos((20 * i) ** 1 / 2) + noise;
       const heightClamp =
-        height > max ? randomIntFromInterval(0, height / 2) : 0;
+        height > max ? randomIntFromInterval(10, height / 2) : 0;
       return height < min ? min : height - heightClamp;
     };
 
@@ -167,7 +166,7 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
     let i = 0;
     while (remainingChunkSpace > 0) {
       const structureWidth: number = randomIntFromInterval(15, 25);
-      const structureHeight: number = calcHeightMod(i, 20, 70);
+      const structureHeight: number = calcHeightMod(i, 20, 60);
       structs.push(
         <Polygon
           key={`struct${i}`}
