@@ -46,12 +46,13 @@ import Slogan from "../components/Slogan.astro";
       const subHeader = document.querySelector("[data-subheader-main]");
       const content = document.querySelector("[data-info-container]");
       const mainContainer = document.querySelector("main");
-      let disableScroll = true;
+      let disableScroll = false;
       const handleExpandContent = (e, header, content) => {
         header.classList.add("hide");
         subHeader.classList.add("hide");
         content.classList.add("expand");
         mainContainer.classList.add("expand");
+        // disables scrolling on wheel event listener
         if (disableScroll) e.preventDefault();
       };
 
@@ -60,10 +61,11 @@ import Slogan from "../components/Slogan.astro";
         subHeader.classList.remove("hide");
         content.classList.remove("expand");
         mainContainer.classList.remove("expand");
+        header.addEventListener("transitionend", () => {
+          console.log(e.deltaY);
+          disableScroll = e.deltaY < 0 ? false : true;
+        });
       };
-      header.addEventListener("transitionend", (e) => {
-        disableScroll = disableScroll === true ? false : true;
-      });
 
       content.addEventListener("wheel", (e: WheelEvent) => {
         e.deltaY > 0
