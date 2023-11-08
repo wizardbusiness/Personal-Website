@@ -86,24 +86,14 @@
   }
 
   [data-info-container] {
-    height: 100%;
+    height: 100vh;
     transform: translateY(0%);
     transition: all 0.5s;
   }
 
   [data-info-container].expand {
-    height: 100%;
-    transform: translateY(-9vh);
-  }
-
-  main {
-    height: 100%;
-    transition: height 0.5s;
-  }
-
-  main.expand {
-    height: 105%;
-    overflow: hidden;
+    transform: translateY(-10vh);
+    height: 110vh;
   }
 
   .nav-scroll:hover {

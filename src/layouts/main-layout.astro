@@ -1,5 +1,5 @@
 <main
-  class="flex h-full w-full flex-col items-center overflow-hidden p-4 pb-0 pt-4 lg:p-8"
+  class="flex h-full w-full flex-col items-center p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
 >
   <header class="header flex w-full flex-col items-center">
     <slot name="nav" />
@@ -7,11 +7,13 @@
   </header>
   <div
     data-info-container
-    class="flex w-[90vw] flex-col gap-8 overflow-scroll bg-blue-smoke p-8 text-gray-200 shadow-xl lg:w-[70vw]"
+    class="flex h-full w-[90vw] flex-col gap-4 overflow-scroll bg-blue-smoke p-8 text-gray-200 shadow-xl lg:w-[70vw]"
   >
     <slot name="about" />
     <slot name="portfolio" />
-    <slot name="slogan" />
-    <slot name="tech" />
+    <div class="flex">
+      <slot name="tech" />
+      <slot name="slogan" />
+    </div>
   </div>
 </main>
