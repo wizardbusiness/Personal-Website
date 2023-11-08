@@ -1,1 +1,0 @@
-document.addEventListener("astro:page-load",()=>{const t=document.querySelector("[data-contact-info]").textContent,o=document.querySelector("[data-copy-info]"),e=()=>{navigator.clipboard.writeText(t)};o.addEventListener("click",()=>e())});
