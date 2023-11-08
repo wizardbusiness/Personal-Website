@@ -2,43 +2,16 @@ import React, { useState, useMemo, useEffect, useRef } from "react";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import "../../styles/tailwind.css";
+import { random } from "lodash";
 
-const createSkylineEffect = (numStructs: number, direction: string) => {
-  const structs = [];
-  let i = 0;
-  while (i < numStructs) {
-    structs.push(
-      <Polygon
-        numStructs={numStructs}
-        delay={i}
-        index={i}
-        baseHeight={10 + i}
-        key={`struct${i}`}
-      />,
-    );
-    i++;
-  }
-  return direction === "left"
-    ? structs.sort((a, b) => (a.props.index < b.props.index ? 1 : -1))
-    : structs.sort((a, b) => (a.props.index < b.props.index ? -1 : 1));
-};
-
-function Polygon({ delay, numStructs, baseHeight, index }) {
+const Polygon = ({ delay, height, width }) => {
   const [build, setBuild] = useState(false);
   const [render, setRender] = useState(false);
-  const [transitionEnd, setTransitionEnd] = useState(false);
+  const [, setTransitionEnd] = useState(false);
   const shapeRef = useRef(null);
 
   const handleTransitionEnd = () => {
     setTransitionEnd(true);
-  };
-
-  const calcHeightMod = () => {
-    const noise = Math.floor(Math.max(Math.random() * 10, 30));
-    const amplitude = 16 * Math.cos(baseHeight);
-    return index % 2 === 0
-      ? Math.log(baseHeight ** randomIntFromInterval(1, 3)) + noise + amplitude
-      : baseHeight ** 1.2 + noise + amplitude;
   };
 
   useEffect(() => {
@@ -96,13 +69,11 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
     () => setNodeVals(targetIndex, initialNodeValPairs, 0.4),
     [],
   );
-  const width = useMemo(() => randomIntFromInterval(15, 25), []);
-  const height = useMemo(() => Math.floor(calcHeightMod()), []);
   const shapeStyles = {
     height: `${height}px`,
     width: `${width}px`,
     clipPath: `polygon(${nodeVals[0][0]}% 0, ${nodeVals[2][0]}% 0, 100% ${nodeVals[2][1]}%, 100% 100%, 0 100%, 0 ${nodeVals[0][1]}%)`,
-    transitionDelay: `${numStructs * 100 - delay * 120}ms`,
+    transitionDelay: `${delay * 120}ms`,
   };
   return (
     <>
@@ -121,7 +92,7 @@ function Polygon({ delay, numStructs, baseHeight, index }) {
       )}
     </>
   );
-}
+};
 
 const Windows = ({ shapeH, shapeW, delay }) => {
   const rows = Math.floor(shapeH / 7.5);
@@ -175,36 +146,93 @@ const Window = ({ showWindow }) => {
   );
 };
 
+type CityChunkProps = {
+  direction: "left" | "right";
+  cityChunkWidth: number;
+};
+
+const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
+  const renderStructures = (direction: "left" | "right") => {
+    const calcHeightMod = (index: number, min: number, max: number) => {
+      const noise = randomIntFromInterval(-10, 10);
+      console.log(noise);
+      const height = 10 * index + 30 * Math.cos((20 * i) ** 1 / 2) + noise;
+      const heightClamp =
+        height > max ? randomIntFromInterval(0, height / 2) : 0;
+      return height < min ? min : height - heightClamp;
+    };
+
+    const structs = [];
+    let remainingChunkSpace = cityChunkWidth;
+    let i = 0;
+    while (remainingChunkSpace > 0) {
+      const structureWidth: number = randomIntFromInterval(15, 25);
+      const structureHeight: number = calcHeightMod(i, 20, 70);
+      structs.push(
+        <Polygon
+          key={`struct${i}`}
+          width={structureWidth}
+          height={structureHeight}
+          delay={i}
+        />,
+      );
+      remainingChunkSpace -= structureWidth;
+      i++;
+    }
+
+    return direction === "left"
+      ? structs.sort((a, b) => (a.props.index < b.props.index ? 1 : -1))
+      : structs.sort((a, b) => (a.props.index < b.props.index ? -1 : 1));
+  };
+
+  return (
+    <div className={`bottom-1 flex items-end gap-2 w-${cityChunkWidth}`}>
+      {renderStructures(direction)}
+    </div>
+  );
+};
+
 const Skyline = () => {
-  const [forestWidth, setAvailableWidth] = useState(0);
-  const widthRef = useRef<HTMLDivElement>(null);
+  const [forestWidth, setForestWidth] = useState(0);
+  const [cityWidth, setCityWidth] = useState(0);
+  const forestWidthRef = useRef<HTMLDivElement>(null);
+  const cityWidthRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const width = Math.floor(widthRef.current?.getBoundingClientRect().width);
-    setAvailableWidth(width);
-  }, [widthRef]);
-  const skylineLeft = useMemo(() => createSkylineEffect(10, "left"), []);
-  const skylineRight = useMemo(() => createSkylineEffect(10, "right"), []);
+    const forestWidth = Math.floor(
+      forestWidthRef.current?.getBoundingClientRect().width,
+    );
+    setForestWidth(forestWidth);
+
+    const cityWidth = Math.floor(
+      cityWidthRef.current?.getBoundingClientRect().width,
+    );
+    setCityWidth(cityWidth);
+  }, [forestWidthRef, cityWidth]);
   return (
     <div
       onTransitionEnd={(e) => e.stopPropagation()}
       className="absolute bottom-2 flex h-32 w-[70vw] items-end justify-center"
     >
       <div
-        ref={widthRef}
+        ref={forestWidthRef}
         className="absolute left-0 flex h-full w-1/4 items-end"
       >
         <Forest chunkWidth={forestWidth} direction={"left"} />
       </div>
-      <div data-effect-container className="absolute flex w-1/2">
-        <div className="absolute bottom-1 flex items-end gap-2">
-          {skylineLeft}
-          {/* {skylineRight} */}
-        </div>
-        <div className="absolute bottom-1 right-2 flex items-end gap-2">
-          {skylineRight}
-          {/* {skylineLeft} */}
-        </div>
+      <div
+        ref={cityWidthRef}
+        data-effect-container
+        className="absolute flex w-1/2 justify-between"
+      >
+        <CityChunk
+          direction="left"
+          cityChunkWidth={Math.floor(cityWidth / 4)}
+        />
+        <CityChunk
+          direction="right"
+          cityChunkWidth={Math.floor(cityWidth / 4)}
+        />
       </div>
       <div className="absolute -right-2 flex h-full w-1/4 items-end">
         <Forest chunkWidth={forestWidth} direction={"right"} />
