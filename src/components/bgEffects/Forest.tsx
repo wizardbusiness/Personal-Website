@@ -12,7 +12,7 @@ const Forest = ({ chunkWidth, direction }) => {
     const boxSize = 40;
     while (treeOffset < chunkWidth - boxSize) {
       const style = {
-        [direction === "left" ? "right" : "left"]: `${treeOffset}px`,
+        [direction === "left" ? "left" : "right"]: `${treeOffset}px`,
         transitionDelay: `${270 + treeOffset * 4}ms`,
       };
       const scaleX = randomDecNumFromInterval(0.7, 1.4, 2);
