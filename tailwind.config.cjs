@@ -46,18 +46,37 @@ module.exports = {
           "50%": { opacity: "0.8" },
           "100%": { transform: "translateY(-10px)", opacity: "0.5" },
         },
-        squish: {
+        "squish-sm": {
           "0%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%) scaleX(100%)",
           },
           "75%": {
             transformOrigin: "bottom",
-            transform: "scaleY(10%) scaleX(100%)",
+            transform: "scaleY(10%)",
+            width: "70vw",
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scaleY(4%) scaleX(271%)",
+            transform: "scaleY(4%)",
+            width: "90vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+        },
+        "squish-lg": {
+          "0%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%) scaleX(100%)",
+          },
+          "75%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(10%)",
+            width: "50vw",
+          },
+          "100%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(4%)",
+            width: "70vw",
             backgroundColor: "rgb(71 85 105)",
           },
         },
@@ -136,7 +155,8 @@ module.exports = {
         "fall-from": "fallfrom 0.6s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.5s forwards",
-        "squish-down": "squish 0.2s 0.1s forwards ease-in",
+        "squish-down-lg": "squish-lg 0.2s 0.1s forwards ease-in",
+        "squish-down-sm": "squish-sm 0.2s 0.1s forwards ease-in",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
