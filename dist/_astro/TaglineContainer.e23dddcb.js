@@ -1,0 +1,3 @@
+import{j as e}from"./jsx-runtime.3014c419.js";import"./index.a94dd550.js";function f({repositTxt:r,children:a,animateBg:o}){return e.jsx("div",{"data-subheader":!0,className:`relative flex items-center justify-center gap-2 whitespace-nowrap text-gray-100 
+        before:absolute before:bottom-1 before:z-auto before:h-24 before:w-[70vw] before:rounded-md 
+        before:bg-foggy-glass sm:before:h-28 lg:h-32 lg:w-2/5 lg:before:w-[30vw] ${o&&"lg:before:animate-squish-down-lg before:animate-squish-down-sm"}`,children:e.jsx("div",{className:`absolute flex ${r&&"-translate-y-7"} flex-nowrap gap-2`,children:a})})}export{f as default};
