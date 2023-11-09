@@ -4,7 +4,7 @@ import ContactInfo from "./ContactInfo";
 ---
 
 <nav
-  class="grid-cols-nav-mobile grid h-fit w-full grid-rows-1 items-center justify-between gap-1 text-gray-100 lg:h-16 lg:grid-cols-nav-lg lg:justify-center lg:p-0"
+  class="grid-cols-nav-mobile grid h-fit w-full grid-rows-1 items-center justify-between gap-1 text-gray-100 lg:justify-center lg:p-0 xl:h-16 xl:grid-cols-nav-lg"
 >
   <div class="col-start-2 flex h-fit justify-center lg:col-start-2">
     <slot />
@@ -15,6 +15,7 @@ import ContactInfo from "./ContactInfo";
     <ContactInfo client:load />
     <textarea
       data-contact-info
+      value="gabrieljkime@gmail.com"
       class="position: fixed -z-10 h-0 w-0 text-transparent"
       >gabrieljkime@gmail.com</textarea
     >
@@ -25,13 +26,15 @@ import ContactInfo from "./ContactInfo";
     >
   </section>
   <div
-    class="lg:text-bg-gray-100 col-start-2 p-2 text-center text-transparent lg:col-start-4 lg:text-3xl lg:text-gray-100"
+    class="lg:text-bg-gray-100 col-start-2 justify-center p-2 text-center text-transparent lg:col-start-4 lg:text-3xl lg:text-gray-100"
   >
     |
   </div>
-  <section class="col-start-3 flex justify-end gap-1 lg:col-start-5">
+  <section
+    class="col-start-3 flex justify-end gap-1 lg:col-start-5 lg:justify-start"
+  >
     <a
-      class="group flex items-center justify-center rounded-md pl-0 hover:bg-gray-100"
+      class="group flex items-center rounded-md pl-0 hover:bg-gray-100"
       href="https://github.com/wizardbusiness"
       target="_blank"
       ><Icon
@@ -58,12 +61,14 @@ import ContactInfo from "./ContactInfo";
 </nav>
 <script>
   document.addEventListener("astro:page-load", () => {
-    const contactInfo = document.querySelector(
+    const contactInfo: HTMLTextAreaElement = document.querySelector(
       "[data-contact-info]",
-    ).textContent;
+    );
     const selectContactInfoBtn = document.querySelector("[data-copy-info]");
     const copyInfo = () => {
-      navigator.clipboard.writeText(contactInfo);
+      const isIosDevice = navigator.userAgent.match(/ipad|iphone/i);
+
+      navigator.clipboard.writeText(contactInfo.value);
     };
     selectContactInfoBtn.addEventListener("click", () => copyInfo());
   });
