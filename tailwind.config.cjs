@@ -70,11 +70,12 @@ module.exports = {
           "0%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%) scaleX(100%)",
+            width: "30vw",
           },
           "75%": {
             transformOrigin: "bottom",
             transform: "scaleY(10%)",
-            width: "50vw",
+            width: "30vw",
           },
           "100%": {
             transformOrigin: "bottom",
