@@ -23,7 +23,7 @@ const rise = {
 <main class="flex h-full w-full flex-col items-center p-4 pt-2 lg:p-8 lg:pt-4">
   <div
     data-transition-group
-    class="flex h-[55%] w-full flex-col justify-around gap-4"
+    class="flex h-[55%] w-full flex-col justify-around gap-4 md:h-[65%] lg:h-[70%]"
   >
     <div class="flex w-full justify-center">
       <slot name="nav" />
@@ -33,7 +33,7 @@ const rise = {
   </div>
   <div
     data-subheader-landing
-    class="flex h-fit w-full justify-center lg:w-2/3"
+    class="flex h-fit justify-center"
     transition:animate={rise}
   >
     <!-- this is so dumb -->
