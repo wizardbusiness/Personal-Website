@@ -75,7 +75,10 @@ import ContactInfo from "./ContactInfo";
       }
     };
     if (isIosDevice) {
-      selectContactInfoBtn.addEventListener("touchstart", () => copyInfo());
+      selectContactInfoBtn.addEventListener("touchstart", () => {
+        alert("hi");
+        copyInfo();
+      });
     } else {
       selectContactInfoBtn.addEventListener("pointerdown", () => copyInfo());
     }
