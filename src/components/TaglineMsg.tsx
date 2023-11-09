@@ -16,8 +16,8 @@ const TaglineMsg = ({ msg, blinkCursor }) => {
   }, [msgIndex]);
 
   return (
-    <div className="flex gap-2">
-      <h1 className="no-wrap h-10 text-center font-mono text-xl lg:text-4xl">
+    <div className="flex items-center gap-2">
+      <h1 className="no-wrap h-fit text-center font-mono text-xl lg:text-3xl">
         {(msgIndex === msg.length &&
           text.split(" ").map((str, index) => {
             const key = str + index;
