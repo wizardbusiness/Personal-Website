@@ -70,6 +70,6 @@ import ContactInfo from "./ContactInfo";
 
       navigator.clipboard.writeText(contactInfo.value);
     };
-    selectContactInfoBtn.addEventListener("click", () => copyInfo());
+    selectContactInfoBtn.addEventListener("pointerdown", () => copyInfo());
   });
 </script>
