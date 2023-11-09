@@ -29,7 +29,7 @@ const ContactInfo = () => {
         gabrieljkime@gmail.com
       </span> */}
       <Toast.Root
-        className="radix-state-open:animate-fade-in radix-state-closed:animate-fade-out items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2"
+        className="items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in"
         open={open}
         onOpenChange={setOpen}
       >
@@ -50,7 +50,7 @@ const ContactInfo = () => {
           <div className="text-xl">gabrieljkime@gmail.com</div>
         </Toast.Description>
       </Toast.Root>
-      <Toast.Viewport className="fixed right-36 top-0 z-20 flex w-96 max-w-[100vw] list-none flex-col items-center gap-4 p-4" />
+      <Toast.Viewport className="fixed left-0 top-0 z-20 flex w-96 max-w-[100vw] list-none flex-col items-center gap-4 p-4 lg:left-3/4" />
     </Toast.Provider>
   );
 };
