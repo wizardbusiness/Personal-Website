@@ -31,7 +31,7 @@ module.exports = {
         },
         fallto: {
           "0%": { transform: "translateY(-25vh)" },
-          "100%": { transform: "translateY(10px)" },
+          "100%": { transform: "translateY(0)" },
         },
         risefrom: {
           "0%": { transform: "translateY(5px)" },
