@@ -13,9 +13,13 @@ import "../styles/tailwind.css";
     data-scroll-halo
     class={scrollDirection === "up"
       ? "flex nav-scroll m-0 h-[4vh] lg:h-[10vh] items-center justify-center w-[40vw] translate-y-1/2 lg:-translate-y-4 text-lg"
-      : "translate-y-4"}
+      : "translate-y-2 lg:translate-y-4"}
   >
-    {scrollDirection === "down" && <div class="text-center">Scroll</div>}
+    {
+      scrollDirection === "down" && (
+        <div class=" translate-y-2 text-center">Scroll</div>
+      )
+    }
     <Icon
       pack="ph"
       name={`caret-${scrollDirection}`}
