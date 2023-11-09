@@ -211,7 +211,7 @@ const Skyline = () => {
   return (
     <div
       onTransitionEnd={(e) => e.stopPropagation()}
-      className="absolute bottom-2 flex h-32 w-[70vw] items-end justify-center"
+      className="absolute bottom-1 flex h-32 w-[70vw] items-end justify-center"
     >
       <div
         ref={forestWidthRef}
