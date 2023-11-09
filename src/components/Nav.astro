@@ -69,18 +69,12 @@ import ContactInfo from "./ContactInfo";
     const copyInfo = () => {
       try {
         navigator.clipboard.writeText(contactInfo.value);
-        console.log("hi");
       } catch (err) {
         console.log(err);
       }
     };
-    if (isIosDevice) {
-      selectContactInfoBtn.addEventListener("touchstart", () => {
-        alert("hi");
-        copyInfo();
-      });
-    } else {
-      selectContactInfoBtn.addEventListener("pointerdown", () => copyInfo());
-    }
+    selectContactInfoBtn.addEventListener("click", () => {
+      copyInfo();
+    });
   });
 </script>
