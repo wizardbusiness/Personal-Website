@@ -12,12 +12,11 @@ const ContactInfo = () => {
   }, []);
 
   const handleCopyInfo = () => {
-    const contactInfo = infoRef?.current.textContent;
+    const contactInfo = infoRef?.current.value;
     try {
       navigator.clipboard.writeText(contactInfo);
-      console.log("hmm");
     } catch (err) {
-      console.log("dir");
+      console.log(err);
     }
   };
 
@@ -25,26 +24,24 @@ const ContactInfo = () => {
     <Toast.Provider duration={700} swipeDirection="right">
       <button
         data-copy-info
-        className="relative cursor-pointer select-none decoration-double hover:underline"
+        className="relative select-none decoration-double hover:underline"
         onClick={() => {
-          console.log("hi");
+          handleCopyInfo();
           setOpen(false);
           window.clearTimeout(timerRef.current);
           timerRef.current = window.setTimeout(() => {
             setOpen(true);
           }, 100);
-          handleCopyInfo();
         }}
       >
         Contact
       </button>
-      <span
+      <textarea
         ref={infoRef}
         data-contact-info
+        value="gabrieljkime@gmail.com"
         className="absolute h-0 w-0 text-transparent"
-      >
-        gabrieljkime@gmail.com
-      </span>
+      />
       <Toast.Root
         className="items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in"
         open={open}
