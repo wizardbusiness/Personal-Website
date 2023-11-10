@@ -70,7 +70,7 @@ import ContactInfo from "./ContactInfo";
       try {
         navigator.clipboard.writeText(contactInfo.value);
       } catch (err) {
-        console.log(err);
+        alert("nope");
       }
     };
     selectContactInfoBtn.addEventListener("click", () => {
