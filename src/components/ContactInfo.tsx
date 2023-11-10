@@ -37,6 +37,7 @@ const ContactInfo = () => {
         Contact
       </button>
       <textarea
+        readOnly
         ref={infoRef}
         data-contact-info
         value="gabrieljkime@gmail.com"
