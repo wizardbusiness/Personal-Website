@@ -7,6 +7,7 @@ const ContactInfo = () => {
   const timerRef = useRef(0);
 
   useEffect(() => {
+    console.log("hi");
     return () => clearTimeout(timerRef.current);
   }, []);
 
