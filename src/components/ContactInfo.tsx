@@ -7,7 +7,6 @@ const ContactInfo = () => {
   const timerRef = useRef(0);
 
   useEffect(() => {
-    console.log("hi");
     return () => clearTimeout(timerRef.current);
   }, []);
 
@@ -17,6 +16,7 @@ const ContactInfo = () => {
         data-copy-info
         className="relative select-none decoration-double hover:underline"
         onClick={() => {
+          alert("click");
           setOpen(false);
           window.clearTimeout(timerRef.current);
           timerRef.current = window.setTimeout(() => {
