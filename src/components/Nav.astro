@@ -67,13 +67,12 @@ import ContactInfo from "./ContactInfo";
     const selectContactInfoBtn = document.querySelector("[data-copy-info]");
     const isIosDevice = navigator.userAgent.match(/ipad|iphone/i);
     const copyInfo = () => {
-      try {
-        navigator.clipboard.writeText(contactInfo.value);
-      } catch (err) {
-        console.log(err);
-      } finally {
-        console.log("clicked");
-      }
+      navigator.clipboard
+        .writeText(contactInfo.value)
+        .then(() => alert("clicked"))
+        .catch((err) => {
+          alert(err);
+        });
     };
     selectContactInfoBtn.addEventListener("click", () => {
       copyInfo();
