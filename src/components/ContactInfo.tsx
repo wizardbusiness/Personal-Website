@@ -5,30 +5,46 @@ import { ClipboardIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 const ContactInfo = () => {
   const [open, setOpen] = useState(false);
   const timerRef = useRef(0);
+  const infoRef = useRef(null);
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
 
+  const handleCopyInfo = () => {
+    const contactInfo = infoRef?.current.textContent;
+    try {
+      navigator.clipboard.writeText(contactInfo);
+      console.log("hmm");
+    } catch (err) {
+      console.log("dir");
+    }
+  };
+
   return (
     <Toast.Provider duration={700} swipeDirection="right">
       <button
         data-copy-info
-        className="relative select-none decoration-double hover:underline"
+        className="relative cursor-pointer select-none decoration-double hover:underline"
         onClick={() => {
-          alert("click");
+          console.log("hi");
           setOpen(false);
           window.clearTimeout(timerRef.current);
           timerRef.current = window.setTimeout(() => {
             setOpen(true);
           }, 100);
+          handleCopyInfo();
         }}
       >
         Contact
       </button>
-      {/* <span data-contact-info className=" absolute h-0 w-0 text-transparent">
+      <span
+        ref={infoRef}
+        data-contact-info
+        className="absolute h-0 w-0 text-transparent"
+      >
         gabrieljkime@gmail.com
-      </span> */}
+      </span>
       <Toast.Root
         className="items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in"
         open={open}
