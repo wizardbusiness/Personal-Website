@@ -13,12 +13,6 @@ import ContactInfo from "./ContactInfo";
     class="col-start-1 flex gap-2 text-xl lg:col-start-3 lg:justify-end lg:gap-3 lg:text-2xl"
   >
     <ContactInfo client:load />
-    <textarea
-      data-contact-info
-      value="gabrieljkime@gmail.com"
-      class="position: fixed -z-10 h-0 w-0 text-transparent"
-      >gabrieljkime@gmail.com</textarea
-    >
     <a
       href="/lunar-dev/Resume"
       target="_blank"
@@ -59,23 +53,3 @@ import ContactInfo from "./ContactInfo";
     >
   </section>
 </nav>
-<script>
-  document.addEventListener("astro:page-load", () => {
-    const contactInfo: HTMLTextAreaElement = document.querySelector(
-      "[data-contact-info]",
-    );
-    const selectContactInfoBtn = document.querySelector("[data-copy-info]");
-    const isIosDevice = navigator.userAgent.match(/ipad|iphone/i);
-    const copyInfo = () => {
-      navigator.clipboard
-        .writeText(contactInfo.value)
-        .then(() => alert("clicked"))
-        .catch((err) => {
-          alert(err);
-        });
-    };
-    selectContactInfoBtn.addEventListener("click", () => {
-      copyInfo();
-    });
-  });
-</script>
