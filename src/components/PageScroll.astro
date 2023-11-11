@@ -2,36 +2,109 @@
 import { Icon } from "astro-icon";
 const { url, scrollDirection } = Astro.props;
 import "../styles/tailwind.css";
+import _ from "lodash";
 ---
 
 <a
   href={url}
   data-scroll-btn={scrollDirection}
-  class="scroll-btn flex h-fit w-20 cursor-default flex-col items-center text-gray-400"
+  class="scroll-btn flex h-fit cursor-default flex-col items-end text-gray-400"
 >
-  <span
+  <div
     data-scroll-halo
     class={scrollDirection === "up"
-      ? "flex nav-scroll m-0 h-[4vh] lg:h-[10vh] items-center justify-center w-[40vw] translate-y-1/2 lg:-translate-y-4 text-lg"
-      : "translate-y-1/2 lg:translate-y-4"}
+      ? "flex nav-scroll m-0 h-[4vh] lg:h-[10vh] items-end justify-center w-[40vw] translate-y-1/2 lg:-translate-y-4 text-lg"
+      : "w-[50vw] lg:translate-y-4"}
   >
-    {
-      scrollDirection === "down" && (
-        <div class=" translate-y-2 text-center">Scroll</div>
-      )
-    }
-    <Icon
-      pack="ph"
-      name={`caret-${scrollDirection}`}
-      height="60"
-      width="60"
-      data-scroll-icon
-      class="animate-pulse cursor-pointer text-gray-100"
-    />
-  </span>
+    <div data-scrollable-area class="flex flex-col items-center">
+      {
+        scrollDirection === "down" && (
+          <div class=" w-fit translate-y-2 text-center">Scroll</div>
+        )
+      }
+      <Icon
+        pack="ph"
+        name={`caret-${scrollDirection === "up" ? "down" : "up"}`}
+        height="60"
+        width="60"
+        data-scroll-icon
+        class="animate-pulse cursor-pointer self-center text-gray-100"
+      />
+    </div>
+  </div>
 </a>
 <script>
   document.addEventListener("astro:page-load", () => {
+    const handleScrollDown = () => {
+      const scrollCaret: HTMLElement =
+        document.querySelector("[data-scroll-btn]");
+
+      const taglineContainer = document.querySelector("[data-subheader]");
+      const transitionGroup = document.querySelector("[data-transition-group]");
+      let msSinceLastScrollEvent = 0;
+      let initial = true;
+      let deltaY = 0;
+      const scrollListener = setInterval(() => {
+        if (msSinceLastScrollEvent > 100) deltaY = 0;
+        if (deltaY < 0 && !initial) {
+          scrollCaret.classList.add("move-down");
+          transitionGroup.classList.add("transition");
+          taglineContainer.classList.add("animate-fall-from");
+          taglineContainer.addEventListener("animationend", () => {
+            scrollCaret.classList.remove("move-down");
+            transitionGroup.classList.remove("transition");
+            clearInterval(scrollListener);
+            scrollCaret.click();
+          });
+        }
+        msSinceLastScrollEvent += 100;
+      }, 100);
+      return (e) => {
+        initial = false;
+        msSinceLastScrollEvent = 0;
+        deltaY = e.deltaY;
+      };
+    };
+
+    const handleScrollUp = (scrollTargetArea) => {
+      const scrollIcon = document.querySelector("[data-scroll-icon]");
+      handleScrollAreaInteraction(scrollTargetArea, scrollIcon);
+      let msSinceLastScrollEvent = 0;
+      let initial = true;
+      let deltaY = 0;
+      const scrollListener = setInterval(() => {
+        if (msSinceLastScrollEvent > 100) deltaY = 0;
+        if (deltaY > 0 && !initial) {
+          clearInterval(scrollListener);
+          scrollIcon.classList.remove("animate-scooch-up&pulse");
+          scrollIcon.classList.add("animate-rise-from");
+          scrollIcon.addEventListener("animationend", () =>
+            scrollTargetArea.click(),
+          );
+        }
+        msSinceLastScrollEvent += 100;
+      }, 100);
+      return (e) => {
+        initial = false;
+        msSinceLastScrollEvent = 0;
+        deltaY = e.deltaY;
+      };
+    };
+
+    const handleScrollAreaInteraction = (
+      scrollableArea: HTMLElement,
+      scrollIcon: Element,
+    ) => {
+      scrollableArea.addEventListener("mouseenter", () => {
+        scrollIcon.classList.remove("animate-pulse");
+        scrollIcon.classList.add("animate-scooch-up&pulse");
+      });
+      scrollableArea.addEventListener("mouseleave", () => {
+        scrollIcon.classList.remove("animate-scooch-up&pulse");
+        scrollIcon.classList.add("animate-pulse");
+      });
+    };
+
     const main = document.querySelector("main");
     const url = location.href;
     if (url.includes("Main")) {
@@ -47,75 +120,73 @@ import "../styles/tailwind.css";
         scrollDown(e);
       });
     }
-  });
 
-  const handleScrollDown = () => {
-    const scrollWidget: HTMLElement =
-      document.querySelector("[data-scroll-btn]");
-
-    const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
-    let msSinceLastScrollEvent = 0;
-    let initial = true;
-    let deltaY = 0;
-    const scrollListener = setInterval(() => {
-      if (msSinceLastScrollEvent > 100) deltaY = 0;
-      if (deltaY < 0 && !initial) {
-        scrollWidget.classList.add("move-down");
-        transitionGroup.classList.add("transition");
-        taglineContainer.classList.add("animate-fall-from");
-        taglineContainer.addEventListener("animationend", () => {
-          scrollWidget.classList.remove("move-down");
-          transitionGroup.classList.remove("transition");
-          clearInterval(scrollListener);
-          scrollWidget.click();
-        });
-      }
-      msSinceLastScrollEvent += 100;
-    }, 100);
-    return (e) => {
-      initial = false;
-      msSinceLastScrollEvent = 0;
-      deltaY = e.deltaY;
-    };
-  };
+    const taglineContainer = document.querySelector("[data-subheader]");
+    const scrollCaret = document.querySelector("[data-scroll-btn]");
 
-  const handleScrollUp = (scrollTargetArea) => {
-    const scrollIcon = document.querySelector("[data-scroll-icon]");
-    handleScrollAreaInteraction(scrollTargetArea, scrollIcon);
-    let msSinceLastScrollEvent = 0;
-    let initial = true;
-    let deltaY = 0;
-    const scrollListener = setInterval(() => {
-      if (msSinceLastScrollEvent > 100) deltaY = 0;
-      if (deltaY > 0 && !initial) {
-        clearInterval(scrollListener);
-        scrollIcon.classList.remove("animate-scooch-up&pulse");
-        scrollIcon.classList.add("animate-rise-from");
-        scrollIcon.addEventListener("animationend", () =>
-          scrollTargetArea.click(),
+    const handleSwipeUp = (
+      touchClientY: number,
+      initialTouchPosit: number,
+      scrollableArea: HTMLElement,
+      scrollContainer: HTMLElement,
+    ) => {
+      const scrollableAreaBoundingRectCurrPosit =
+        scrollableArea.getBoundingClientRect();
+
+      const scrollContainerBoundingRect =
+        scrollContainer.getBoundingClientRect();
+      if (
+        touchClientY - initialTouchPosit < 0 &&
+        scrollableAreaBoundingRectCurrPosit.top >
+          scrollContainerBoundingRect.top
+      ) {
+        scrollableArea.style.transform = `translateY(${
+          touchClientY - initialTouchPosit
+        }px)`;
+      }
+      return scrollableAreaBoundingRectCurrPosit.top >
+        scrollContainerBoundingRect.top
+        ? false
+        : true;
+    };
+
+    const handleSwipe = () => {
+      const scrollableArea: HTMLElement = document.querySelector(
+        "[data-scrollable-area]",
+      );
+      const scrollContainer: HTMLElement = document.querySelector(
+        "[data-scroll-container]",
+      );
+      let initialTouchPosit: number;
+      let touchClientY: number;
+      let swipeComplete: boolean;
+      scrollableArea.addEventListener("touchstart", (e: TouchEvent) => {
+        initialTouchPosit = e.touches[0].clientY;
+      });
+      const handleTouchMove = (e) => {
+        console.log("handle");
+        touchClientY = e.touches[0].clientY;
+        swipeComplete = handleSwipeUp(
+          touchClientY,
+          initialTouchPosit,
+          scrollableArea,
+          scrollContainer,
         );
-      }
-      msSinceLastScrollEvent += 100;
-    }, 100);
-    return (e) => {
-      initial = false;
-      msSinceLastScrollEvent = 0;
-      deltaY = e.deltaY;
+        if (swipeComplete) {
+          scrollContainer.removeEventListener("touchmove", handleTouchMove);
+          scrollableArea.classList.add("animate-fade-out");
+          transitionGroup.classList.add("transition");
+          taglineContainer.classList.add("animate-fall-from");
+          taglineContainer.addEventListener("animationend", () => {
+            scrollCaret.classList.remove("move-down");
+            transitionGroup.classList.remove("transition");
+            scrollCaret.click();
+          });
+        }
+      };
+      scrollContainer.addEventListener("touchmove", handleTouchMove);
     };
-  };
-
-  const handleScrollAreaInteraction = (
-    scrollableArea: HTMLElement,
-    scrollIcon: Element,
-  ) => {
-    scrollableArea.addEventListener("mouseenter", () => {
-      scrollIcon.classList.remove("animate-pulse");
-      scrollIcon.classList.add("animate-scooch-up&pulse");
-    });
-    scrollableArea.addEventListener("mouseleave", () => {
-      scrollIcon.classList.remove("animate-scooch-up&pulse");
-      scrollIcon.classList.add("animate-pulse");
-    });
-  };
+    handleSwipe();
+  });
 </script>
