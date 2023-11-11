@@ -8,13 +8,5 @@ import CommonHead from "./common-head-layout.astro";
     class="flex h-screen w-full flex-grow justify-center overflow-clip bg-dusk font-sans"
   >
     <slot name="page" />
-    <script>
-      const blockMoveOnTouch = (e: Event) => {
-        e.preventDefault();
-        e.stopPropagation();
-      };
-      const body = document.querySelector("body");
-      body.addEventListener("touchmove", blockMoveOnTouch);
-    </script>
   </body>
 </html>
