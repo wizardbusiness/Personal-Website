@@ -173,7 +173,7 @@ import _ from "lodash";
         initialTouchPosit = e.touches[0].clientY;
       });
       const handleTouchMove = (e) => {
-        e.preventDefault();
+        // e.preventDefault();
         console.log("handle");
         touchClientY = e.touches[0].clientY;
         swipeComplete = handleSwipeUp(
