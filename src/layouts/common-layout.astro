@@ -4,14 +4,17 @@ import CommonHead from "./common-head-layout.astro";
 
 <html class="w-screen">
   <CommonHead />
-  <body class="flex h-screen w-full flex-grow justify-center bg-dusk font-sans">
+  <body
+    class="flex h-screen w-full flex-grow justify-center overflow-clip bg-dusk font-sans"
+  >
     <slot name="page" />
     <script>
       const blockMoveOnTouch = (e: Event) => {
         e.preventDefault();
+        e.stopPropagation();
       };
       const body = document.querySelector("body");
-      body.addEventListener("ontouchmove", blockMoveOnTouch);
+      body.addEventListener("touchmove", blockMoveOnTouch);
     </script>
   </body>
 </html>
