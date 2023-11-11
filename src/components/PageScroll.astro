@@ -19,7 +19,9 @@ import _ from "lodash";
     <div data-scrollable-area class="flex flex-col items-center">
       {
         scrollDirection === "down" && (
-          <div class=" w-fit translate-y-2 text-center">Scroll</div>
+          <div data-test class=" w-fit translate-y-2 text-center">
+            Scroll
+          </div>
         )
       }
       <Icon
@@ -121,9 +123,14 @@ import _ from "lodash";
       });
     }
 
-    const transitionGroup = document.querySelector("[data-transition-group]");
-    const taglineContainer = document.querySelector("[data-subheader]");
-    const scrollCaret = document.querySelector("[data-scroll-btn]");
+    const transitionGroup: HTMLDivElement = document.querySelector(
+      "[data-transition-group]",
+    );
+    const taglineContainer: HTMLDivElement =
+      document.querySelector("[data-subheader]");
+    const scrollCaret: HTMLElement =
+      document.querySelector("[data-scroll-btn]");
+    const testTouch = document.querySelector("[data-test]");
 
     const handleSwipeUp = (
       touchClientY: number,
@@ -144,6 +151,7 @@ import _ from "lodash";
         scrollableArea.style.transform = `translateY(${
           touchClientY - initialTouchPosit
         }px)`;
+        testTouch.innerHTML = `${touchClientY - initialTouchPosit}`;
       }
       return scrollableAreaBoundingRectCurrPosit.top >
         scrollContainerBoundingRect.top
