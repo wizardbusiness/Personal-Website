@@ -1,6 +1,6 @@
 ---
 import LandingLayout from "../layouts/landing-layout.astro";
-import ScrollToPageBtn from "../components/PageScroll.astro";
+import PageScroll from "../components/PageScroll.astro";
 import Nav from "../components/Nav.astro";
 import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
@@ -31,9 +31,5 @@ import avatarImg from "../images/BeachHeadshotB&W.png";
       client:load
     />
   </TaglineContainer>
-  <ScrollToPageBtn
-    url="/lunar-dev/Main"
-    scrollDirection="down"
-    slot="scroll-down"
-  />
+  <PageScroll url="/lunar-dev/Main" scrollDirection="down" slot="scroll-down" />
 </LandingLayout>

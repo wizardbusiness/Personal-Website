@@ -36,6 +36,8 @@ import _ from "lodash";
   </div>
 </a>
 <script>
+  import Portfolio from "./Portfolio.astro";
+
   const handleScrollDown = () => {
     const scrollCaret: HTMLElement =
       document.querySelector("[data-scroll-btn]");
@@ -171,7 +173,6 @@ import _ from "lodash";
     });
     const handleTouchMove = (e: TouchEvent) => {
       // e.preventDefault();
-      console.log("handle");
       touchClientY = e.touches[0].clientY;
       swipeComplete = handleSwipeUp(
         touchClientY,
@@ -180,7 +181,6 @@ import _ from "lodash";
         scrollContainer,
       );
       if (swipeComplete) {
-        console.log("complete");
         scrollContainer.removeEventListener("touchmove", handleTouchMove);
         scrollableArea.classList.add("animate-fade-out");
         transitionGroup.classList.add("transition");
@@ -197,5 +197,9 @@ import _ from "lodash";
       capture: true,
     });
   };
+  // handleSwipe();
+
+  // document.addEventListener("astro:page-load", () => {
   handleSwipe();
+  // });
 </script>

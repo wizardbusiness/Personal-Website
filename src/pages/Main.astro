@@ -62,7 +62,6 @@ import Slogan from "../components/Slogan.astro";
         content.classList.remove("expand");
         mainContainer.classList.remove("expand");
         header.addEventListener("transitionend", () => {
-          console.log(e.deltaY);
           disableScroll = e.deltaY < 0 ? false : true;
         });
       };
