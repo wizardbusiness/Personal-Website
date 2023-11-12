@@ -4,6 +4,7 @@ import { ClipboardIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 
 const ContactInfo = () => {
   const [open, setOpen] = useState(false);
+  const [error, setError] = useState(false);
   const timerRef = useRef(0);
   const infoRef = useRef(null);
 
@@ -12,12 +13,22 @@ const ContactInfo = () => {
   }, []);
 
   const handleCopyInfo = () => {
-    const contactInfo = infoRef?.current.value;
+    const contactInfo = infoRef.current?.value;
     try {
       navigator.clipboard.writeText(contactInfo);
     } catch (err) {
       console.log(err);
+      setError(true);
     }
+  };
+
+  const handleClickToast = () => {
+    handleCopyInfo();
+    setOpen(false);
+    window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => {
+      setOpen(true);
+    }, 100);
   };
 
   return (
@@ -25,14 +36,7 @@ const ContactInfo = () => {
       <button
         data-copy-info
         className="relative select-none decoration-double hover:underline"
-        onClick={() => {
-          handleCopyInfo();
-          setOpen(false);
-          window.clearTimeout(timerRef.current);
-          timerRef.current = window.setTimeout(() => {
-            setOpen(true);
-          }, 100);
-        }}
+        onClick={handleClickToast}
       >
         Contact
       </button>
@@ -44,12 +48,14 @@ const ContactInfo = () => {
         className="absolute h-0 w-0 text-transparent"
       />
       <Toast.Root
-        className="items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in"
+        className={`items-center rounded-md border border-gray-400 ${
+          !error ? "bg-slate-600" : "bg-red-500"
+        } p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in`}
         open={open}
         onOpenChange={setOpen}
       >
         <Toast.Title className="flex items-center gap-2 text-lg italic">
-          Copied to Clipboard!
+          {!error ? "Copied to Clipboard!" : "Error copying to clipboard"}
           <ClipboardIcon height={30} width={30} />
           <Toast.Action
             className="flex justify-end"
