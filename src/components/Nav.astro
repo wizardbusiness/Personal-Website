@@ -4,7 +4,7 @@ import ContactInfo from "./ContactInfo";
 ---
 
 <nav
-  class="grid-cols-nav-mobile grid h-fit w-full grid-rows-1 items-center justify-between gap-1 text-gray-100 lg:justify-center lg:p-0 xl:h-16 xl:grid-cols-nav-lg"
+  class="grid h-fit w-full grid-cols-nav-mobile grid-rows-1 items-center justify-between gap-1 text-gray-100 lg:justify-center lg:p-0 xl:h-16 xl:grid-cols-nav-lg"
 >
   <div class="col-start-2 flex h-fit justify-center lg:col-start-2">
     <slot />
@@ -13,10 +13,8 @@ import ContactInfo from "./ContactInfo";
     class="col-start-1 flex gap-2 text-xl lg:col-start-3 lg:justify-end lg:gap-3 lg:text-2xl"
   >
     <ContactInfo client:load />
-    <a
-      href="/lunar-dev/Resume"
-      target="_blank"
-      class="decoration-double hover:underline">Resume</a
+    <a href="/lunar-dev/Resume" class="decoration-double hover:underline"
+      >Resume</a
     >
   </section>
   <div
