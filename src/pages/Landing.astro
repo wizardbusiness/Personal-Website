@@ -1,11 +1,12 @@
 ---
 import LandingLayout from "../layouts/landing-layout.astro";
-import PageScroll from "../components/PageScroll.astro";
+import PageScrollWidget from "../components/PageScrollWidget.tsx";
 import Nav from "../components/Nav.astro";
 import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
 import Avatar from "../components/Avatar.astro";
 import avatarImg from "../images/BeachHeadshotB&W.png";
+import { Icon } from "astro-icon";
 ---
 
 <LandingLayout>
@@ -31,5 +32,19 @@ import avatarImg from "../images/BeachHeadshotB&W.png";
       client:load
     />
   </TaglineContainer>
-  <PageScroll url="/lunar-dev/Main" scrollDirection="down" slot="scroll-down" />
+  <PageScrollWidget
+    pageUrl="/lunar-dev/Main"
+    scrollDirection="down"
+    slot="scroll-down"
+    client:load
+  >
+    <Icon
+      pack="ph"
+      name={`caret-${"up"}`}
+      height="60"
+      width="60"
+      data-scroll-icon
+      class="animate-pulse cursor-pointer self-center text-gray-100"
+    />
+  </PageScrollWidget>
 </LandingLayout>
