@@ -2,7 +2,7 @@
 import CommonLayout from "../layouts/common-layout.astro";
 import MainLayout from "../layouts/main-layout.astro";
 import Nav from "../components/Nav.astro";
-import ScrollToPageBtn from "../components/PageScroll.astro";
+import PageScrollWidget from "../components/PageScrollWidget.tsx";
 import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
 import Skyline from "../components/bgEffects/Skyline";
@@ -10,12 +10,22 @@ import About from "../components/About.astro";
 import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
 import Slogan from "../components/Slogan.astro";
+import { Icon } from "astro-icon";
 ---
 
 <CommonLayout>
   <MainLayout data-info-page slot="page">
     <Nav slot="nav">
-      <ScrollToPageBtn scrollDirection="up" url="/lunar-dev" />
+      <PageScrollWidget client:load scrollDirection="up" pageUrl="/lunar-dev">
+        <Icon
+          pack="ph"
+          name="caret-up"
+          height="60"
+          width="60"
+          data-scroll-icon
+          class="animate-pulse cursor-pointer self-center text-gray-100"
+        />
+      </PageScrollWidget>
     </Nav>
     <div
       data-subheader-main
@@ -38,7 +48,7 @@ import Slogan from "../components/Slogan.astro";
     <Tech slot="tech" />
   </MainLayout>
 </CommonLayout>
-<script>
+<!-- <script>
   document.addEventListener("astro:page-load", () => {
     const url = location.href;
     if (url.includes("Main")) {
@@ -73,4 +83,4 @@ import Slogan from "../components/Slogan.astro";
       });
     }
   });
-</script>
+</script> -->
