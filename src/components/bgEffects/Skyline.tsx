@@ -210,20 +210,18 @@ const Skyline = () => {
   }, [forestWidthRef, cityWidth]);
   return (
     <div
+      data-effects-container
       onTransitionEnd={(e) => e.stopPropagation()}
       className="absolute bottom-1 flex h-32 w-[70vw] items-end justify-center"
     >
       <div
+        data-forest
         ref={forestWidthRef}
         className="absolute left-0 flex h-full w-1/4 items-end"
       >
         <Forest chunkWidth={forestWidth} direction={"left"} />
       </div>
-      <div
-        ref={cityWidthRef}
-        data-effect-container
-        className="absolute flex w-1/2 justify-between"
-      >
+      <div ref={cityWidthRef} className="absolute flex w-1/2 justify-between">
         <CityChunk
           direction="left"
           cityChunkWidth={Math.floor(cityWidth / 4)}
@@ -233,7 +231,10 @@ const Skyline = () => {
           cityChunkWidth={Math.floor(cityWidth / 4)}
         />
       </div>
-      <div className="absolute -right-2 flex h-full w-1/4 items-end">
+      <div
+        data-forest
+        className="absolute -right-2 flex h-full w-1/4 items-end"
+      >
         <Forest chunkWidth={forestWidth} direction={"right"} />
       </div>
     </div>
