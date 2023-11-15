@@ -30,7 +30,7 @@
 
   .window {
     visibility: hidden;
-    transition: visibility 100ms;
+    transition: all 100ms;
   }
 
   .window.show {
@@ -59,16 +59,16 @@
 
   [data-transition-group].transition {
     opacity: 0;
-    transform: translateY(-55%);
+    transform: translateY(-20%);
   }
 
-  .scroll-btn {
-    transform: translateY(0%);
+  .caret-posit-default {
+    transform: translateY(-5vh);
     transition: transform 0.3s ease-out;
   }
 
-  .scroll-btn.move-down {
-    transform: translateY(200%);
+  .scroll-btn.move-up {
+    transform: translateY(-200%);
   }
 
   .scroll-btn.navigate-down {
@@ -82,7 +82,7 @@
   }
   .header.hide,
   [data-subheader-main].hide {
-    transform: translateY(-10vh);
+    transform: translateY(-15vh);
   }
 
   [data-info-container] {
@@ -92,8 +92,8 @@
   }
 
   [data-info-container].expand {
-    transform: translateY(-10vh);
     height: 110vh;
+    transform: translateY(-15vh);
   }
 
   .nav-scroll:hover {
