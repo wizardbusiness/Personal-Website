@@ -2,7 +2,7 @@
 import CommonLayout from "../layouts/common-layout.astro";
 import MainLayout from "../layouts/main-layout.astro";
 import Nav from "../components/Nav.astro";
-import PageScrollWidget from "../components/PageScrollWidget.tsx";
+import NavController from "../components/NavController";
 import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
 import Skyline from "../components/bgEffects/Skyline";
@@ -16,16 +16,16 @@ import { Icon } from "astro-icon";
 <CommonLayout>
   <MainLayout data-info-page slot="page">
     <Nav slot="nav">
-      <PageScrollWidget client:load scrollDirection="up" pageUrl="/lunar-dev">
+      <NavController client:load navDirection="prev" pageUrl="/lunar-dev">
         <Icon
           pack="ph"
-          name="caret-up"
+          name="caret-down"
           height="60"
           width="60"
           data-scroll-icon
           class="animate-pulse cursor-pointer self-center text-gray-100"
         />
-      </PageScrollWidget>
+      </NavController>
     </Nav>
     <div
       data-subheader-main
@@ -48,39 +48,53 @@ import { Icon } from "astro-icon";
     <Tech slot="tech" />
   </MainLayout>
 </CommonLayout>
-<!-- <script>
-  document.addEventListener("astro:page-load", () => {
-    const url = location.href;
-    if (url.includes("Main")) {
-      const header = document.querySelector("header");
-      const subHeader = document.querySelector("[data-subheader-main]");
-      const content = document.querySelector("[data-info-container]");
-      const mainContainer = document.querySelector("main");
-      let disableScroll = false;
-      const handleExpandContent = (e, header, content) => {
-        header.classList.add("hide");
-        subHeader.classList.add("hide");
-        content.classList.add("expand");
-        mainContainer.classList.add("expand");
-        // disables scrolling on wheel event listener
-        if (disableScroll) e.preventDefault();
-      };
+<script>
+  const infoContainer = document.querySelector("[data-info-container]");
+  const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
+  infoContainer.addEventListener("wheel", handleStopPropagation);
 
-      const handleShowHeader = (e, header, content) => {
-        header.classList.remove("hide");
-        subHeader.classList.remove("hide");
-        content.classList.remove("expand");
-        mainContainer.classList.remove("expand");
-        header.addEventListener("transitionend", () => {
-          disableScroll = e.deltaY < 0 ? false : true;
-        });
-      };
+  // document.addEventListener("astro:page-load", () => {
+  //   if (!location.href.includes("Main")) return;
+  //   console.log("main");
+  //   const infoContainer = document.querySelector("[data-info-container]");
+  //   infoContainer.addEventListener("wheel", handleStopPropagation);
+  // });
 
-      content.addEventListener("wheel", (e: WheelEvent) => {
-        e.deltaY > 0
-          ? handleExpandContent(e, header, content)
-          : handleShowHeader(e, header, content);
-      });
-    }
-  });
-</script> -->
+  const url = location.href;
+  if (url.includes("Main")) {
+    const header = document.querySelector("header");
+    const subHeader = document.querySelector("[data-subheader-main]");
+    const content = document.querySelector("[data-info-container]");
+    const mainContainer = document.querySelector("main");
+    const handleExpandContent = (e, header, content) => {
+      header.classList.add("hide");
+      subHeader.classList.add("hide");
+      content.classList.add("expand");
+      mainContainer.classList.add("expand");
+    };
+
+    const handleShowHeader = (e, header, content) => {
+      header.classList.remove("hide");
+      subHeader.classList.remove("hide");
+      content.classList.remove("expand");
+      mainContainer.classList.remove("expand");
+    };
+
+    content.addEventListener("wheel", (e: WheelEvent) => {
+      e.deltaY < 0 && content.scrollTop <= 0
+        ? handleShowHeader(e, header, content)
+        : handleExpandContent(e, header, content);
+    });
+    let touchStartPosit;
+    let touchEndPosit;
+    content.addEventListener("touchstart", (e: TouchEvent) => {
+      touchStartPosit = e.touches[0].clientY;
+    });
+    content.addEventListener("touchmove", (e: TouchEvent) => {
+      touchEndPosit = e.touches[0].clientY;
+      touchStartPosit < touchEndPosit && content.scrollTop <= 0
+        ? handleShowHeader(e, header, content)
+        : handleExpandContent(e, header, content);
+    });
+  }
+</script>
