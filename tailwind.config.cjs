@@ -37,8 +37,8 @@ module.exports = {
           "100%": { transform: "translateY(0)" },
         },
         risefrom: {
-          "0%": { transform: "translateY(5px)" },
-          "100%": { transform: "translateY(-10vh)" },
+          "0%": { transform: "translateY(0)" },
+          "100%": { transform: "translateY(-20vh)" },
         },
         riseto: {
           "0%": { transform: "translateY(30vh)" },
@@ -82,6 +82,54 @@ module.exports = {
             transform: "scaleY(4%)",
             width: "70vw",
             backgroundColor: "rgb(71 85 105)",
+          },
+        },
+        "squelch-sm": {
+          "0%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(4%)",
+            width: "90vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "25%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(10%)",
+            width: "70vw",
+          },
+          "50%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%)",
+            width: "70vw",
+            backgroundColor: "foggy-glass",
+          },
+          "100%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%) scaleX(100%) translateY(-40vh)",
+            width: "70vw",
+          },
+        },
+        "squelch-lg": {
+          "0%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(4%)",
+            width: "70vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "25%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(10%)",
+            width: "30vw",
+          },
+          "50%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%)",
+            width: "30vw",
+            backgroundColor: "foggy-glass",
+          },
+          "100%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%) scaleX(100%) translateY(-40vh)",
+            width: "30vw",
           },
         },
         grow: {
@@ -158,9 +206,11 @@ module.exports = {
         "fall-to": "fallto 0.2s forwards ease-in",
         "fall-from": "fallfrom 0.6s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
-        "rise-from": "risefrom 0.5s forwards",
+        "rise-from": "risefrom 0.2s 0.3s forwards",
         "squish-down-lg": "squish-lg 0.2s 0.1s forwards ease-in",
         "squish-down-sm": "squish-sm 0.2s 0.1s forwards ease-in",
+        "squelch-up-lg": "squelch-lg 0.5s forwards ease-in",
+        "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
