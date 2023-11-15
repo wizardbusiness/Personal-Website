@@ -1,25 +1,3 @@
----
-const anim = {
-  old: {
-    name: "riseto",
-    duration: "0.5s",
-    easing: "ease-out",
-    fillMode: "forwards",
-  },
-  new: {
-    name: "riseto",
-    duration: "0.5s",
-    easing: "ease-out",
-    fillMode: "backwards",
-  },
-};
-
-const rise = {
-  forwards: anim,
-  backwards: anim,
-};
----
-
 <main class="flex h-full w-full flex-col items-center p-4 pt-2 lg:p-8 lg:pt-4">
   <div
     data-transition-group
@@ -31,13 +9,7 @@ const rise = {
     <slot name="avatar" />
     <slot name="title" />
   </div>
-  <div
-    data-subheader-landing
-    class="flex h-fit justify-center"
-    transition:animate={rise}
-  >
-    <!-- this is so dumb -->
-    <div class="animate-rise-to"></div>
+  <div data-subheader-landing class="flex h-fit justify-center">
     <slot name="subheader" />
   </div>
   <slot name="page-scroll-area" />
