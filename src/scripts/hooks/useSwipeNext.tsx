@@ -33,7 +33,7 @@ const useSwipeNext = (swipeableAreaRef) => {
       ) {
         setClicked(true);
         setCurrentTouchPosit(Math.floor(e.touches[0].clientY));
-        swipeableArea.classList.add("animate-fade-out");
+        // swipeableArea.classList.add("animate-fade-out");
         transitionGroup.classList.add("transition");
         taglineContainer.classList.add("animate-fall-from");
         taglineContainer.addEventListener("animationend", () => {
@@ -49,8 +49,19 @@ const useSwipeNext = (swipeableAreaRef) => {
         );
       }
     };
+    const handleTouchEnd = () => {
+      transitionGroup.classList.add("transition");
+      taglineContainer.classList.add("animate-fall-from");
+      if (!swipeableArea.classList.contains("animate-swipe-up")) {
+        swipeableArea.classList.add("animate-swipe-up");
+        taglineContainer.addEventListener("animationend", () =>
+          swipeableArea.click(),
+        );
+      }
+    };
     swipeableArea.addEventListener("touchstart", handleTouchStart);
     swipeableArea.addEventListener("touchmove", handleTouchMove);
+    swipeableArea.addEventListener("touchend", handleTouchEnd);
     return () => {
       swipeableArea.removeEventListener("touchstart", handleTouchStart);
       swipeableArea.removeEventListener("touchmove", handleTouchMove);
