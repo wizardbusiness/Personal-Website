@@ -174,6 +174,26 @@ module.exports = {
             opacity: "0%",
           },
         },
+        longblink: {
+          "0%": {
+            opacity: "30%",
+          },
+          "20%": {
+            opacity: "0%",
+          },
+          "50%": {
+            opacity: "30%",
+          },
+          "70%": {
+            opacity: "80%",
+          },
+          90: {
+            opacity: "100%",
+          },
+          "100%": {
+            opacity: "30%",
+          },
+        },
         impact: {
           "0%": {
             transform: "translateY(0px)",
@@ -220,10 +240,17 @@ module.exports = {
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
         "scooch-up&pulse": "scoochup 1.2s infinite",
+        "long-blink": "longblink 1s forwards",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
         "nav-mobile": "40% 10% 40%",
+        "content-main-lg": "50% 45%", // leave a little extra room to right of grid for a more organic looking result
+        "content-main-mobile": "65% 30%",
+      },
+      gridTemplateRows: {
+        "content-main-mobile": "min(40%, 15vh) 1fr",
+        "content-main-lg": "42% 25% 25%",
       },
     },
   },
