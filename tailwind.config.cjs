@@ -44,6 +44,16 @@ module.exports = {
           "0%": { transform: "translateY(30vh)" },
           "100%": { transform: "translateY(0vh)" },
         },
+        "swipe-down": {
+          "0%": {
+            opacity: "100%",
+            transform: "translateY(0%)",
+          },
+          "100%": {
+            opacity: "0%",
+            transform: "translateY(100%)",
+          },
+        },
         scoochup: {
           "0%": { transform: "translateY(0)", opacity: "0.5" },
           "50%": { opacity: "0.8" },
@@ -227,6 +237,7 @@ module.exports = {
         "fall-from": "fallfrom 0.6s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.2s 0.3s forwards",
+        "swipe-down": "swipe-down 0.2s forwards",
         "squish-down-lg": "squish-lg 0.2s 0.1s forwards ease-in",
         "squish-down-sm": "squish-sm 0.2s 0.1s forwards ease-in",
         "squelch-up-lg": "squelch-lg 0.5s forwards ease-in",
