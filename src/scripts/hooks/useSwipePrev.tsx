@@ -32,8 +32,7 @@ const useSwipePrev = (swipeableAreaRef) => {
             setTransitionCount((prevCount) => (prevCount += 1)),
           );
         });
-
-        scrollCaret.classList.add("animate-fade-out");
+        scrollCaret.classList.add("animate-swipe-down");
       }
     };
 
