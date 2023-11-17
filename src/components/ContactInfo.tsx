@@ -1,16 +1,24 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, type RefObject } from "react";
 import * as Toast from "@radix-ui/react-toast";
 import { ClipboardIcon, CrossCircledIcon } from "@radix-ui/react-icons";
 
 const ContactInfo = () => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
+  const [btnBottom, setBtnBottom] = useState(0);
+  const [btnLeft, setBtnLeft] = useState(0);
+  const [btnHeight, setBtnHeight] = useState(0);
   const timerRef = useRef(0);
   const infoRef = useRef(null);
+  const btnRef: RefObject<HTMLButtonElement> = useRef(null);
 
   useEffect(() => {
     return () => clearTimeout(timerRef.current);
   }, []);
+
+  useEffect(() => {
+    handleWindowSizeChange(btnRef);
+  }, [open]);
 
   const handleCopyInfo = () => {
     const contactInfo = infoRef.current?.value;
@@ -30,12 +38,22 @@ const ContactInfo = () => {
       setOpen(true);
     }, 100);
   };
-
+  // handle dynamic positioning of toast popup according to window size
+  const handleWindowSizeChange = (btnRef: RefObject<HTMLButtonElement>) => {
+    // check position of left and bottom edges of button and use them to position toast
+    const btnLeftBound = btnRef.current?.getBoundingClientRect().left;
+    const btnBottomBound = btnRef.current?.getBoundingClientRect().bottom;
+    setBtnLeft(btnLeftBound);
+    setBtnBottom(btnBottomBound);
+  };
+  // insert dynamic values here since tailwind doesn't support them
+  const toastStyle = { top: `${btnBottom}px`, left: `${btnLeft}px` };
   return (
-    <Toast.Provider duration={700} swipeDirection="right">
+    <Toast.Provider duration={!error && 900} swipeDirection="right">
       <button
+        ref={btnRef}
         data-copy-info
-        className="relative select-none decoration-double hover:underline"
+        className="select-none decoration-double hover:underline"
         onClick={handleClickToast}
       >
         Contact
@@ -48,9 +66,7 @@ const ContactInfo = () => {
         className="absolute h-0 w-0 text-transparent"
       />
       <Toast.Root
-        className={`items-center rounded-md border border-gray-400 ${
-          !error ? "bg-slate-600" : "bg-red-500"
-        } p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in`}
+        className={`items-center rounded-md border border-gray-400 bg-slate-600 p-3 focus:border-2 radix-state-closed:animate-fade-out radix-state-open:animate-fade-in`}
         open={open}
         onOpenChange={setOpen}
       >
@@ -71,7 +87,11 @@ const ContactInfo = () => {
           <div className="text-xl">gabrieljkime@gmail.com</div>
         </Toast.Description>
       </Toast.Root>
-      <Toast.Viewport className="fixed left-0 top-0 z-20 flex w-96 max-w-[100vw] list-none flex-col items-center gap-4 p-4 lg:left-3/4" />
+      <Toast.Viewport
+        style={toastStyle}
+        className={`fixed z-20
+        flex w-[270px] list-none flex-col items-center gap-4`}
+      />
     </Toast.Provider>
   );
 };
