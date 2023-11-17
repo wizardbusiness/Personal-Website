@@ -9,7 +9,8 @@ import Skyline from "../components/bgEffects/Skyline";
 import About from "../components/About.astro";
 import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
-import Slogan from "../components/Slogan.astro";
+import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
+import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 import { Icon } from "astro-icon";
 ---
 
@@ -43,9 +44,11 @@ import { Icon } from "astro-icon";
       </TaglineContainer>
     </div>
     <About slot="about" />
+
     <Portfolio slot="portfolio" />
-    <Slogan slot="slogan" />
+    <YouDreamIt slot="flav-text-a" />
     <Tech slot="tech" />
+    <IllHandleTheRest slot="flav-text-b" />
   </MainLayout>
 </CommonLayout>
 <script>
@@ -53,27 +56,25 @@ import { Icon } from "astro-icon";
   const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
   infoContainer.addEventListener("wheel", handleStopPropagation);
 
-  // document.addEventListener("astro:page-load", () => {
-  //   if (!location.href.includes("Main")) return;
-  //   console.log("main");
-  //   const infoContainer = document.querySelector("[data-info-container]");
-  //   infoContainer.addEventListener("wheel", handleStopPropagation);
-  // });
-
   const url = location.href;
   if (url.includes("Main")) {
-    const header = document.querySelector("header");
-    const subHeader = document.querySelector("[data-subheader-main]");
-    const content = document.querySelector("[data-info-container]");
+    const header: HTMLElement = document.querySelector("header");
+    const subHeader: HTMLElement = document.querySelector(
+      "[data-subheader-main]",
+    );
+    const content: HTMLElement = document.querySelector(
+      "[data-info-container]",
+    );
     const mainContainer = document.querySelector("main");
-    const handleExpandContent = (e, header, content) => {
+    const handleExpandContent = (header: HTMLElement, content: HTMLElement) => {
+      const headerHeight = header.getBoundingClientRect().height;
       header.classList.add("hide");
-      subHeader.classList.add("hide");
+      subHeader.classList.add("shrink");
       content.classList.add("expand");
       mainContainer.classList.add("expand");
     };
 
-    const handleShowHeader = (e, header, content) => {
+    const handleShowHeader = (header: HTMLElement, content: HTMLElement) => {
       header.classList.remove("hide");
       subHeader.classList.remove("hide");
       content.classList.remove("expand");
@@ -82,19 +83,19 @@ import { Icon } from "astro-icon";
 
     content.addEventListener("wheel", (e: WheelEvent) => {
       e.deltaY < 0 && content.scrollTop <= 0
-        ? handleShowHeader(e, header, content)
-        : handleExpandContent(e, header, content);
+        ? handleShowHeader(header, content)
+        : handleExpandContent(header, content);
     });
-    let touchStartPosit;
-    let touchEndPosit;
+    let touchStartPosit: number;
+    let touchEndPosit: number;
     content.addEventListener("touchstart", (e: TouchEvent) => {
       touchStartPosit = e.touches[0].clientY;
     });
     content.addEventListener("touchmove", (e: TouchEvent) => {
       touchEndPosit = e.touches[0].clientY;
       touchStartPosit < touchEndPosit && content.scrollTop <= 0
-        ? handleShowHeader(e, header, content)
-        : handleExpandContent(e, header, content);
+        ? handleShowHeader(header, content)
+        : handleExpandContent(header, content);
     });
   }
 </script>
