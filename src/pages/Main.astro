@@ -52,50 +52,61 @@ import { Icon } from "astro-icon";
   </MainLayout>
 </CommonLayout>
 <script>
-  const infoContainer = document.querySelector("[data-info-container]");
-  const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
-  infoContainer.addEventListener("wheel", handleStopPropagation);
-
-  const url = location.href;
-  if (url.includes("Main")) {
-    const header: HTMLElement = document.querySelector("header");
+  const handleShowHideHeader = () => {
+    const infoContainer: HTMLElement = document.querySelector(
+      "[data-info-container]",
+    );
+    const headerContainer: HTMLElement = document.querySelector("header");
     const subHeader: HTMLElement = document.querySelector(
       "[data-subheader-main]",
     );
-    const content: HTMLElement = document.querySelector(
-      "[data-info-container]",
-    );
-    const mainContainer = document.querySelector("main");
-    const handleExpandContent = (header: HTMLElement, content: HTMLElement) => {
-      const headerHeight = header.getBoundingClientRect().height;
-      header.classList.add("hide");
-      subHeader.classList.add("shrink");
-      content.classList.add("expand");
-      mainContainer.classList.add("expand");
+    const navBar: HTMLElement = document.querySelector("nav");
+    const navBottom: number = navBar.getBoundingClientRect().bottom;
+    const elements = [headerContainer, subHeader, infoContainer];
+
+    const handleTranslateHeader = (
+      elements: HTMLElement[],
+      transformDistance: number,
+    ) => {
+      elements.forEach(
+        (element) =>
+          (element.style.transform = `translateY(${transformDistance}px)`),
+      );
     };
 
-    const handleShowHeader = (header: HTMLElement, content: HTMLElement) => {
-      header.classList.remove("hide");
-      subHeader.classList.remove("hide");
-      content.classList.remove("expand");
-      mainContainer.classList.remove("expand");
+    const handleScroll = (
+      infoContainer: HTMLElement,
+      elements: HTMLElement[],
+      navBottom: number,
+    ) => {
+      infoContainer.addEventListener("wheel", (e: WheelEvent) => {
+        const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
+        handleStopPropagation(e);
+        e.deltaY < 0 && infoContainer.scrollTop <= 0
+          ? handleTranslateHeader(elements, 0) // show header
+          : handleTranslateHeader(elements, navBottom); // hide header
+      });
     };
+    const handleSwipe = (
+      infoContainer: HTMLElement,
+      elements: HTMLElement[],
+      navBottom: number,
+    ) => {
+      let touchStartPosit: number;
+      let touchEndPosit: number;
+      infoContainer.addEventListener("touchstart", (e: TouchEvent) => {
+        touchStartPosit = e.touches[0].clientY;
+      });
 
-    content.addEventListener("wheel", (e: WheelEvent) => {
-      e.deltaY < 0 && content.scrollTop <= 0
-        ? handleShowHeader(header, content)
-        : handleExpandContent(header, content);
-    });
-    let touchStartPosit: number;
-    let touchEndPosit: number;
-    content.addEventListener("touchstart", (e: TouchEvent) => {
-      touchStartPosit = e.touches[0].clientY;
-    });
-    content.addEventListener("touchmove", (e: TouchEvent) => {
-      touchEndPosit = e.touches[0].clientY;
-      touchStartPosit < touchEndPosit && content.scrollTop <= 0
-        ? handleShowHeader(header, content)
-        : handleExpandContent(header, content);
-    });
-  }
+      infoContainer.addEventListener("touchmove", (e: TouchEvent) => {
+        touchEndPosit = e.touches[0].clientY;
+        touchStartPosit < touchEndPosit && infoContainer.scrollTop <= 0
+          ? handleTranslateHeader(elements, 0) // show header
+          : handleTranslateHeader(elements, navBottom); // hide header
+      });
+    };
+    handleScroll(infoContainer, elements, -1 * navBottom);
+    handleSwipe(infoContainer, elements, -1 * navBottom);
+  };
+  handleShowHideHeader();
 </script>
