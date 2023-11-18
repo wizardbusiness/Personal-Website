@@ -32,7 +32,7 @@ const PageScrollWidget = ({
       className={
         navDirection === "next"
           ? "flex w-[50vw] translate-y-4 flex-col items-center"
-          : "nav-scroll m-0 flex w-[40vw] -translate-y-6 cursor-default flex-col justify-center text-lg lg:h-[10vh]"
+          : "nav-scroll m-0 flex w-[40vw] -translate-y-4 cursor-default flex-col items-center justify-center text-lg lg:h-[10vh]"
       }
       ref={swipeableAreaRef}
     >
@@ -45,6 +45,14 @@ const PageScrollWidget = ({
         </div>
       )}
       {children}
+      {navDirection === "prev" && (
+        <div
+          data-caret
+          className=" w-fit -translate-y-3 animate-pulse text-center text-gray-400 opacity-30"
+        >
+          {!!isTouchDevice ? "Swipe" : ""}
+        </div>
+      )}
     </a>
   );
 };
