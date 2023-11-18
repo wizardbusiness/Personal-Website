@@ -51,14 +51,18 @@ const TechList = ({ categories }: TechList) => {
   );
 
   return (
-    <div className="p-2 pt-6">
-      <button onClick={handleSetOpenAll} className="lg:text-4xl">
+    <div data-tech-list className="pl-2 pt-6">
+      <button
+        data-open-all={openAll}
+        onClick={handleSetOpenAll}
+        className="lg:text-4xl"
+      >
         <AccordionBtnIcon height={20} width={20} active={openAll} />
       </button>
       <Accordion.Root
         value={openItems}
         onValueChange={setOpenItems}
-        className="leading-relaxed lg:text-2xl"
+        className="text-xl leading-relaxed lg:text-2xl"
         type="multiple"
       >
         {list}
@@ -82,7 +86,7 @@ const AccordionedList = ({
   value,
 }: AccordionedList) => {
   return (
-    <Accordion.Item className="overflow-hidden pl-1" value={value}>
+    <Accordion.Item className="h-fit overflow-hidden pl-1" value={value}>
       <AccordionTrigger open={openItems.includes(value)}>
         {category}
       </AccordionTrigger>
@@ -128,7 +132,7 @@ const AccordionedListItems = ({
         key={`item${index}`}
         className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-200 ${
           lastItem
-            ? "before:absolute before:z-10 before:h-4 before:w-1 before:-translate-x-1 before:translate-y-[56%] before:bg-blue-smoke"
+            ? "before:absolute before:h-4 before:w-2 before:-translate-x-1 before:translate-y-[57%] before:bg-blue-smoke"
             : ""
         } translate-x-4`}
       >
