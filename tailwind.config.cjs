@@ -54,6 +54,12 @@ module.exports = {
             transform: "translateY(100%)",
           },
         },
+        "swipe-up": {
+          "100%": {
+            transform: "translateY(-75%)",
+            opacity: 0,
+          },
+        },
         scoochup: {
           "0%": { transform: "translateY(0)", opacity: "0.5" },
           "50%": { opacity: "0.8" },
@@ -238,6 +244,7 @@ module.exports = {
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.2s 0.3s forwards",
         "swipe-down": "swipe-down 0.2s forwards",
+        "swipe-up": "swipe-up 0.2s forwards",
         "squish-down-lg": "squish-lg 0.2s 0.1s forwards ease-in",
         "squish-down-sm": "squish-sm 0.2s 0.1s forwards ease-in",
         "squelch-up-lg": "squelch-lg 0.5s forwards ease-in",
@@ -247,7 +254,7 @@ module.exports = {
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.2s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
-        impact: "impact 0.05s 0.3s forwards",
+        // impact: "impact 0.05s 0.3s forwards",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
         "scooch-up&pulse": "scoochup 1.2s infinite",
