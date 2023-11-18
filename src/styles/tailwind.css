@@ -72,7 +72,7 @@
   }
 
   .scroll-btn.navigate-down {
-    transform: translateY(20vh);
+    /* transform: translateY(-10vh); */
   }
 
   .header,
@@ -81,8 +81,13 @@
     transition: transform 0.5s;
   }
   .header.hide,
-  [data-subheader-main].hide {
-    transform: translateY(-15vh);
+  [data-subheader-main].shrink {
+    transform: translateY(-10vh);
+  }
+
+  .header.hide-xl,
+  [data-subheader-main].hide-xl {
+    transform: translateY(-1vh);
   }
 
   [data-info-container] {
@@ -93,16 +98,29 @@
 
   [data-info-container].expand {
     height: 110vh;
-    transform: translateY(-15vh);
+    transform: translateY(-10vh);
+  }
+
+  [data-info-container].expand-xl {
+    height: 110vh;
+    transform: translateY(-1vh);
   }
 
   .nav-scroll:hover {
-    /* z-index: 10; */
     background: radial-gradient(
         farthest-side at 50% 0,
         rgba(255, 255, 255, 0.1),
         rgba(0, 0, 0, 0)
       )
       center top;
+  }
+
+  [data-flavor-text] {
+    opacity: 1;
+    transition: opacity 0.2s ease-out;
+  }
+
+  [data-flavor-text].fade {
+    opacity: 0;
   }
 }
