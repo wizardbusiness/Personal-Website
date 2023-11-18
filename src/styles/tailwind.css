@@ -71,39 +71,13 @@
     transform: translateY(-200%);
   }
 
-  .scroll-btn.navigate-down {
-    /* transform: translateY(-10vh); */
-  }
-
   .header,
   [data-subheader-main] {
-    /* transform-origin: top; */
     transition: transform 0.5s;
-  }
-  .header.hide,
-  [data-subheader-main].shrink {
-    transform: translateY(-10vh);
-  }
-
-  .header.hide-xl,
-  [data-subheader-main].hide-xl {
-    transform: translateY(-1vh);
   }
 
   [data-info-container] {
-    height: 100vh;
-    transform: translateY(0%);
     transition: all 0.5s;
-  }
-
-  [data-info-container].expand {
-    height: 110vh;
-    transform: translateY(-10vh);
-  }
-
-  [data-info-container].expand-xl {
-    height: 110vh;
-    transform: translateY(-1vh);
   }
 
   .nav-scroll:hover {
