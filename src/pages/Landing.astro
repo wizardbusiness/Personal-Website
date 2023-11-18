@@ -43,3 +43,13 @@ import { Icon } from "astro-icon";
     />
   </NavController>
 </LandingLayout>
+<script>
+  const adjustNavBarHeight = () => {
+    if (!location.href.includes("Main")) {
+      const navBar = document.querySelector("nav");
+      navBar.classList.replace("h-[15vh]", "h-fit");
+      navBar.classList.replace("lg:h-[5vh]", "h-fit");
+    }
+  };
+  adjustNavBarHeight();
+</script>
