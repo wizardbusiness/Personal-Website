@@ -5,7 +5,6 @@ const useScrollNext = () => {
   const [clicked, setClicked] = useState(false);
   useEffect(() => {
     if (location.href.includes("/Main")) return;
-    console.log(location.href);
     const taglineContainer = document.querySelector("[data-subheader]");
     const transitionGroup = document.querySelector("[data-transition-group]");
     const scrollContainer = document.querySelector("main");
