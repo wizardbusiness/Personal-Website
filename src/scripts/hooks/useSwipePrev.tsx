@@ -53,10 +53,14 @@ const useSwipePrev = (swipeableAreaRef) => {
         "before:animate-squish-down-sm",
         "before:animate-squelch-up-sm",
       );
-      taglineContainer.classList.add("animate-rise-from"),
-        taglineContainer.addEventListener("animationend", () =>
-          scrollCaret.click(),
-        );
+      taglineContainer.classList.add("animate-rise-from");
+      taglineContainer.addEventListener(
+        "animationend",
+        () => {
+          scrollCaret.click();
+        },
+        // taglineContainer.classList.remove("animate-rise-from"),
+      );
       setClicked(true);
     }
     swipeContainer.addEventListener("touchmove", handleScrollPrev);
