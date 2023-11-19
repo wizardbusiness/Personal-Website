@@ -108,5 +108,13 @@ import { Icon } from "astro-icon";
     handleScroll(infoContainer, elements, -1 * navBottom);
     handleSwipe(infoContainer, elements, -1 * navBottom);
   };
+  const handleNavPrev = () => {
+    const onLanding = location.href.includes("/Main") ? false : true;
+    if (!onLanding) {
+      localStorage.setItem("navPrev", JSON.stringify(true));
+    }
+  };
+
   handleShowHideHeader();
+  handleNavPrev();
 </script>

@@ -24,7 +24,12 @@ import { Icon } from "astro-icon";
       Full-Stack Developer
     </h2>
   </div>
-  <TaglineContainer slot="subheader" repositTxt={false} animateBg={false}>
+  <TaglineContainer
+    slot="subheader"
+    client:load
+    repositTxt={false}
+    animateBg={false}
+  >
     <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
   </TaglineContainer>
   <NavController
@@ -51,5 +56,21 @@ import { Icon } from "astro-icon";
       navBar.classList.replace("lg:h-[5vh]", "h-fit");
     }
   };
+
+  const handleNavPrev = () => {
+    const sloganContainer = document.querySelector("[data-subheader-landing]");
+    const onLanding = location.href.includes("/Main") ? false : true;
+    const navPrev = JSON.parse(localStorage.getItem("navPrev"));
+    const handleResetNavPrev = () => {
+      localStorage.setItem("navPrev", JSON.stringify(!navPrev));
+    };
+    if (onLanding && navPrev) {
+      sloganContainer.classList.add("translate-y-[50vh]");
+      sloganContainer.classList.add("animate-rise-to");
+      sloganContainer.addEventListener("animationend", handleResetNavPrev);
+    }
+  };
+
   adjustNavBarHeight();
+  handleNavPrev();
 </script>
