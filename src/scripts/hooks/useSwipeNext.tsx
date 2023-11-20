@@ -51,7 +51,7 @@ const useSwipeNext = (swipeableAreaRef) => {
     };
     const handleTouchEnd = () => {
       transitionGroup.classList.add("transition");
-      taglineContainer.classList.add("animate-fall-from");
+      taglineContainer.classList.add("animate-fall-next");
       if (!swipeableArea.classList.contains("animate-swipe-up")) {
         swipeableArea.classList.add("animate-swipe-up");
         taglineContainer.addEventListener("animationend", () =>

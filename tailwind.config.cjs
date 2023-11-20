@@ -20,17 +20,17 @@ module.exports = {
           "50%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
-        fallfrom: {
+        fallnext: {
           "0%": { transform: "translateY(0vh)" },
           "40%": {
-            transform: "translateY(-30vh) scale(110%)",
+            transform: "translateY(-20vh) scale(120%)",
             opacity: 0.8,
           },
           "70%": {
-            transform: "translateY(-30vh) scale(110%)",
+            transform: "translateY(-20vh) scale(120%)",
             opacity: 0.8,
           },
-          "100%": { transform: "translateY(40vh) scale(100%)" },
+          "100%": { transform: "translateY(50vh) scale(100%)" },
         },
         fallto: {
           "0%": { transform: "translateY(-25vh)" },
@@ -210,14 +210,6 @@ module.exports = {
             opacity: "30%",
           },
         },
-        impact: {
-          "0%": {
-            transform: "translateY(0px)",
-          },
-          "100%": {
-            transform: "translateY(5px)",
-          },
-        },
         buoy: {
           "0%": {
             transform: "translateY(5px)",
@@ -240,7 +232,7 @@ module.exports = {
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "fall-to": "fallto 0.2s forwards ease-in",
-        "fall-from": "fallfrom 0.6s forwards ease-out",
+        "fall-next": "fallnext 0.6s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.2s 0.3s forwards",
         "swipe-down": "swipe-down 0.2s forwards",
@@ -254,7 +246,6 @@ module.exports = {
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.2s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
-        // impact: "impact 0.05s 0.3s forwards",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
         "scooch-up&pulse": "scoochup 1.2s infinite",

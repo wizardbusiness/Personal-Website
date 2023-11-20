@@ -15,7 +15,7 @@ const useScrollNext = () => {
       if (deltaY > 0 && !clicked) {
         scrollCaret.classList.add("animate-fade-out");
         transitionGroup.classList.add("transition");
-        taglineContainer.classList.add("animate-fall-from");
+        taglineContainer.classList.add("animate-fall-next");
         taglineContainer.addEventListener("animationend", () => {
           scrollCaret.click();
         });
