@@ -73,11 +73,15 @@ import { Icon } from "astro-icon";
       elements.forEach((element) => {
         element.style.transform = `translateY(${transformDistance}px)`;
       });
-      // without a set timeout, this resize looks jerky when user scrolls up.
-      setTimeout(() => {
-        // recalculates container height so that info fills whole height of available screenspace.
-        mainContainer.style.height = `${windowHeight - transformDistance}px`;
-      }, !transformDistance && 500); // only activates when user scrolls up
+      const handleExpandContentContainer = (transformDistance: number) => {
+        // without a set timeout, this resize looks jerky when user scrolls up.
+        const wait = setTimeout(() => {
+          // recalculates container height so that info fills whole height of available screenspace.
+          mainContainer.style.height = `${windowHeight - transformDistance}px`;
+          clearTimeout(wait);
+        }, !transformDistance && 500); // only activates when header expands
+      };
+      handleExpandContentContainer(transformDistance);
     };
 
     const handleScroll = (
@@ -93,6 +97,7 @@ import { Icon } from "astro-icon";
           : handleTranslateHeader(elements, navBottom); // hide header
       });
     };
+
     const handleSwipe = (
       infoContainer: HTMLElement,
       elements: HTMLElement[],
@@ -114,6 +119,7 @@ import { Icon } from "astro-icon";
     handleScroll(infoContainer, elements, -1 * navBottom);
     handleSwipe(infoContainer, elements, -1 * navBottom);
   };
+
   const handleNavPrev = () => {
     const onLanding = location.href.includes("/Main") ? false : true;
     if (!onLanding) {
