@@ -8,5 +8,19 @@ import CommonHead from "./common-head-layout.astro";
     class="flex h-screen w-full flex-grow justify-center overflow-clip bg-dusk font-sans"
   >
     <slot name="page" />
+    <script>
+      const handleOrientationChange = () => {
+        const body = document.querySelector("body");
+        const bClassList = body.classList;
+        bClassList.contains("overflow-scroll")
+          ? bClassList.replace("overflow-scroll", "overflow-clip")
+          : bClassList.replace("overflow-clip", "overflow-scroll");
+        console.log(bClassList);
+      };
+      if (!location.href.includes("/Main")) {
+        window.addEventListener("load", handleOrientationChange);
+        window.addEventListener("orientationchange", handleOrientationChange);
+      }
+    </script>
   </body>
 </html>
