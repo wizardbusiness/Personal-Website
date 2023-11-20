@@ -19,16 +19,16 @@ import "../styles/tailwind.css";
     <div class="flex">
       <div class="flex w-full flex-col gap-8">
         <div class="flex gap-2">
-          <div>
+          <div class="w-full">
             <slot name="portfolio" />
           </div>
-          <div class="flex h-full w-full items-end justify-center pl-2">
+          <div class="flex h-full w-full items-center pl-2">
             <slot name="flav-text-a" />
           </div>
         </div>
         <div class="flex">
           <!-- id is used to automatically scroll into view when expanded, see Tech.astro script -->
-          <div id="tech-section">
+          <div id="tech-section" class="w-full">
             <slot name="tech" />
           </div>
           <div class="h-full w-full pl-2 pt-14">
