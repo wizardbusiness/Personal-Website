@@ -12,6 +12,7 @@ import Tech from "../components/Tech.astro";
 import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
 import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 import { Icon } from "astro-icon";
+import _ from "lodash";
 ---
 
 <CommonLayout>
@@ -66,6 +67,15 @@ import { Icon } from "astro-icon";
     const elements = [headerContainer, subHeader, infoContainer];
     const windowHeight = window.innerHeight;
 
+    const handleExpandContentContainer = (transformDistance: number) => {
+      // without a set timeout, this resize looks jerky when user scrolls up.
+      const wait = setTimeout(() => {
+        // recalculates container height so that info fills whole height of available screenspace.
+        mainContainer.style.height = `${windowHeight - transformDistance}px`;
+        clearTimeout(wait);
+      }, !transformDistance && 500); // only activates when header expands
+    };
+
     const handleTranslateHeader = (
       elements: HTMLElement[],
       transformDistance: number,
@@ -73,29 +83,35 @@ import { Icon } from "astro-icon";
       elements.forEach((element) => {
         element.style.transform = `translateY(${transformDistance}px)`;
       });
-      const handleExpandContentContainer = (transformDistance: number) => {
-        // without a set timeout, this resize looks jerky when user scrolls up.
-        const wait = setTimeout(() => {
-          // recalculates container height so that info fills whole height of available screenspace.
-          mainContainer.style.height = `${windowHeight - transformDistance}px`;
-          clearTimeout(wait);
-        }, !transformDistance && 500); // only activates when header expands
-      };
+
       handleExpandContentContainer(transformDistance);
     };
 
-    const handleScroll = (
+    const handleScrollSetup = (
       infoContainer: HTMLElement,
       elements: HTMLElement[],
       navBottom: number,
     ) => {
-      infoContainer.addEventListener("wheel", (e: WheelEvent) => {
-        const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
-        handleStopPropagation(e);
-        e.deltaY < 0 && infoContainer.scrollTop <= 0
-          ? handleTranslateHeader(elements, 0) // show header
-          : handleTranslateHeader(elements, navBottom); // hide header
-      });
+      let expand = true;
+
+      return () => {
+        const handleScrollEvent = (e: WheelEvent) => {
+          const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
+          handleStopPropagation(e);
+          if (e.deltaY < 0 && infoContainer.scrollTop <= 0) {
+            if (!expand) {
+              handleTranslateHeader(elements, 0);
+              expand = true;
+            }
+          } else if (e.deltaY > 0) {
+            if (expand) {
+              handleTranslateHeader(elements, navBottom);
+              expand = false;
+            }
+          }
+        };
+        infoContainer.addEventListener("wheel", handleScrollEvent);
+      };
     };
 
     const handleSwipe = (
@@ -116,7 +132,12 @@ import { Icon } from "astro-icon";
           : handleTranslateHeader(elements, navBottom); // hide header
       });
     };
-    handleScroll(infoContainer, elements, -1 * navBottom);
+    const handleScroll = handleScrollSetup(
+      infoContainer,
+      elements,
+      -1 * navBottom,
+    );
+    handleScroll();
     handleSwipe(infoContainer, elements, -1 * navBottom);
   };
 
