@@ -3,7 +3,7 @@ import {
   randomIntFromInterval,
   randomDecNumFromInterval,
 } from "../../scripts/randomFromInterval";
-import FirTree from "./FirTree";
+import FirTree from "./treeSvgComponents/FirTree";
 
 const Forest = ({ chunkWidth, direction }) => {
   const createForestChunk = () => {
