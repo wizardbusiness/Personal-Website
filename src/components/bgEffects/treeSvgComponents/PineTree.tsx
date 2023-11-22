@@ -21,7 +21,7 @@ const PineTree = ({
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 340.6 468.07"
-      className="tree absolute bottom-0"
+      className="park-tree absolute bottom-0"
       style={{
         height: height,
         fill: color,

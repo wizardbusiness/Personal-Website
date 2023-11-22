@@ -37,7 +37,8 @@
     visibility: visible;
   }
 
-  .tree {
+  .tree,
+  .park-tree {
     fill: rgb(51, 69, 101);
     transform: scale(20%, 0);
     transform-box: fill-box;
