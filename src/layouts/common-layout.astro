@@ -17,8 +17,17 @@ import CommonHead from "./common-head-layout.astro";
           : bClassList.replace("overflow-clip", "overflow-scroll");
         console.log(bClassList);
       };
+      const handleOrientation = () => {
+        const body = document.querySelector("body");
+        const bClassList = body.classList;
+        if (window.innerHeight > window.innerWidth) {
+          bClassList.replace("overflow-scroll", "overflow-clip");
+        } else {
+          bClassList.replace("overflow-clip", "overflow-scroll");
+        }
+      };
       if (!location.href.includes("/Main")) {
-        window.addEventListener("load", handleOrientationChange);
+        window.addEventListener("load", handleOrientation);
         window.addEventListener("orientationchange", handleOrientationChange);
       }
     </script>
