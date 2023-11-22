@@ -43,7 +43,6 @@ const CityPark = (props) => {
     let i = 0;
     let position = 0;
     while (unfilledWidth > position + 15) {
-      console.log(unfilledWidth);
       const treeProps: treeProps = {
         position: position,
         height: 25,
