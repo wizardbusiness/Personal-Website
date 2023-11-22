@@ -1,10 +1,17 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
+import CityPark from "./CityPark";
 import "../../styles/tailwind.css";
-import { random } from "lodash";
 
-const Polygon = ({ delay, height, width }) => {
+const Building = ({ delay, height, width }) => {
   const [build, setBuild] = useState(false);
   const [render, setRender] = useState(false);
   const [, setTransitionEnd] = useState(false);
@@ -149,9 +156,14 @@ const Window = ({ showWindow }) => {
 type CityChunkProps = {
   direction: "left" | "right";
   cityChunkWidth: number;
+  setParkEffectDelay?: Dispatch<SetStateAction<number>>;
 };
 
-const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
+const CityChunk = ({
+  direction,
+  cityChunkWidth,
+  setParkEffectDelay,
+}: CityChunkProps) => {
   const renderStructures = (direction: "left" | "right") => {
     const calcHeightMod = (index: number, min: number, max: number) => {
       const noise = randomIntFromInterval(-10, 10);
@@ -168,7 +180,7 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
       const structureWidth: number = randomIntFromInterval(15, 25);
       const structureHeight: number = calcHeightMod(i, 20, 60);
       structs.push(
-        <Polygon
+        <Building
           key={`struct${i}`}
           width={structureWidth}
           height={structureHeight}
@@ -178,22 +190,23 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
       remainingChunkSpace -= structureWidth;
       i++;
     }
-
+    if (setParkEffectDelay) setParkEffectDelay(i * 120);
     return direction === "left"
       ? structs.sort((a, b) => (a.props.index < b.props.index ? 1 : -1))
       : structs.sort((a, b) => (a.props.index < b.props.index ? -1 : 1));
   };
 
   return (
-    <div className={`bottom-1 flex items-end gap-2 w-${cityChunkWidth}`}>
+    <div className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>
       {renderStructures(direction)}
     </div>
   );
 };
 
 const Skyline = () => {
-  const [forestWidth, setForestWidth] = useState(0);
-  const [cityWidth, setCityWidth] = useState(0);
+  const [forestWidth, setForestWidth] = useState<number>(0);
+  const [cityWidth, setCityWidth] = useState<number>(0);
+  const [delayParkEffect, setParkEffectDelay] = useState<number>(0);
   const forestWidthRef = useRef<HTMLDivElement>(null);
   const cityWidthRef = useRef<HTMLDivElement>(null);
 
@@ -212,7 +225,7 @@ const Skyline = () => {
     <div
       data-effects-container
       onTransitionEnd={(e) => e.stopPropagation()}
-      className="absolute bottom-1 flex h-32 w-[70vw] items-end justify-center"
+      className="absolute bottom-1 flex h-32 w-[90vw] items-end justify-center lg:w-[70vw]"
     >
       <div
         data-forest
@@ -221,11 +234,13 @@ const Skyline = () => {
       >
         <Forest chunkWidth={forestWidth} direction={"left"} />
       </div>
-      <div ref={cityWidthRef} className="absolute flex w-1/2 justify-between">
+      <div ref={cityWidthRef} className="absolute flex w-1/2">
         <CityChunk
           direction="left"
           cityChunkWidth={Math.floor(cityWidth / 4)}
+          setParkEffectDelay={setParkEffectDelay}
         />
+        <CityPark delayParkEffect={delayParkEffect} />
         <CityChunk
           direction="right"
           cityChunkWidth={Math.floor(cityWidth / 4)}
