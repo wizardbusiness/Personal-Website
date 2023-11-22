@@ -12,6 +12,7 @@ const useScrollPrev = () => {
       document.querySelectorAll(".structure"),
     );
     const forestElements = Array.from(document.querySelectorAll(".tree"));
+    const parkElements = Array.from(document.querySelectorAll(".park-tree"));
     setEffectElementsCount((prevLength) =>
       forestElements.length > prevLength ? forestElements.length : prevLength,
     );
@@ -21,6 +22,10 @@ const useScrollPrev = () => {
     const handleScrollPrev = (e: WheelEvent) => {
       setDeltaY(e.deltaY);
       if (deltaY < 0) {
+        parkElements.forEach((element: SVGElement) => {
+          element.style.transform = "scale(0, 0)";
+          element.style.transitionDelay = `100ms`;
+        });
         buildingElements.forEach((element) =>
           element.classList.remove("build"),
         );
@@ -56,6 +61,7 @@ const useScrollPrev = () => {
         taglineContainer.addEventListener("animationend", () =>
           scrollCaret.click(),
         );
+
       setClicked(true);
     }
     scrollContainer.addEventListener("wheel", handleScrollPrev);

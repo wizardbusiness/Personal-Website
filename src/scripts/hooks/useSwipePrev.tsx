@@ -17,12 +17,17 @@ const useSwipePrev = (swipeableAreaRef) => {
     setEffectElementsCount((prevLength) =>
       forestElements.length > prevLength ? forestElements.length : prevLength,
     );
+    const parkElements = Array.from(document.querySelectorAll(".park-tree"));
     const scrollCaret: HTMLElement =
       document.querySelector("[data-scroll-btn]");
     const handleScrollPrev = (e: TouchEvent) => {
       setCurrentTouchPosit(e.touches[0].clientY);
       const swipeDistance = initialTouchPosit - currentTouchPosit;
       if (currentTouchPosit > 0) {
+        parkElements.forEach((element: SVGElement) => {
+          element.style.transform = "scale(0, 0)";
+          element.style.transitionDelay = `100ms`;
+        });
         buildingElements.forEach((element) =>
           element.classList.remove("build"),
         );
