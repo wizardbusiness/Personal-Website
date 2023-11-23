@@ -159,8 +159,6 @@ type CityChunkProps = {
 };
 
 const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
-  const [buildingCount, setBuildingCount] = useState(0);
-
   const renderStructures = (direction: "left" | "right") => {
     const calcHeightMod = (index: number, min: number, max: number) => {
       const noise = randomIntFromInterval(-10, 10);
