@@ -46,17 +46,17 @@ const CityPark = (props) => {
         position: position,
         height: 25,
         scaleX:
-          unfilledWidth - position < 30 ? 0.7 : randomElFromArray([-1, 1]),
+          unfilledWidth - position < 20 ? 0.9 : randomElFromArray([-1, 1]),
         scaleY:
           unfilledWidth - position < 30
-            ? 0.7
-            : randomDecNumFromInterval(0.8, 1.2),
+            ? 1
+            : randomDecNumFromInterval(0.8, 1.3),
         foliageTranslate: randomIntFromInterval(10, 20),
-        offset: randomIntFromInterval(0, 10),
+        offset: randomIntFromInterval(10, 15),
         color: randomElFromArray(colors),
         zIndex: randomElFromArray([1, 2, 3, 4, 5]),
         flipTrunk: randomElFromArray([-1, 1]),
-        randomDelay: randomIntFromInterval(800, 1520) + props.delayEffectMs,
+        randomDelay: randomIntFromInterval(1300, 1520) + props.delayEffectMs,
         ...props,
       };
 
