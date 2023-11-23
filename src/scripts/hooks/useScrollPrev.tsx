@@ -32,7 +32,7 @@ const useScrollPrev = () => {
           const transitionDelayMs = Number(
             element.style.transitionDelay.replace("ms", ""),
           );
-          element.style.transform = "scale(0, 0)";
+          element.style.transform = "scale(1, 0)";
           // element.classList.remove("build");
           element.style.transitionDelay = `${transitionDelayMs - 200}ms`;
         });
