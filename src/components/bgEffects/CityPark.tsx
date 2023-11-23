@@ -31,7 +31,6 @@ type treeProps = {
 
 const CityPark = (props) => {
   const widthRef: RefObject<HTMLDivElement> = useRef(null);
-
   const handleTreeFill = () => {
     const trees = [];
     const width = widthRef.current?.getBoundingClientRect().width;
@@ -57,7 +56,7 @@ const CityPark = (props) => {
         color: randomElFromArray(colors),
         zIndex: randomElFromArray([1, 2, 3, 4, 5]),
         flipTrunk: randomElFromArray([-1, 1]),
-        randomDelay: randomIntFromInterval(800, 1520) + props.delayParkEffect,
+        randomDelay: randomIntFromInterval(800, 1520) + props.delayEffectMs,
         ...props,
       };
 

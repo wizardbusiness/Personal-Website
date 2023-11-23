@@ -156,14 +156,11 @@ const Window = ({ showWindow }) => {
 type CityChunkProps = {
   direction: "left" | "right";
   cityChunkWidth: number;
-  setParkEffectDelay?: Dispatch<SetStateAction<number>>;
 };
 
-const CityChunk = ({
-  direction,
-  cityChunkWidth,
-  setParkEffectDelay,
-}: CityChunkProps) => {
+const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
+  const [buildingCount, setBuildingCount] = useState(0);
+
   const renderStructures = (direction: "left" | "right") => {
     const calcHeightMod = (index: number, min: number, max: number) => {
       const noise = randomIntFromInterval(-10, 10);
@@ -190,15 +187,16 @@ const CityChunk = ({
       remainingChunkSpace -= structureWidth;
       i++;
     }
-    if (setParkEffectDelay) setParkEffectDelay(i * 120);
     return direction === "left"
       ? structs.sort((a, b) => (a.props.index < b.props.index ? 1 : -1))
       : structs.sort((a, b) => (a.props.index < b.props.index ? -1 : 1));
   };
 
+  const chunk = renderStructures(direction);
+
   return (
     <div className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>
-      {renderStructures(direction)}
+      {chunk}
     </div>
   );
 };
@@ -206,7 +204,7 @@ const CityChunk = ({
 const Skyline = () => {
   const [forestWidth, setForestWidth] = useState<number>(0);
   const [cityWidth, setCityWidth] = useState<number>(0);
-  const [delayParkEffect, setParkEffectDelay] = useState<number>(0);
+  const [delayEffectMs, setDelayEffectMs] = useState<number>(0);
   const forestWidthRef = useRef<HTMLDivElement>(null);
   const cityWidthRef = useRef<HTMLDivElement>(null);
 
@@ -232,15 +230,18 @@ const Skyline = () => {
         ref={forestWidthRef}
         className="absolute left-0 flex h-full w-1/4 items-end"
       >
-        <Forest chunkWidth={forestWidth} direction={"left"} />
+        <Forest
+          chunkWidth={forestWidth}
+          direction={"left"}
+          setDelayEffectMs={setDelayEffectMs}
+        />
       </div>
       <div ref={cityWidthRef} className="absolute flex w-1/2">
         <CityChunk
           direction="left"
           cityChunkWidth={Math.floor(cityWidth / 4)}
-          setParkEffectDelay={setParkEffectDelay}
         />
-        <CityPark delayParkEffect={delayParkEffect} />
+        <CityPark delayEffectMs={delayEffectMs} />
         <CityChunk
           direction="right"
           cityChunkWidth={Math.floor(cityWidth / 4)}
@@ -250,7 +251,11 @@ const Skyline = () => {
         data-forest
         className="absolute -right-2 flex h-full w-1/4 items-end"
       >
-        <Forest chunkWidth={forestWidth} direction={"right"} />
+        <Forest
+          setDelayEffectMs={setDelayEffectMs}
+          chunkWidth={forestWidth}
+          direction={"right"}
+        />
       </div>
     </div>
   );
