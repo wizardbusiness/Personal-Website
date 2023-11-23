@@ -26,20 +26,21 @@ const useScrollPrev = () => {
           element.style.transform = "scale(0, 0)";
           element.style.transitionDelay = `100ms`;
         });
-        buildingElements.forEach((element: HTMLElement) =>
-          element.classList.remove("build"),
-        );
+        buildingElements.forEach((element: HTMLElement) => {
+          const transitionDelayMs = Number(
+            element.style.transitionDelay.replace("ms", ""),
+          );
+          element.style.transform = "scale(0, 0)";
+          // element.classList.remove("build");
+          element.style.transitionDelay = `${transitionDelayMs - 200}ms`;
+        });
         forestElements.forEach((element: SVGElement) => {
           const transitionDelayMs = Number(
             element.style.transitionDelay.replace("ms", ""),
           );
           element.style.transform = "scale(0, 0)";
-          console.log(element.style.transitionDelay);
           element.style.transitionDelay = `${transitionDelayMs - 600}ms`;
-          setTransitionCount((prev) => Math.max(prev, transitionDelayMs - 300)); // 300 is arbitrary, replace with variable
-          element.addEventListener("transitionend", () =>
-            setTransitionCount((prevCount) => (prevCount += 1)),
-          );
+          setTransitionCount((prev) => Math.max(prev, transitionDelayMs)); // 300 is arbitrary, replace with variable
         });
 
         scrollCaret.classList.add("animate-fade-out");
