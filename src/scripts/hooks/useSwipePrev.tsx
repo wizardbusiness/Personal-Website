@@ -26,17 +26,25 @@ const useSwipePrev = (swipeableAreaRef) => {
       if (currentTouchPosit > 0) {
         parkElements.forEach((element: SVGElement) => {
           element.style.transform = "scale(0, 0)";
-          element.style.transitionDelay = `100ms`;
+          // keep this at zero, otherwise transition will still be happening as container floats up
+          element.style.transitionDelay = `0ms`;
         });
-        buildingElements.forEach((element) =>
-          element.classList.remove("build"),
-        );
-        forestElements.forEach((element) => {
-          element.classList.remove("grow");
-          element.addEventListener("transitionend", () =>
-            setTransitionCount((prevCount) => (prevCount += 1)),
+        buildingElements.forEach((element: HTMLElement) => {
+          const transitionDelayMs = Number(
+            element.style.transitionDelay.replace("ms", ""),
           );
+          element.style.transform = "scale(0, 0)";
+          element.style.transitionDelay = `${transitionDelayMs - 200}ms`;
         });
+        forestElements.forEach((element: SVGElement) => {
+          const transitionDelayMs = Number(
+            element.style.transitionDelay.replace("ms", ""),
+          );
+          element.style.transform = "scale(0, 0)";
+          element.style.transitionDelay = `${transitionDelayMs - 600}ms`;
+          setTransitionCount((prev) => Math.max(prev, transitionDelayMs)); // 300 is arbitrary, replace with variable
+        });
+
         scrollCaret.classList.add("animate-swipe-down");
       }
     };
