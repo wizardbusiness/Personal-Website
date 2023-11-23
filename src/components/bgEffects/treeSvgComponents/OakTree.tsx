@@ -10,9 +10,9 @@ const OakTree = ({
   foliageTranslate,
   randomDelay,
 }) => {
-  const [grow, setGrow] = useState("");
+  const [grow, setGrow] = useState(false);
   useEffect(() => {
-    setGrow("grow");
+    setGrow(true);
   }, []);
   return (
     <svg
@@ -21,7 +21,7 @@ const OakTree = ({
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 280.65 267.28"
-      className={`tree ${grow} absolute bottom-0`}
+      className={`tree ${grow && "grow"} absolute bottom-0`}
       style={{
         height: height,
         fill: color,
