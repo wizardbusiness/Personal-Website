@@ -8,6 +8,8 @@ const useScrollPrev = () => {
   useEffect(() => {
     if (!location.href.includes("/Main")) return;
     const taglineContainer = document.querySelector("[data-subheader]");
+    const navHeader = document.querySelector("nav");
+
     const buildingElements = Array.from(
       document.querySelectorAll(".structure"),
     );
@@ -44,6 +46,7 @@ const useScrollPrev = () => {
         });
 
         scrollCaret.classList.add("animate-fade-out");
+        navHeader.classList.add("animate-fade-out-slow");
       }
     };
 

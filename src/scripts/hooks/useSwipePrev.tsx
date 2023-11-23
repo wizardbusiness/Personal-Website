@@ -10,6 +10,7 @@ const useSwipePrev = (swipeableAreaRef) => {
     if (!location.href.includes("/Main")) return;
     const taglineContainer = document.querySelector("[data-subheader]");
     const swipeContainer = document.querySelector("[data-swipe-container]");
+    const navHeader = document.querySelector("nav");
     const buildingElements = Array.from(
       document.querySelectorAll(".structure"),
     );
@@ -46,6 +47,7 @@ const useSwipePrev = (swipeableAreaRef) => {
         });
 
         scrollCaret.classList.add("animate-swipe-down");
+        navHeader.classList.add("animate-fade-out-slow");
       }
     };
 
