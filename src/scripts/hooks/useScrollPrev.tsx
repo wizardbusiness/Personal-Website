@@ -26,11 +26,17 @@ const useScrollPrev = () => {
           element.style.transform = "scale(0, 0)";
           element.style.transitionDelay = `100ms`;
         });
-        buildingElements.forEach((element) =>
+        buildingElements.forEach((element: HTMLElement) =>
           element.classList.remove("build"),
         );
-        forestElements.forEach((element) => {
-          element.classList.remove("grow");
+        forestElements.forEach((element: SVGElement) => {
+          const transitionDelayMs = Number(
+            element.style.transitionDelay.replace("ms", ""),
+          );
+          element.style.transform = "scale(0, 0)";
+          console.log(element.style.transitionDelay);
+          element.style.transitionDelay = `${transitionDelayMs - 600}ms`;
+          setTransitionCount((prev) => Math.max(prev, transitionDelayMs - 300)); // 300 is arbitrary, replace with variable
           element.addEventListener("transitionend", () =>
             setTransitionCount((prevCount) => (prevCount += 1)),
           );
@@ -40,29 +46,29 @@ const useScrollPrev = () => {
       }
     };
 
-    if (
-      transitionCount >= Math.floor(effectElementsCount) &&
-      transitionCount > 0 &&
-      !clicked
-    ) {
-      taglineContainer.classList.replace(
-        "2xl:before:w-[22vw]",
-        "2xl:before:w-[70vw]",
-      );
-      taglineContainer.classList.replace(
-        "lg:before:animate-squish-down-lg",
-        "lg:before:animate-squelch-up-lg",
-      );
-      taglineContainer.classList.replace(
-        "before:animate-squish-down-sm",
-        "before:animate-squelch-up-sm",
-      );
-      taglineContainer.classList.add("animate-rise-from"),
-        taglineContainer.addEventListener("animationend", () =>
-          scrollCaret.click(),
+    if (transitionCount > 0 && !clicked) {
+      const handleTransitionPrev = () => {
+        taglineContainer.classList.replace(
+          "2xl:before:w-[22vw]",
+          "2xl:before:w-[70vw]",
         );
+        taglineContainer.classList.replace(
+          "lg:before:animate-squish-down-lg",
+          "lg:before:animate-squelch-up-lg",
+        );
+        taglineContainer.classList.replace(
+          "before:animate-squish-down-sm",
+          "before:animate-squelch-up-sm",
+        );
+        taglineContainer.classList.add("animate-rise-from"),
+          taglineContainer.addEventListener("animationend", () =>
+            scrollCaret.click(),
+          );
 
-      setClicked(true);
+        setClicked(true);
+      };
+
+      setTimeout(() => handleTransitionPrev(), transitionCount);
     }
     scrollContainer.addEventListener("wheel", handleScrollPrev);
     return () => {
