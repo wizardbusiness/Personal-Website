@@ -9,14 +9,14 @@ type Props = {
 };
 
 const FirTree = ({ height, width, scaleX, scaleY, style }: Props) => {
-  const [grow, setgrow] = useState(false);
+  const [grow, setGrow] = useState(false);
   useEffect(() => {
     // sometimes transition doesn't fire, this hack seems to fix it.
     // most likely caused by grow being set to true before react can render component in initial state.
     // this means that no transition takes place, since the grow class is never added, it was there on the first render.
     // this is likely correct behaviour, and the method of adding a class on initial rendering to trigger a transition is
     // not a good practice on my part.
-    const pause = setTimeout(() => setgrow(true), 10);
+    const pause = setTimeout(() => setGrow(true), 10);
     () => clearTimeout(pause);
   }, []);
   return (

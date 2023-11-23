@@ -10,9 +10,10 @@ const PineTree = ({
   foliageTranslate,
   randomDelay,
 }) => {
-  const [grow, setGrow] = useState("");
+  const [grow, setGrow] = useState(false);
   useEffect(() => {
-    setGrow("grow");
+    const pause = setTimeout(() => setGrow(true), 10);
+    () => clearTimeout(pause);
   }, []);
   return (
     <svg
