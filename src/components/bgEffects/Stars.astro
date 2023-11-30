@@ -1,0 +1,109 @@
+<canvas
+  class="animate-fade-in-slow absolute bottom-0 left-0 -z-10 block h-full w-full bg-dusk object-contain"
+></canvas>
+<script>
+  import {
+    randomIntFromInterval,
+    generateWeightedRandomInRange,
+    generatedWeightedCoords,
+  } from "../../scripts/randomFromInterval";
+  const canvas = document.querySelector("canvas");
+
+  const renderCanvas = () => {
+    const context = canvas.getContext("2d");
+    const pixelRatio = window.devicePixelRatio || 1;
+    const height = window.innerHeight * pixelRatio;
+    const width = window.innerWidth * pixelRatio;
+    canvas.width = width;
+    canvas.height = height;
+    context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    const generateStars = (
+      starCount: number,
+      context: CanvasRenderingContext2D,
+    ): Star[] => {
+      const stars = [];
+      const cachedCoords = {};
+      for (let i = 0; i < starCount; i++) {
+        const radius = generateWeightedRandomInRange(20, 90, 20, 200) / 20;
+        const coords = generatedWeightedCoords(
+          innerWidth,
+          innerHeight,
+          200, // variance
+          -0.2, // slope
+          innerHeight / 3, // intercept
+          i,
+          starCount,
+        );
+        const x = coords.x;
+        const y = coords.y;
+        // if (x > innerWidth || x < 0 || y > innerHeight || y > 0) continue;
+        if (x in cachedCoords) continue;
+        else cachedCoords[x] = y;
+
+        const star = new Star(x, y, radius, context);
+        stars.push(star);
+      }
+
+      return stars;
+    };
+    const starCount = Math.floor(
+      (window.innerHeight * window.innerWidth) / 1500,
+    );
+    const stars: Star[] = generateStars(starCount, context);
+
+    const animateStars = () => {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach((star) => {
+        star.blink();
+      });
+      requestAnimationFrame(animateStars);
+    };
+
+    animateStars();
+  };
+
+  class Star {
+    public brightness: number;
+    public dim: boolean;
+    public blinkInterval: number;
+    constructor(
+      public x: number,
+      public y: number,
+      public radius: number,
+      public context: CanvasRenderingContext2D,
+    ) {
+      this.x = x;
+      this.y = y;
+      this.radius = radius;
+      this.context = context;
+      this.brightness = 0.5;
+      this.dim = true;
+      this.blinkInterval =
+        generateWeightedRandomInRange(10, 400, 10, 200) / 2000;
+    }
+
+    draw() {
+      this.context.globalAlpha = this.brightness;
+      this.context.beginPath();
+      this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false); // x y radius, startangle, end angle, cc
+      this.context.fillStyle = "lightgray";
+      this.context.fill();
+    }
+
+    blink() {
+      this.context.globalAlpha = this.brightness;
+      if (this.brightness <= 0.5 || this.brightness >= 1) {
+        this.dim = !this.dim;
+      }
+      const blinkNoise = randomIntFromInterval(0, 5) / 800;
+      if (this.dim) {
+        this.brightness -= this.blinkInterval + blinkNoise;
+      } else if (!this.dim) {
+        this.brightness += this.blinkInterval + blinkNoise;
+      }
+      this.draw();
+    }
+  }
+
+  renderCanvas();
+</script>
