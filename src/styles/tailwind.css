@@ -39,7 +39,7 @@
 
   .tree,
   .park-tree {
-    fill: rgb(51, 69, 101);
+    fill: #334565;
     transform: scale(20%, 0);
     transform-box: fill-box;
     transform-origin: bottom;
