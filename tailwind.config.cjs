@@ -8,7 +8,7 @@ module.exports = {
       },
       colors: {
         "foggy-glass": "#E5E7EB50",
-        "moon-shine": "#F3F3F330",
+        "moon-shine": "#F3F3F340",
         "blue-smoke": "#223249",
         dusk: "#1d2a44",
       },
@@ -246,6 +246,7 @@ module.exports = {
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.2s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
+        "fade-in-slow": "fadein 0.3s forwards ease-in",
         "fade-out-slow": "fadeout 0.4s forwards ease",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
