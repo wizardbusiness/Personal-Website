@@ -191,7 +191,7 @@
         if (x < 0 || y < 0) continue;
         // const degreeOffset = randomElFromArray([0, 10, 20, 30, 40]);
         const degreeOffset = randomIntFromInterval(0, 90);
-        const animationDur = randomIntFromInterval(2000, 4000);
+        const animationDur = randomIntFromInterval(800, 1200);
         const star = new Star(
           x,
           y,
@@ -209,7 +209,7 @@
     const starCount = Math.floor(
       (window.innerHeight * window.innerWidth) / 3500,
     );
-    const stars: Star[] = generateStars(1, context);
+    const stars: Star[] = generateStars(starCount, context);
     const animateStars = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
@@ -245,7 +245,7 @@
     ) {
       this.x = x;
       this.y = y;
-      this.width = 50;
+      this.width = width;
       this.height = height;
       this.left = Math.floor(x - width / 2);
       this.top = Math.floor(y - height / 2);
@@ -259,7 +259,7 @@
       this.dim = false;
       this.radiusModifiers = [3, 5, 3, 5, 3];
       this.degreeOffset = degreeOffset;
-      this.shapeDegreeMods = randomElFromArray([30, 36, 45]);
+      this.shapeDegreeMods = randomElFromArray([36, 45]);
     }
 
     /**
@@ -328,24 +328,23 @@
       const currTimeMs = performance.now();
       const msSincePrevFrame = currTimeMs - this.prevFrameTStampMs;
       const elapsedMs = currTimeMs - this.animationStart;
-      if (elapsedMs > this.animationDur) {
+      if (elapsedMs > this.animationDur / 2) {
         this.animationStart = performance.now();
         this.dim = !this.dim;
-      } else if (elapsedMs <= this.animationDur) {
+      } else if (elapsedMs <= this.animationDur / 2) {
         if (this.dim) {
           this.radiusModifiers = this.radiusModifiers.map(
             (radius) =>
-              (radius += (3 / this.animationDur / 2) * msSincePrevFrame),
+              (radius += (2 / this.animationDur / 2) * msSincePrevFrame),
           );
-          this.brightness = 1 - (0.5 * elapsedMs) / this.animationDur;
+          this.brightness = 0.8 - (0.3 * elapsedMs) / this.animationDur / 2;
         } else if (!this.dim) {
           this.radiusModifiers = this.radiusModifiers.map(
             (radius) =>
-              (radius -= (3 / this.animationDur / 2) * msSincePrevFrame),
+              (radius -= (2 / this.animationDur / 2) * msSincePrevFrame),
           );
-          this.brightness = 0.5 + (0.5 * elapsedMs) / this.animationDur;
+          this.brightness = 0.5 + (0.3 * elapsedMs) / this.animationDur / 2;
         }
-        console.log(this.brightness);
         this.prevFrameTStampMs = currTimeMs;
         this.context.globalAlpha = this.brightness;
       }
