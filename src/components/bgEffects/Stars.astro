@@ -6,6 +6,8 @@
     randomIntFromInterval,
     generateWeightedRandomInRange,
     generatedWeightedCoords,
+    randomElFromArray,
+    randomIntFromInterval,
   } from "../../scripts/randomFromInterval";
   const canvas = document.querySelector("canvas");
 
@@ -58,7 +60,6 @@
       });
       requestAnimationFrame(animateStars);
     };
-
     animateStars();
   };
 
@@ -74,7 +75,15 @@
     ) {
       this.x = x;
       this.y = y;
-      this.radius = radius;
+      this.width = width;
+      this.height = height;
+      this.left = Math.floor(x - width / 2);
+      this.top = Math.floor(y - height / 2);
+      this.right = Math.floor(x + width / 2);
+      this.bottom = Math.floor(y + height / 2);
+      this.animationStart = Date.now();
+      this.prevFrameTStampMs = Date.now();
+      this.animationDur = animationDur;
       this.context = context;
       this.brightness = 0.5;
       this.dim = true;
@@ -90,9 +99,16 @@
       this.context.fill();
     }
 
-    blink() {
-      this.context.globalAlpha = this.brightness;
-      if (this.brightness <= 0.5 || this.brightness >= 1) {
+    twinkle() {
+      const currTimeMs = Date.now();
+      const elapsedMs = currTimeMs - this.animationStart;
+      const msSincePrevFrame = Math.min(
+        currTimeMs - this.prevFrameTStampMs,
+        100,
+      );
+
+      if (elapsedMs > this.animationDur / 2) {
+        this.animationStart = Date.now();
         this.dim = !this.dim;
       }
       const blinkNoise = randomIntFromInterval(0, 5) / 800;
