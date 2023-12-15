@@ -316,9 +316,7 @@
           this.context.lineTo(nextX, nextY);
         }
         this.context.closePath();
-        this.context.strokeStyle = "lightgray";
         this.context.fillStyle = "lightgray";
-        this.context.stroke();
         this.context.fill();
       };
       drawShapeFromPoints(points);
@@ -346,8 +344,8 @@
           this.brightness = 0.5 + (0.3 * elapsedMs) / this.animationDur / 2;
         }
         this.prevFrameTStampMs = currTimeMs;
-        this.context.globalAlpha = this.brightness;
       }
+      this.context.globalAlpha = this.brightness;
       this.draw();
     }
   }
