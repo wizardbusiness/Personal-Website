@@ -321,16 +321,12 @@
     }
 
     twinkle() {
-      // if (!document.hidden) {
-      //   this.animationStart = Date.now();
-      //   this.prevFrameTStampMs = Date.now();
-      //   this.radiusModifiers = [3, 5, 3, 5, 3];
-      //   this.brightness = 0.5;
-      // }
-
       const currTimeMs = Date.now();
       const elapsedMs = currTimeMs - this.animationStart;
-      const msSincePrevFrame = currTimeMs - this.prevFrameTStampMs;
+      const msSincePrevFrame = Math.min(
+        currTimeMs - this.prevFrameTStampMs,
+        100,
+      );
 
       if (elapsedMs > this.animationDur / 2) {
         this.animationStart = Date.now();
