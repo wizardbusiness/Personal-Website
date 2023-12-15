@@ -177,8 +177,6 @@
         const coords = generatedWeightedCoords(
           innerWidth,
           innerHeight,
-          width,
-          height,
           200, // variance
           -0.2, // slope
           innerHeight / 3, // intercept
@@ -266,7 +264,7 @@
      * draws a star shape with 4 inner and 4 outer points, offset by 45 degrees
      */
     draw() {
-      const getPointsOnCircle = (radiuses, degrees, degreeOffset = 0) => {
+      const getPointsOnCircle = (radiuses, degrees, degreeOffset) => {
         const points = [];
         // create points at regular intervals around circle from initial angle
         const pointCount = 360 / degrees;
