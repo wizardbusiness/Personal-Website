@@ -32,7 +32,8 @@ export const generateWeightedRandomInRange = (
   const u2 = Math.random();
 
   const weightedRandom =
-    mean + Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2) * variance;
+    mean + Math.sqrt(-2 * Math.log(u1) * Math.cos(2 * Math.PI * u2) * variance);
+
   return Math.max(min, Math.min(max, weightedRandom));
 };
 
@@ -51,8 +52,6 @@ type coordNode = {
 export const generatedWeightedCoords = (
   innerWidth: number,
   innerHeight: number,
-  width: number,
-  height: number,
   variance: number,
   slope: number,
   intercept: number,
@@ -65,9 +64,9 @@ export const generatedWeightedCoords = (
       Math.cos(2 * Math.PI * Math.random())
     );
   };
-  const x = Math.floor(((innerWidth - width) / count) * i + width);
-  const y = i * slope + normalRandom() * variance + intercept + height;
-  // const y = 500;
+
+  const x = (innerWidth / count) * i;
+  const y = i * slope + normalRandom() * variance + intercept;
 
   return { x: x, y: y };
 };
