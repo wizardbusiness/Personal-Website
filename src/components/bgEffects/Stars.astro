@@ -1,62 +1,216 @@
 <canvas
-  class="animate-fade-in-slow absolute bottom-0 left-0 -z-10 block h-full w-full bg-dusk object-contain"
+  class="absolute bottom-0 left-0 -z-10 block h-full w-full animate-fade-in-slow bg-dusk object-contain"
 ></canvas>
 <script>
   import {
-    randomIntFromInterval,
     generateWeightedRandomInRange,
     generatedWeightedCoords,
     randomElFromArray,
     randomIntFromInterval,
   } from "../../scripts/randomFromInterval";
-  const canvas = document.querySelector("canvas");
 
   const renderCanvas = () => {
+    const canvas = document.querySelector("canvas");
     const context = canvas.getContext("2d");
+
     const pixelRatio = window.devicePixelRatio || 1;
     const height = window.innerHeight * pixelRatio;
     const width = window.innerWidth * pixelRatio;
-    canvas.width = width;
     canvas.height = height;
+    canvas.width = width;
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+    // create collision grid
+    const createGrid = (canvasHeight, canvasWidth, cellHeight, cellWidth) => {
+      const grid = [];
+      // divide canvas up into cellHeight x cellWidth px cells
+      const cellRowsCount = canvasHeight / cellHeight;
+      const cellColumnsCount = canvasWidth / cellWidth;
+      // cell
+      const cellCount = cellRowsCount * cellColumnsCount;
+      let currCell = 0;
+      let currRow = 0;
+      let currColumn = 0;
+      interface cell {
+        x: number;
+        y: number;
+        left: number;
+        right: number;
+        top: number;
+        bottom: number;
+        id: string;
+      }
+      const createCell = (
+        id: string,
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+      ) => {
+        const cell: cell = {
+          id: id,
+          x: x,
+          y: y,
+          left: x - width / 2,
+          right: x + width / 2,
+          top: y - height / 2,
+          bottom: y + height / 2,
+        };
+        return cell;
+      };
+      while (currCell < cellCount) {
+        // x y is center of each cell.
+        const x = currColumn * cellWidth + cellWidth / 2;
+        const y = currRow * cellHeight + cellHeight / 2;
+        // use id to check which cells an object occupies
+        const id = `c${currColumn}r${currRow}`;
+        const cell = createCell(id, x, y, cellWidth, cellHeight);
+        grid.push(cell);
+        if (currColumn < cellColumnsCount) currColumn++;
+        else if (currColumn === cellColumnsCount) {
+          currColumn = 0;
+          currRow++;
+        }
+        currCell++;
+      }
+      return { cells: grid, cellHeight: cellHeight, cellWidth: cellWidth };
+    };
+
+    const grid = createGrid(canvas.height, canvas.width, 8, 8);
+
+    const getCellsOccupiedByObj = (grid, object: Star) => {
+      // round object bounds to nearest cell bounds
+      const calcCellBounds = (grid, obj) => {
+        // check each object outer bound against the height / width of each cell.
+        // round to nearest left cell side
+        const left = Math.floor(obj.left / grid.cellWidth) * grid.cellWidth;
+        const top = Math.floor(obj.top / grid.cellHeight) * grid.cellHeight;
+        const right = Math.ceil(obj.right / grid.cellWidth) * grid.cellWidth;
+        const bottom =
+          Math.ceil(obj.bottom / grid.cellHeight) * grid.cellHeight;
+        return { left, top, right, bottom };
+      };
+
+      const occupiedCellBounds = calcCellBounds(grid, object);
+
+      const getOccupiedCellIds = (
+        occupiedCellBounds,
+        cellWidth,
+        cellHeight,
+      ) => {
+        const ids = [];
+
+        const cellsWidth = occupiedCellBounds.right - occupiedCellBounds.left;
+        const cellsHeight = occupiedCellBounds.bottom - occupiedCellBounds.top;
+        let cellCount = (cellsWidth / cellWidth) * (cellsHeight / cellHeight);
+        let currCellLeft = occupiedCellBounds.left;
+        let currCellTop = occupiedCellBounds.top;
+        while (cellCount > 0) {
+          // get row and column of top and left bounds by dividing by cellwidth and height
+          const cellRow = Math.floor(currCellTop / cellHeight);
+          const cellCol = Math.floor(currCellLeft / cellWidth);
+          const cellId = `c${cellCol}r${cellRow}`;
+          ids.push(cellId);
+          currCellLeft += cellWidth;
+          if (currCellLeft === occupiedCellBounds.right) {
+            currCellTop += cellHeight;
+            currCellLeft = occupiedCellBounds.left;
+          }
+
+          cellCount--;
+        }
+        return ids;
+      };
+
+      const cellIds = getOccupiedCellIds(
+        occupiedCellBounds,
+        grid.cellWidth,
+        grid.cellHeight,
+      );
+      return cellIds;
+    };
+
+    const handleCollisions = (grid, object: Star, collisionMap) => {
+      return () => {
+        const occupiedCells = getCellsOccupiedByObj(grid, object);
+        let collision = false;
+        let test = 0;
+        for (let i = 0; i < occupiedCells.length; i++) {
+          const cellId = occupiedCells[i];
+          if (!(cellId in collisionMap)) {
+            collisionMap[cellId] = null;
+            test++;
+          } else if (cellId in collisionMap) {
+            collision = true;
+          }
+        }
+        return collision;
+      };
+    };
+
+    const addDivToCollisionMap = (div: HTMLElement) => {
+      const divArea = div.getBoundingClientRect();
+    };
+
+    // for each object
+    // get cell id(s)
+    // check if any cells are already occupied
+    // if not,
+    // add cell ids to collision array
+    // add object to render array
+    // else, continue
+
     const generateStars = (
       starCount: number,
       context: CanvasRenderingContext2D,
     ): Star[] => {
       const stars = [];
-      const cachedCoords = {};
+      // cache an area, so that any coords that fall within the same area are rerun.
+      // check if any part of the area overlaps with existing object (within a rectangle)
+      const collisionMap = {};
       for (let i = 0; i < starCount; i++) {
-        const radius = generateWeightedRandomInRange(20, 90, 20, 200) / 20;
+        const width = Math.floor(
+          generateWeightedRandomInRange(20, 100, 20, 20) / 4,
+        );
+        const height = width;
         const coords = generatedWeightedCoords(
           innerWidth,
           innerHeight,
+          width,
+          height,
           200, // variance
           -0.2, // slope
           innerHeight / 3, // intercept
-          i,
-          starCount,
         );
         const x = coords.x;
         const y = coords.y;
-        // if (x > innerWidth || x < 0 || y > innerHeight || y > 0) continue;
-        if (x in cachedCoords) continue;
-        else cachedCoords[x] = y;
-
-        const star = new Star(x, y, radius, context);
-        stars.push(star);
+        // don't render stars that are offscreen
+        if (x < 0 || y < 0) continue;
+        // const degreeOffset = randomElFromArray([0, 10, 20, 30, 40]);
+        const degreeOffset = randomIntFromInterval(0, 90);
+        const animationDur = randomIntFromInterval(800, 1200);
+        const star = new Star(
+          x,
+          y,
+          width,
+          height,
+          degreeOffset,
+          animationDur,
+          context,
+        );
+        const collision = handleCollisions(grid, star, collisionMap)();
+        if (!collision) stars.push(star);
       }
-
       return stars;
     };
     const starCount = Math.floor(
-      (window.innerHeight * window.innerWidth) / 1500,
+      (window.innerHeight * window.innerWidth) / 3500,
     );
     const stars: Star[] = generateStars(starCount, context);
-
     const animateStars = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
-        star.blink();
+        star.twinkle();
       });
       requestAnimationFrame(animateStars);
     };
@@ -66,11 +220,23 @@
   class Star {
     public brightness: number;
     public dim: boolean;
-    public blinkInterval: number;
+    public left: number;
+    public right: number;
+    public top: number;
+    public bottom: number;
+    public radiusModifiers: number[];
+    public radiuses: number[];
+    public shapeDegreeMods: number | string | FC;
+    public animationStart: number;
+    public prevFrameTStampMs: number;
+
     constructor(
       public x: number,
       public y: number,
-      public radius: number,
+      public width: number,
+      public height: number,
+      public degreeOffset: number,
+      public animationDur: number,
       public context: CanvasRenderingContext2D,
     ) {
       this.x = x;
@@ -86,17 +252,70 @@
       this.animationDur = animationDur;
       this.context = context;
       this.brightness = 0.5;
-      this.dim = true;
-      this.blinkInterval =
-        generateWeightedRandomInRange(10, 400, 10, 200) / 2000;
+      this.dim = false;
+      this.radiusModifiers = [3, 5, 3, 5, 3];
+      this.degreeOffset = degreeOffset;
+      this.shapeDegreeMods = randomElFromArray([36, 45]);
     }
 
+    /**
+     * draws a star shape with 4 inner and 4 outer points, offset by 45 degrees
+     */
     draw() {
-      this.context.globalAlpha = this.brightness;
+      const getPointsOnCircle = (radiuses, degrees, degreeOffset = 0) => {
+        const points = [];
+        // create points at regular intervals around circle from initial angle
+        const pointCount = 360 / degrees;
+        let multiplier = 0;
+        let currRadI = 0;
+        while (multiplier <= pointCount) {
+          if (!radiuses[currRadI + 1]) currRadI = 0;
+          const theta = degrees * multiplier * (Math.PI / 180);
+          const rotateTheta = degreeOffset * (Math.PI / 180);
+          const x = radiuses[currRadI] * Math.cos(theta);
+          const y = radiuses[currRadI] * Math.sin(theta);
+          const rotatedX =
+            x * Math.cos(rotateTheta) - y * Math.sin(rotateTheta);
+          const rotatedY =
+            x * Math.sin(rotateTheta) + y * Math.cos(rotateTheta);
+          points.push([rotatedX, rotatedY]);
+          multiplier++;
+          currRadI++;
+        }
+        return points;
+      };
+
+      const radiuses = this.radiusModifiers.map(
+        (radiusFract) => this.width / radiusFract,
+      );
+      const points = getPointsOnCircle(
+        radiuses,
+        this.shapeDegreeMods,
+        this.degreeOffset,
+      );
       this.context.beginPath();
-      this.context.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false); // x y radius, startangle, end angle, cc
-      this.context.fillStyle = "lightgray";
-      this.context.fill();
+      const drawShapeFromPoints = (points: number[]) => {
+        for (let i = 0; i < points.length - 1; i++) {
+          const x = points[i][0] + this.x;
+          const y = points[i][1] + this.y;
+          if (i === 0) this.context.moveTo(x, y);
+          const nextX =
+            i === points.length - 1
+              ? points[0][0] + this.x
+              : points[i + 1][0] + this.x;
+          const nextY =
+            i === points.length - 1
+              ? points[0][1] + this.x
+              : points[i + 1][1] + this.y;
+
+          this.context.lineTo(x, y);
+          this.context.lineTo(nextX, nextY);
+        }
+        this.context.closePath();
+        this.context.fillStyle = "lightgray";
+        this.context.fill();
+      };
+      drawShapeFromPoints(points);
     }
 
     twinkle() {
@@ -110,12 +329,21 @@
       if (elapsedMs > this.animationDur / 2) {
         this.animationStart = Date.now();
         this.dim = !this.dim;
-      }
-      const blinkNoise = randomIntFromInterval(0, 5) / 800;
-      if (this.dim) {
-        this.brightness -= this.blinkInterval + blinkNoise;
-      } else if (!this.dim) {
-        this.brightness += this.blinkInterval + blinkNoise;
+      } else if (elapsedMs <= this.animationDur / 2) {
+        if (this.dim) {
+          this.radiusModifiers = this.radiusModifiers.map(
+            (radius) =>
+              (radius += (2 / this.animationDur / 2) * msSincePrevFrame),
+          );
+          this.brightness = 0.8 - (0.3 * elapsedMs) / this.animationDur / 2;
+        } else if (!this.dim) {
+          this.radiusModifiers = this.radiusModifiers.map(
+            (radius) =>
+              (radius -= (2 / this.animationDur / 2) * msSincePrevFrame),
+          );
+          this.brightness = 0.5 + (0.3 * elapsedMs) / this.animationDur / 2;
+        }
+        this.prevFrameTStampMs = currTimeMs;
       }
       this.context.globalAlpha = this.brightness;
       this.draw();
