@@ -250,7 +250,8 @@ module.exports = {
         "fade-out-slow": "fadeout 0.4s forwards ease",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
         spread: "spread 0.2s forwards ease-out",
-        "scooch-up&pulse": "scoochup 1.2s infinite",
+        "scooch-up": "scoochup 1.2s infinite",
+        "scooch-down": "scoochup 1.2s infinite reverse",
         "long-blink": "longblink 1s forwards",
       },
       gridTemplateColumns: {
