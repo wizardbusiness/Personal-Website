@@ -7,18 +7,18 @@ import "../styles/tailwind.css";
 <a
   href={url}
   data-scroll-btn={scrollDirection}
-  class="scroll-btn flex h-fit translate-y-1/2 cursor-default flex-col items-end text-gray-400"
+  class="scroll-btn flex h-fit translate-y-1/2 cursor-default flex-col text-gray-400"
 >
   <div
     data-scroll-halo
     class={scrollDirection === "up"
-      ? "flex nav-scroll m-0 h-[4vh] lg:h-[10vh] items-end justify-center w-[40vw] translate-y-1/2 lg:-translate-y-4 text-lg"
+      ? "flex nav-scroll m-0 h-[4vh] lg:h-[10vh] items-end justify-center w-[40vw] translate-y-1/2 lg:-translate-y-6 text-lg"
       : "w-[50vw] lg:translate-y-4"}
   >
     <div data-scrollable-area class="flex flex-col items-center">
       {
         scrollDirection === "down" && (
-          <div data-test class=" w-fit translate-y-2 text-center">
+          <div data-test class="w-fit translate-y-2 text-center">
             Scroll
           </div>
         )
@@ -29,180 +29,169 @@ import "../styles/tailwind.css";
         height="60"
         width="60"
         data-scroll-icon
-        class="animate-pulse cursor-pointer self-center text-gray-100"
+        class="cursor-pointer self-center text-gray-100"
       />
     </div>
   </div>
 </a>
 <script>
-  document.addEventListener("astro:page-load", () => {
-    const handleScrollDown = () => {
-      const scrollCaret: HTMLElement =
-        document.querySelector("[data-scroll-btn]");
-
-      const taglineContainer = document.querySelector("[data-subheader]");
-      const transitionGroup = document.querySelector("[data-transition-group]");
-      let msSinceLastScrollEvent = 0;
-      let initial = true;
-      let deltaY = 0;
-      const scrollListener = setInterval(() => {
-        if (msSinceLastScrollEvent > 100) deltaY = 0;
-        if (deltaY < 0 && !initial) {
-          scrollCaret.classList.add("move-down");
-          transitionGroup.classList.add("transition");
-          taglineContainer.classList.add("animate-fall-from");
-          taglineContainer.addEventListener("animationend", () => {
-            scrollCaret.classList.remove("move-down");
-            transitionGroup.classList.remove("transition");
-            clearInterval(scrollListener);
-            scrollCaret.click();
-          });
-        }
-        msSinceLastScrollEvent += 100;
-      }, 100);
-      return (e) => {
-        initial = false;
-        msSinceLastScrollEvent = 0;
-        deltaY = e.deltaY;
-      };
-    };
-
-    const handleScrollUp = (scrollTargetArea) => {
-      const scrollIcon = document.querySelector("[data-scroll-icon]");
-      handleScrollAreaInteraction(scrollTargetArea, scrollIcon);
-      let msSinceLastScrollEvent = 0;
-      let initial = true;
-      let deltaY = 0;
-      const scrollListener = setInterval(() => {
-        if (msSinceLastScrollEvent > 100) deltaY = 0;
-        if (deltaY > 0 && !initial) {
-          clearInterval(scrollListener);
-          scrollIcon.classList.remove("animate-scooch-up&pulse");
-          scrollIcon.classList.add("animate-rise-from");
-          scrollIcon.addEventListener("animationend", () =>
-            scrollTargetArea.click(),
-          );
-        }
-        msSinceLastScrollEvent += 100;
-      }, 100);
-      return (e) => {
-        initial = false;
-        msSinceLastScrollEvent = 0;
-        deltaY = e.deltaY;
-      };
-    };
-
-    const handleScrollAreaInteraction = (
-      scrollableArea: HTMLElement,
-      scrollIcon: Element,
-    ) => {
-      scrollableArea.addEventListener("mouseenter", () => {
-        scrollIcon.classList.remove("animate-pulse");
-        scrollIcon.classList.add("animate-scooch-up&pulse");
-      });
-      scrollableArea.addEventListener("mouseleave", () => {
-        scrollIcon.classList.remove("animate-scooch-up&pulse");
-        scrollIcon.classList.add("animate-pulse");
-      });
-    };
-
-    const main = document.querySelector("main");
-    const url = location.href;
-    if (url.includes("Main")) {
-      const scrollTargetArea: HTMLElement =
-        document.querySelector("[data-scroll-halo]");
-      const scrollUp = handleScrollUp(scrollTargetArea);
-      scrollTargetArea.addEventListener("wheel", (e) => {
-        scrollUp(e);
-      });
-    } else {
-      const scrollDown = handleScrollDown();
-      main.addEventListener("wheel", (e) => {
-        scrollDown(e);
-      });
-    }
-
-    const transitionGroup: HTMLDivElement = document.querySelector(
-      "[data-transition-group]",
-    );
-    const taglineContainer: HTMLDivElement =
-      document.querySelector("[data-subheader]");
+  const handleScrollDown = () => {
     const scrollCaret: HTMLElement =
       document.querySelector("[data-scroll-btn]");
-    const testTouch = document.querySelector("[data-test]");
 
-    const handleSwipeUp = (
-      touchClientY: number,
-      initialTouchPosit: number,
-      scrollableArea: HTMLElement,
-      scrollContainer: HTMLElement,
-    ) => {
-      const scrollableAreaBoundingRectCurrPosit =
-        scrollableArea.getBoundingClientRect();
-
-      const scrollContainerBoundingRect =
-        scrollContainer.getBoundingClientRect();
-      if (
-        touchClientY - initialTouchPosit < 0 &&
-        scrollableAreaBoundingRectCurrPosit.top >
-          scrollContainerBoundingRect.top
-      ) {
-        scrollableArea.style.transform = `translateY(${
-          touchClientY - initialTouchPosit
-        }px)`;
+    const taglineContainer = document.querySelector("[data-subheader]");
+    const transitionGroup = document.querySelector("[data-transition-group]");
+    let msSinceLastScrollEvent = 0;
+    let initial = true;
+    let deltaY = 0;
+    const scrollListener = setInterval(() => {
+      if (msSinceLastScrollEvent > 100) deltaY = 0;
+      if (deltaY < 0 && !initial) {
+        scrollCaret.classList.add("move-down");
+        transitionGroup.classList.add("transition");
+        taglineContainer.classList.add("animate-fall-from");
+        taglineContainer.addEventListener("animationend", () => {
+          scrollCaret.classList.remove("move-down");
+          transitionGroup.classList.remove("transition");
+          clearInterval(scrollListener);
+          scrollCaret.click();
+        });
       }
-      return scrollableAreaBoundingRectCurrPosit.top >
-        scrollContainerBoundingRect.top
-        ? false
-        : true;
+      msSinceLastScrollEvent += 100;
+    }, 100);
+    return (e) => {
+      initial = false;
+      msSinceLastScrollEvent = 0;
+      deltaY = e.deltaY;
     };
+  };
 
-    const handleSwipe = () => {
-      const scrollableArea: HTMLElement = document.querySelector(
-        "[data-scrollable-area]",
-      );
-
-      const scrollContainer: HTMLElement = document.querySelector(
-        "[data-scroll-container]",
-      );
-
-      let initialTouchPosit: number;
-      let touchClientY: number;
-      let swipeComplete: boolean;
-      scrollContainer.addEventListener("touchstart", (e: TouchEvent) => {
-        initialTouchPosit = e.touches[0].clientY;
-        scrollContainer.style.backgroundColor = "red";
-      });
-      const handleTouchMove = (e: TouchEvent) => {
-        // e.preventDefault();
-        touchClientY = e.touches[0].clientY;
-        swipeComplete = handleSwipeUp(
-          touchClientY,
-          initialTouchPosit,
-          scrollableArea,
-          scrollContainer,
+  const handleScrollUp = (scrollTargetArea) => {
+    const scrollIcon = document.querySelector("[data-scroll-icon]");
+    handleScrollAreaInteraction(scrollTargetArea, scrollIcon);
+    let msSinceLastScrollEvent = 0;
+    let initial = true;
+    let deltaY = 0;
+    const scrollListener = setInterval(() => {
+      if (msSinceLastScrollEvent > 100) deltaY = 0;
+      if (deltaY > 0 && !initial) {
+        clearInterval(scrollListener);
+        scrollIcon.classList.add("animate-rise-from");
+        scrollIcon.addEventListener("animationend", () =>
+          scrollTargetArea.click(),
         );
-        if (swipeComplete) {
-          scrollContainer.removeEventListener("touchmove", handleTouchMove);
-          scrollableArea.classList.add("animate-fade-out");
-          transitionGroup.classList.add("transition");
-          taglineContainer.classList.add("animate-fall-from");
-          taglineContainer.addEventListener("animationend", () => {
-            scrollCaret.classList.remove("move-down");
-            transitionGroup.classList.remove("transition");
-            scrollCaret.click();
-          });
-        }
-      };
-      scrollContainer.addEventListener("touchmove", handleTouchMove, {
-        passive: false,
-        capture: true,
-      });
+      }
+      msSinceLastScrollEvent += 100;
+    }, 100);
+    return (e) => {
+      initial = false;
+      msSinceLastScrollEvent = 0;
+      deltaY = e.deltaY;
     };
-    // handleSwipe();
+  };
 
-    // document.addEventListener("astro:page-load", () => {
-    handleSwipe();
-  });
-  // });
+  const handleScrollAreaInteraction = (
+    scrollableArea: HTMLElement,
+    scrollIcon: Element,
+  ) => {
+    scrollableArea.addEventListener("mouseenter", () => {
+      scrollIcon.classList.add("animate-scooch-up&pulse");
+    });
+    scrollableArea.addEventListener("mouseleave", () => {
+      scrollIcon.classList.remove("animate-scooch-up&pulse");
+    });
+  };
+
+  const main = document.querySelector("main");
+  const url = location.href;
+  if (url.includes("Main")) {
+    const scrollTargetArea: HTMLElement =
+      document.querySelector("[data-scroll-halo]");
+    const scrollUp = handleScrollUp(scrollTargetArea);
+    scrollTargetArea.addEventListener("wheel", (e) => {
+      scrollUp(e);
+    });
+  } else {
+    const scrollDown = handleScrollDown();
+    main.addEventListener("wheel", (e) => {
+      scrollDown(e);
+    });
+  }
+
+  const transitionGroup: HTMLDivElement = document.querySelector(
+    "[data-transition-group]",
+  );
+  const taglineContainer: HTMLDivElement =
+    document.querySelector("[data-subheader]");
+  const scrollCaret: HTMLElement = document.querySelector("[data-scroll-btn]");
+  const testTouch = document.querySelector("[data-test]");
+
+  const handleSwipeUp = (
+    touchClientY: number,
+    initialTouchPosit: number,
+    scrollableArea: HTMLElement,
+    scrollContainer: HTMLElement,
+  ) => {
+    const scrollableAreaBoundingRectCurrPosit =
+      scrollableArea.getBoundingClientRect();
+
+    const scrollContainerBoundingRect = scrollContainer.getBoundingClientRect();
+    if (
+      touchClientY - initialTouchPosit < 0 &&
+      scrollableAreaBoundingRectCurrPosit.top > scrollContainerBoundingRect.top
+    ) {
+      scrollableArea.style.transform = `translateY(${
+        touchClientY - initialTouchPosit
+      }px)`;
+    }
+    return scrollableAreaBoundingRectCurrPosit.top >
+      scrollContainerBoundingRect.top
+      ? false
+      : true;
+  };
+
+  const handleSwipe = () => {
+    const scrollableArea: HTMLElement = document.querySelector(
+      "[data-scrollable-area]",
+    );
+
+    const scrollContainer: HTMLElement = document.querySelector(
+      "[data-scroll-container]",
+    );
+
+    let initialTouchPosit: number;
+    let touchClientY: number;
+    let swipeComplete: boolean;
+    scrollContainer.addEventListener("touchstart", (e: TouchEvent) => {
+      initialTouchPosit = e.touches[0].clientY;
+      scrollContainer.style.backgroundColor = "red";
+    });
+    const handleTouchMove = (e: TouchEvent) => {
+      // e.preventDefault();
+      touchClientY = e.touches[0].clientY;
+      swipeComplete = handleSwipeUp(
+        touchClientY,
+        initialTouchPosit,
+        scrollableArea,
+        scrollContainer,
+      );
+      if (swipeComplete) {
+        scrollContainer.removeEventListener("touchmove", handleTouchMove);
+        scrollableArea.classList.add("animate-fade-out");
+        transitionGroup.classList.add("transition");
+        taglineContainer.classList.add("animate-fall-from");
+        taglineContainer.addEventListener("animationend", () => {
+          scrollCaret.classList.remove("move-down");
+          transitionGroup.classList.remove("transition");
+          scrollCaret.click();
+        });
+      }
+    };
+    scrollContainer.addEventListener("touchmove", handleTouchMove, {
+      passive: false,
+      capture: true,
+    });
+  };
+
+  handleSwipe();
 </script>

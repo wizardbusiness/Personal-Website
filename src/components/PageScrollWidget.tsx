@@ -41,18 +41,18 @@ const PageScrollWidget = ({
           data-caret
           className=" w-fit translate-y-2 text-center text-gray-400 "
         >
-          {!!isTouchDevice ? "Swipe" : "Scroll"}
+          {!!isTouchDevice ? "Swipe Back" : "Scroll Back"}
         </div>
       )}
-      {children}
       {navDirection === "prev" && (
         <div
           data-caret
-          className=" w-fit -translate-y-3 animate-pulse text-center text-gray-400 opacity-30"
+          className=" w-fit translate-y-4 text-center text-gray-400 opacity-30"
         >
-          {!!isTouchDevice ? "Swipe" : ""}
+          {!!isTouchDevice ? "Swipe Back" : "Scroll Back"}
         </div>
       )}
+      {children}
     </a>
   );
 };
