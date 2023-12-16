@@ -325,7 +325,7 @@
       const elapsedMs = currTimeMs - this.animationStart;
       const msSincePrevFrame = Math.min(
         currTimeMs - this.prevFrameTStampMs,
-        100,
+        20,
       );
 
       if (elapsedMs > this.animationDur / 2) {
@@ -333,16 +333,16 @@
         this.dim = !this.dim;
       } else if (elapsedMs <= this.animationDur / 2) {
         if (this.dim) {
-          this.radiusModifiers = this.radiusModifiers.map(
-            (radius) =>
-              (radius += (2 / this.animationDur / 2) * msSincePrevFrame),
-          );
+          this.radiusModifiers = this.radiusModifiers.map((radius) => {
+            if (radius > 7) return;
+            return (radius += (2 / this.animationDur / 2) * msSincePrevFrame);
+          });
           this.brightness = 0.8 - (0.3 * elapsedMs) / this.animationDur / 2;
         } else if (!this.dim) {
-          this.radiusModifiers = this.radiusModifiers.map(
-            (radius) =>
-              (radius -= (2 / this.animationDur / 2) * msSincePrevFrame),
-          );
+          this.radiusModifiers = this.radiusModifiers.map((radius) => {
+            if (radius < 1) return;
+            return (radius -= (2 / this.animationDur / 2) * msSincePrevFrame);
+          });
           this.brightness = 0.5 + (0.3 * elapsedMs) / this.animationDur / 2;
         }
         this.prevFrameTStampMs = currTimeMs;
