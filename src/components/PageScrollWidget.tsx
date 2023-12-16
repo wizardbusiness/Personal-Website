@@ -41,7 +41,7 @@ const PageScrollWidget = ({
           data-caret
           className=" w-fit translate-y-2 text-center text-gray-400 "
         >
-          {!!isTouchDevice ? "Swipe Back" : "Scroll Back"}
+          {!!isTouchDevice ? "Swipe" : "Scroll"}
         </div>
       )}
       {navDirection === "prev" && (
