@@ -7,7 +7,9 @@ const NavController = ({ pageUrl, navDirection, children }) => {
   return (
     <div
       data-swipe-container
-      className="flex h-1/5 w-full items-end justify-center"
+      className={`flex h-1/5 w-full ${
+        navDirection === "next" ? "animate-scooch-up" : "animate-pulse"
+      } items-end justify-center`}
     >
       <PageScrollWidget
         isTouchDevice={isTouchDevice}
