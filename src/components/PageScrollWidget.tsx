@@ -49,7 +49,7 @@ const PageScrollWidget = ({
           data-caret
           className=" w-fit translate-y-4 text-center text-gray-400 opacity-30"
         >
-          {!!isTouchDevice ? "Swipe Back" : "Scroll Back"}
+          {!!isTouchDevice ? "Back" : "Scroll Back"}
         </div>
       )}
       {children}
