@@ -1,11 +1,22 @@
 ---
 import CommonLayout from "../layouts/common-layout.astro";
+import ResumePdf from "../images/GabrielKimeResume.pdf";
 ---
 
 <CommonLayout>
-  <iframe
-    slot="page"
-    src="https://drive.google.com/file/d/1_ZdbWTtV2SvvQ2JH4nojAhlwPcI6z5zW/preview"
-    width="100%"
-    height="100%"></iframe>
+  <div slot="page" class="flex h-full w-full content-center">
+    <iframe
+      allowtransparency="true"
+      style="opacity: 0"
+      src="https://drive.google.com/file/d/1_Cpey0XAoEnO7yHcDiPwXEx71GAeBIm6/preview?"
+      width="100%"
+      height="100%"></iframe>
+  </div>
 </CommonLayout>
+
+<script>
+  const iframe = document.querySelector("iframe");
+  iframe.onload = () => {
+    iframe.classList.add("animate-fade-in-resume");
+  };
+</script>
