@@ -182,6 +182,14 @@ module.exports = {
             opacity: "100%",
           },
         },
+        fadein2: {
+          "0%": {
+            opacity: "0%",
+          },
+          "100%": {
+            opacity: "85%",
+          },
+        },
         fadeout: {
           "0%": {
             opacity: "100%",
@@ -245,6 +253,7 @@ module.exports = {
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.2s forwards ease",
+        "fade-in-resume": "fadein2 0.6s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
         "fade-out-slow": "fadeout 0.4s forwards ease",
         buoy: "buoy 0.1s 0.2s fowards ease-in",
