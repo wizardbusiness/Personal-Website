@@ -62,8 +62,8 @@ module.exports = {
         },
         scoochup: {
           "0%": { transform: "translateY(0)", opacity: "0.5" },
-          "50%": { opacity: "0.8" },
-          "100%": { transform: "translateY(-10px)", opacity: "0.5" },
+          "50%": { opacity: "0.8", transform: "translateY(-5px)" },
+          "100%": { transform: "translateY(0px)", opacity: "0.5" },
         },
         "squish-sm": {
           "0%": {
