@@ -7,4 +7,7 @@ export default defineConfig({
   integrations: [react(), tailwind({ config: { applyBaseStyles: false } })],
   site: "https://wizardbusiness.github.io",
   base: "/lunar-dev",
+  prefetch: {
+    prefetchAll: true,
+  },
 });
