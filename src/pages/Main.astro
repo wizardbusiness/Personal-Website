@@ -34,7 +34,6 @@ import _ from "lodash";
       class="relative z-10 flex h-32 w-2/3 animate-fall-to justify-center"
       slot="subheader"
     >
-      <Skyline client:load />
       <TaglineContainer repositTxt={true} animateBg client:load>
         <TaglineMsg
           msg="Dream it. Build it."
@@ -43,6 +42,7 @@ import _ from "lodash";
           transition:persist="taglineMsg"
         />
       </TaglineContainer>
+      <Skyline client:load />
     </div>
     <About slot="about" />
 
