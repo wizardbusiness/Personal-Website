@@ -1,5 +1,6 @@
 <canvas
-  class="absolute bottom-0 left-0 -z-10 block h-full w-full animate-fade-in-slow bg-dusk object-contain"
+  id="canvas1"
+  class="absolute bottom-0 left-0 -z-10 block h-full w-full animate-fade-in bg-dusk object-contain"
 ></canvas>
 <script>
   import {
@@ -10,7 +11,7 @@
   } from "../../scripts/randomFromInterval";
 
   const renderCanvas = () => {
-    const canvas = document.querySelector("canvas");
+    const canvas: HTMLCanvasElement = document.querySelector("#canvas1");
     const context = canvas.getContext("2d");
 
     const pixelRatio = window.devicePixelRatio || 1;
@@ -21,7 +22,12 @@
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
     // create collision grid
-    const createGrid = (canvasHeight, canvasWidth, cellHeight, cellWidth) => {
+    const createGrid = (
+      canvasHeight: number,
+      canvasWidth: number,
+      cellHeight: number,
+      cellWidth: number,
+    ) => {
       const grid = [];
       // divide canvas up into cellHeight x cellWidth px cells
       const cellRowsCount = canvasHeight / cellHeight;
