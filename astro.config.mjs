@@ -6,7 +6,7 @@ import tailwind from "@astrojs/tailwind";
 export default defineConfig({
   integrations: [react(), tailwind({ config: { applyBaseStyles: false } })],
   site: "https://wizardbusiness.github.io",
-  base: "/lunar-dev",
+  base: "/",
   prefetch: {
     prefetchAll: true,
   },
