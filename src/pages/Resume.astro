@@ -1,9 +1,9 @@
 ---
-import CommonLayout from "../layouts/common-layout.astro";
+import MainLayout from "../layouts/main-layout.astro";
 import Nav from "../components/Nav.astro";
 ---
 
-<CommonLayout>
+<MainLayout>
   <div slot="page" class="flex h-full w-full content-center">
     <div
       class="nav-container fixed top-[-8vh] z-20 flex h-[8vh] w-full items-center bg-dusk opacity-90"
@@ -17,7 +17,7 @@ import Nav from "../components/Nav.astro";
       width="100%"
       height="100%"></iframe>
   </div>
-</CommonLayout>
+</MainLayout>
 
 <script>
   const iframe = document.querySelector("iframe");
