@@ -6,10 +6,11 @@ import Stars from "../components/bgEffects/Stars.astro";
 <html class="w-screen">
   <CommonHead />
   <body
-    class="flex h-screen w-full flex-grow justify-center overflow-hidden bg-dusk font-sans"
+    class="overflow-y scrollbar-hide flex h-fit w-full flex-grow flex-col justify-center overflow-y-auto bg-dusk font-sans"
   >
     <Stars />
-    <slot name="page" />
+    <slot name="landing-section" />
+    <slot name="about-section" />
     <script>
       const handleOrientationChange = () => {
         const body = document.querySelector("body");
