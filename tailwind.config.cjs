@@ -236,6 +236,11 @@ module.exports = {
             backgroundColor: "rgb(71 85 105)",
           },
         },
+        slideDown: {
+          "100%": {
+            transform: "translateY(100%)",
+          },
+        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
@@ -261,6 +266,7 @@ module.exports = {
         "scooch-up": "scoochup 1.2s infinite",
         "scooch-down": "scoochup 1.2s infinite reverse",
         "long-blink": "longblink 1s forwards",
+        "slide-down": "slideDown 0.5s forwards",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
