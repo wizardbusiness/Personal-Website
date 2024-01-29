@@ -15,39 +15,37 @@ import { Icon } from "astro-icon";
 import _ from "lodash";
 ---
 
-<CommonLayout>
-  <MainLayout data-info-page slot="page">
-    <Nav slot="nav">
-      <NavController client:load navDirection="prev" pageUrl="/">
-        <Icon
-          pack="ph"
-          name="caret-down"
-          height="60"
-          width="60"
-          data-scroll-icon
-          class="cursor-pointer self-center text-gray-500"
-        />
-      </NavController>
-    </Nav>
-    <div
-      data-subheader-main
-      class="z-10 flex h-32 w-2/3 animate-fall-to justify-center"
-      slot="subheader"
-    >
-      <TaglineContainer repositTxt={true} animateBg client:load>
-        <TaglineMsg
-          msg="Dream it. Build it."
-          blinkCursor={false}
-          client:load
-          transition:persist="taglineMsg"
-        />
-      </TaglineContainer>
-      <Skyline client:load />
-    </div>
-    <About slot="about" />
-    <Portfolio slot="portfolio" />
-    <YouDreamIt slot="flav-text-a" />
-    <Tech slot="tech" />
-    <IllHandleTheRest slot="flav-text-b" />
-  </MainLayout>
-</CommonLayout>
+<MainLayout data-info-page slot="page">
+  <Nav slot="nav">
+    <NavController client:load navDirection="prev" pageUrl="/">
+      <Icon
+        pack="ph"
+        name="caret-down"
+        height="60"
+        width="60"
+        data-scroll-icon
+        class="cursor-pointer self-center text-gray-500"
+      />
+    </NavController>
+  </Nav>
+  <div
+    data-subheader-main
+    class="z-10 flex h-32 w-2/3 animate-fall-to justify-center"
+    slot="subheader"
+  >
+    <TaglineContainer repositTxt={true} animateBg client:load>
+      <TaglineMsg
+        msg="Dream it. Build it."
+        blinkCursor={false}
+        client:load
+        transition:persist="taglineMsg"
+      />
+    </TaglineContainer>
+    <Skyline client:load />
+  </div>
+  <About slot="about" />
+  <Portfolio slot="portfolio" />
+  <YouDreamIt slot="flav-text-a" />
+  <Tech slot="tech" />
+  <IllHandleTheRest slot="flav-text-b" />
+</MainLayout>
