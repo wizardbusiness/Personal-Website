@@ -31,7 +31,7 @@ import _ from "lodash";
     </Nav>
     <div
       data-subheader-main
-      class="relative z-10 flex h-32 w-2/3 animate-fall-to justify-center"
+      class="z-10 flex h-32 w-2/3 animate-fall-to justify-center"
       slot="subheader"
     >
       <TaglineContainer repositTxt={true} animateBg client:load>
@@ -45,109 +45,9 @@ import _ from "lodash";
       <Skyline client:load />
     </div>
     <About slot="about" />
-
     <Portfolio slot="portfolio" />
     <YouDreamIt slot="flav-text-a" />
     <Tech slot="tech" />
     <IllHandleTheRest slot="flav-text-b" />
   </MainLayout>
 </CommonLayout>
-<script>
-  const handleShowHideHeader = () => {
-    const mainContainer = document.querySelector("main");
-    const infoContainer: HTMLElement = document.querySelector(
-      "[data-info-container]",
-    );
-    const headerContainer: HTMLElement = document.querySelector("header");
-    const subHeader: HTMLElement = document.querySelector(
-      "[data-subheader-main]",
-    );
-    const navBar: HTMLElement = document.querySelector("nav");
-    const navBottom: number = navBar.getBoundingClientRect().bottom;
-    const elements = [headerContainer, subHeader, infoContainer];
-    const windowHeight = window.innerHeight;
-
-    const handleExpandContentContainer = (transformDistance: number) => {
-      // without a set timeout, this resize looks jerky when user scrolls up.
-      const wait = setTimeout(() => {
-        // recalculates container height so that info fills whole height of available screenspace.
-        mainContainer.style.height = `${windowHeight - transformDistance}px`;
-        clearTimeout(wait);
-      }, !transformDistance && 500); // only activates when header expands
-    };
-
-    const handleTranslateHeader = (
-      elements: HTMLElement[],
-      transformDistance: number,
-    ) => {
-      elements.forEach((element) => {
-        element.style.transform = `translateY(${transformDistance}px)`;
-      });
-
-      handleExpandContentContainer(transformDistance);
-    };
-
-    const handleScrollSetup = (
-      infoContainer: HTMLElement,
-      elements: HTMLElement[],
-      navBottom: number,
-    ) => {
-      let expand = true;
-
-      return () => {
-        const handleScrollEvent = (e: WheelEvent) => {
-          const handleStopPropagation = (e: WheelEvent) => e.stopPropagation();
-          handleStopPropagation(e);
-          if (e.deltaY < 0 && infoContainer.scrollTop <= 0) {
-            if (!expand) {
-              handleTranslateHeader(elements, 0);
-              expand = true;
-            }
-          } else if (e.deltaY > 0) {
-            if (expand) {
-              handleTranslateHeader(elements, navBottom);
-              expand = false;
-            }
-          }
-        };
-        infoContainer.addEventListener("wheel", handleScrollEvent);
-      };
-    };
-
-    const handleSwipe = (
-      infoContainer: HTMLElement,
-      elements: HTMLElement[],
-      navBottom: number,
-    ) => {
-      let touchStartPosit: number;
-      let touchEndPosit: number;
-      infoContainer.addEventListener("touchstart", (e: TouchEvent) => {
-        touchStartPosit = e.touches[0].clientY;
-      });
-
-      infoContainer.addEventListener("touchmove", (e: TouchEvent) => {
-        touchEndPosit = e.touches[0].clientY;
-        touchStartPosit < touchEndPosit && infoContainer.scrollTop <= 0
-          ? handleTranslateHeader(elements, 0) // show header
-          : handleTranslateHeader(elements, navBottom); // hide header
-      });
-    };
-    const handleScroll = handleScrollSetup(
-      infoContainer,
-      elements,
-      -1 * navBottom,
-    );
-    handleScroll();
-    handleSwipe(infoContainer, elements, -1 * navBottom);
-  };
-
-  const handleNavPrev = () => {
-    const onLanding = location.href.includes("/Main") ? false : true;
-    if (!onLanding) {
-      localStorage.setItem("navPrev", JSON.stringify(true));
-    }
-  };
-
-  handleShowHideHeader();
-  handleNavPrev();
-</script>

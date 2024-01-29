@@ -3,18 +3,19 @@ import "../styles/tailwind.css";
 ---
 
 <main
-  class="flex h-full w-full flex-col items-center p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
+  class="flex h-full w-full flex-col items-center overflow-y-auto overflow-x-clip p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
 >
   <header class="header flex w-full flex-col items-center">
     <slot name="nav" />
     <slot name="subheader" />
   </header>
+
   <div
     data-info-container
-    class="relative flex w-[90vw] flex-col gap-4 overflow-x-clip overflow-y-scroll bg-blue-smoke p-8 text-gray-200 shadow-xl lg:w-[70vw]"
+    class="flex w-[90vw] flex-col gap-4 bg-blue-smoke p-8 text-gray-200 shadow-xl lg:w-[70vw]"
   >
     <div
-      class="collision-obj absolute -top-8 left-0 flex h-7 w-[90vw] items-end justify-center lg:w-[70vw]"
+      class="collision-obj -top-8 left-0 flex h-7 w-[90vw] items-end justify-center lg:w-[70vw]"
     >
     </div>
     <div>
