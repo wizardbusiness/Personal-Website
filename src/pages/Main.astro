@@ -1,6 +1,6 @@
 ---
 import CommonLayout from "../layouts/common-layout.astro";
-import MainLayout from "../layouts/main-layout.astro";
+import AboutSectionLayout from "../layouts/about-section-layout.astro";
 import Nav from "../components/Nav.astro";
 import NavController from "../components/NavController";
 import TaglineContainer from "../components/TaglineContainer";
@@ -15,7 +15,7 @@ import { Icon } from "astro-icon";
 import _ from "lodash";
 ---
 
-<MainLayout data-info-page slot="page">
+<AboutSectionLayout data-info-page slot="page">
   <Nav slot="nav">
     <NavController client:load navDirection="prev" pageUrl="/">
       <Icon
@@ -48,4 +48,4 @@ import _ from "lodash";
   <YouDreamIt slot="flav-text-a" />
   <Tech slot="tech" />
   <IllHandleTheRest slot="flav-text-b" />
-</MainLayout>
+</AboutSectionLayout>

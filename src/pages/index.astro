@@ -1,8 +1,10 @@
 ---
-import CommonLayout from "../layouts/common-layout.astro";
+import MainLayout from "../layouts/main-layout.astro";
 import Landing from "./Landing.astro";
+import Main from "./Main.astro";
 ---
 
-<CommonLayout>
-  <Landing slot="page" />
-</CommonLayout>
+<MainLayout>
+  <Landing slot="landing" />
+  <Main slot="content" />
+</MainLayout>
