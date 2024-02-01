@@ -6,6 +6,7 @@ const Cursor = ({ animStart }) => {
       className={`inline-block h-6 w-3 bg-gray-100 lg:h-8 lg:w-4 ${
         animStart && "animate-blinking-cursor"
       }`}
+      onAnimationEnd={(e) => e.stopPropagation()}
     />
   );
 };
