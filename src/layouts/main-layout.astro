@@ -9,8 +9,10 @@ import Stars from "../components/bgEffects/Stars.astro";
     class="overflow-y scrollbar-hide flex h-fit w-full flex-grow flex-col justify-center overflow-y-auto bg-dusk font-sans"
   >
     <Stars />
-    <slot name="landing-section" />
-    <slot name="about-section" />
+    <main>
+      <slot name="landing-section" />
+      <slot name="about-section" />
+    </main>
     <script>
       const handleOrientationChange = () => {
         const body = document.querySelector("body");
