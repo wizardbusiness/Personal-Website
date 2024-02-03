@@ -7,12 +7,12 @@ const TaglineMsg = ({ msg, blinkCursor }) => {
 
   useEffect(() => {
     if (!msg[msgIndex]) return;
-    const interval = msg[msgIndex - 1] === "." ? 500 : 55; // pause on end of sentence.
-    const typeChars = setInterval(() => {
+    const msBetweenChars = msg[msgIndex - 1] === "." ? 500 : 55; // pause on end of sentence.
+    const typeChars = setTimeout(() => {
       setText((prevText) => (prevText += msg[msgIndex]));
       setMsgIndex((prevMsgIndex) => (prevMsgIndex += 1));
-    }, interval);
-    return () => clearInterval(typeChars);
+    }, msBetweenChars);
+    return () => clearTimeout(typeChars);
   }, [msgIndex]);
 
   return (
