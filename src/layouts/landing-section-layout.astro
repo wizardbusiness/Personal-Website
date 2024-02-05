@@ -1,10 +1,10 @@
 <section
   id="landing"
-  class="flex h-screen w-full flex-grow flex-col items-center p-4 pt-2 lg:p-8 lg:pt-4"
+  class="flex h-screen w-full flex-grow flex-col items-center justify-around p-4 pt-2 lg:p-8 lg:pt-4"
 >
   <div
     data-transition-group
-    class="flex h-[55%] w-full flex-col justify-around gap-4 md:h-[65%] lg:h-[70%]"
+    class="flex h-[55%] w-full flex-shrink flex-col gap-4 md:h-[65%] lg:h-[70%]"
   >
     <div class="flex w-full justify-center">
       <slot name="nav" />
@@ -12,8 +12,6 @@
     <slot name="avatar" />
     <slot name="title" />
   </div>
-  <div data-subheader-landing class="flex h-fit justify-center">
-    <slot name="subheader" />
-  </div>
-  <slot name="page-scroll-area" />
+  <slot name="caption-container" />
+  <slot name="scroll-caret" />
 </section>
