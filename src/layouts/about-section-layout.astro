@@ -2,14 +2,16 @@
 import "../styles/tailwind.css";
 ---
 
-<main
+<section
+  id="about"
   class="flex h-full w-full flex-col items-center overflow-x-clip p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
 >
   <header class="header flex w-full flex-col items-center">
     <slot name="nav" />
-    <slot name="subheader" />
+    <div class="-translate-y-5">
+      <slot name="caption-container" />
+    </div>
   </header>
-
   <div
     data-info-container
     class="flex w-[90vw] flex-col gap-4 bg-blue-smoke p-8 text-gray-200 shadow-xl lg:w-[70vw]"
@@ -43,4 +45,4 @@ import "../styles/tailwind.css";
       </div>
     </div>
   </div>
-</main>
+</section>
