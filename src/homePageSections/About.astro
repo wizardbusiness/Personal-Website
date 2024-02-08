@@ -1,12 +1,12 @@
 ---
-import CommonLayout from "../layouts/common-layout.astro";
 import AboutSectionLayout from "../layouts/about-section-layout.astro";
 import Nav from "../components/Nav.astro";
 import NavController from "../components/NavController";
 import TaglineContainer from "../components/TaglineContainer";
+import CaptionContainer from "../components/CaptionContainer.astro";
 import TaglineMsg from "../components/TaglineMsg";
 import Skyline from "../components/bgEffects/Skyline";
-import About from "../components/About.astro";
+import Bio from "../components/Bio.astro";
 import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
 import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
@@ -17,7 +17,7 @@ import _ from "lodash";
 
 <AboutSectionLayout data-info-page slot="page">
   <Nav slot="nav">
-    <NavController client:load navDirection="prev" pageUrl="/">
+    <!-- <NavController client:load navDirection="prev" pageUrl="/">
       <Icon
         pack="ph"
         name="caret-down"
@@ -26,24 +26,12 @@ import _ from "lodash";
         data-scroll-icon
         class="cursor-pointer self-center text-gray-500"
       />
-    </NavController>
+    </NavController> -->
   </Nav>
-  <div
-    data-subheader-main
-    class="z-10 flex h-32 w-2/3 animate-fall-to justify-center"
-    slot="subheader"
-  >
-    <TaglineContainer repositTxt={true} animateBg client:load>
-      <TaglineMsg
-        msg="Dream it. Build it."
-        blinkCursor={false}
-        client:load
-        transition:persist="taglineMsg"
-      />
-    </TaglineContainer>
-    <Skyline client:load />
-  </div>
-  <About slot="about" />
+  <CaptionContainer slot="caption-container" visible={false} animateBg={false}>
+    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
+  </CaptionContainer>
+  <Bio slot="about" />
   <Portfolio slot="portfolio" />
   <YouDreamIt slot="flav-text-a" />
   <Tech slot="tech" />
