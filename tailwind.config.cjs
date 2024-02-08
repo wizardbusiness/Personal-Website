@@ -21,20 +21,17 @@ module.exports = {
           "100%": { opacity: "1" },
         },
         fallnext: {
-          "0%": { transform: "translateY(0vh)" },
-          "40%": {
-            transform: "translateY(-20vh) scale(120%)",
+          "0%": {
+            transform: "translateY(0vh)",
+          },
+          "100%": {
+            transform: "translateY(-30vh) scale(130%)",
             opacity: 0.8,
           },
-          "70%": {
-            transform: "translateY(-20vh) scale(120%)",
-            opacity: 0.8,
-          },
-          "100%": { transform: "translateY(50vh) scale(100%)" },
         },
         fallto: {
-          "0%": { transform: "translateY(-25vh)" },
-          "100%": { transform: "translateY(0)" },
+          "0%": { transform: "scale(130%)" },
+          "100%": { transform: "scale(130%)" },
         },
         risefrom: {
           "0%": { transform: "translateY(0)" },
@@ -244,8 +241,8 @@ module.exports = {
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
-        "fall-to": "fallto 0.2s forwards ease-in",
-        "fall-next": "fallnext 0.6s forwards ease-out",
+        "fall-to": "fallto 0.3s forwards ease-in",
+        "fall-next": "fallnext 0.4s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.2s 0.3s forwards",
         "swipe-down": "swipe-down 0.2s forwards",
