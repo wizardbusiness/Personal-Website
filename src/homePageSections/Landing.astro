@@ -7,6 +7,8 @@ import TaglineMsg from "../components/TaglineMsg";
 import Avatar from "../components/Avatar.astro";
 import avatarImg from "../images/BeachHeadshotB&Wjpg.jpg";
 import { Icon } from "astro-icon";
+import ScrollCaret from "../components/ScrollCaret.astro";
+import CaptionContainer from "../components/CaptionContainer.astro";
 ---
 
 <LandingSectionLayout>
@@ -24,18 +26,22 @@ import { Icon } from "astro-icon";
       Full-Stack Developer
     </h2>
   </div>
-  <TaglineContainer
+  <!-- <TaglineContainer
     slot="subheader"
     client:load
     repositTxt={false}
     animateBg={false}
   >
     <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
-  </TaglineContainer>
-  <NavController
+  </TaglineContainer> -->
+  <CaptionContainer slot="caption-container" visible animateBg={false}>
+    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
+  </CaptionContainer>
+  <ScrollCaret section="landing" slot="scroll-caret" />
+  <!-- <NavController
     pageUrl="/Main"
     navDirection="next"
-    slot="page-scroll-area"
+    slot="scroll-caret"
     client:load
   >
     <Icon
@@ -47,30 +53,106 @@ import { Icon } from "astro-icon";
       class="cursor-pointer self-center text-gray-100"
     />
   </NavController>
-</LandingSectionLayout>
-<script>
-  const adjustNavBarHeight = () => {
-    if (!location.href.includes("Main")) {
-      const navBar = document.querySelector("nav");
-      navBar.classList.replace("h-[15vh]", "h-fit");
-      navBar.classList.replace("lg:h-[5vh]", "h-fit");
-    }
-  };
+</LandingSectionLayout> -->
+  <script>
+    import disableScroll from "../scripts/disableScroll";
 
-  const handleNavPrev = () => {
-    const sloganContainer = document.querySelector("[data-subheader-landing]");
-    const onLanding = location.href.includes("/Main") ? false : true;
-    const navPrev = JSON.parse(localStorage.getItem("navPrev"));
-    const handleResetNavPrev = () => {
-      localStorage.setItem("navPrev", JSON.stringify(!navPrev));
+    const handleScrollToNextSection = () => {
+      disableScroll(true);
+      const elementsBeingFadedOut: HTMLDivElement = document.querySelector(
+        "[data-transition-group]",
+      );
+      const caret = document.querySelector("[data-scroll-btn]");
+      const captionContainerInstances: NodeListOf<HTMLDivElement> =
+        document.querySelectorAll("[data-caption-container]");
+      const captionContainer: HTMLDivElement = captionContainerInstances[0];
+      const captionContainerOnLanding: HTMLDivElement =
+        captionContainerInstances[1];
+      const startTransition = (e: WheelEvent) => {
+        if (e.deltaY > 0) {
+          elementsBeingFadedOut.classList.add("transition");
+          captionContainer.classList.add("animate-fall-next");
+        }
+      };
+
+      window.addEventListener("wheel", startTransition);
+
+      const scrollToBottomWithFocusedElement = () => {
+        const captionContainerRect = document
+          .querySelector("[data-caption-container]")
+          .getBoundingClientRect();
+
+        const rectHeightScaled = captionContainerRect.height;
+        const rectHeightRescaled = rectHeightScaled / 1.3;
+        const diffHeight = rectHeightScaled - rectHeightRescaled;
+
+        const rectWidthScaled = captionContainerRect.width;
+        const rectWidthRescaled = Math.floor(rectWidthScaled / 1.3);
+
+        const rectTop = captionContainerRect.top;
+        const rectTopRescaled = Math.floor(rectTop + diffHeight / 2);
+
+        const captionContainerTop = rectTopRescaled;
+        const captionContainerWidth = rectWidthRescaled;
+
+        // -20vh is the transform translate distance in the animation.
+        captionContainer.style.top = `calc(30vh + ${captionContainerTop}px`;
+        captionContainer.style.left = `calc(50% - ${
+          captionContainerWidth / 2
+        }px)`;
+        captionContainer.style.position = "fixed";
+
+        const calculateScrollDistance = (
+          element: HTMLElement,
+          section: HTMLElement,
+        ) => {
+          const elementRect = element.getBoundingClientRect();
+          const elementRectBottom = elementRect.bottom;
+          const sectionRect = section.getBoundingClientRect();
+          const sectionRectTop = sectionRect.top;
+          const distance = sectionRectTop - elementRectBottom;
+          return distance;
+        };
+
+        const infoContainer: HTMLElement = document.querySelector(
+          "[data-info-container]",
+        );
+        const scrollDistance = calculateScrollDistance(
+          captionContainer,
+          infoContainer,
+        );
+
+        window.scrollBy({ top: scrollDistance, behavior: "smooth" });
+        // if (window.scrollY === scrollDistance)
+      };
+
+      const reenableUserScrolling = () => {
+        disableScroll(false);
+        window.removeEventListener("wheel", startTransition);
+      };
+
+      const swapCaptionContainers = () => {
+        captionContainer.classList.add("hidden");
+        captionContainerOnLanding.classList.add("opacity-[0.8]");
+        captionContainerOnLanding.classList.add("animate-fall-to");
+      };
+
+      const transitionFocusedElementToAboutSection = () => {
+        swapCaptionContainers();
+        reenableUserScrolling();
+      };
+
+      captionContainer.addEventListener(
+        "animationend",
+        scrollToBottomWithFocusedElement,
+      );
+
+      window.addEventListener(
+        "scrollend",
+        transitionFocusedElementToAboutSection,
+      );
     };
-    if (onLanding && navPrev) {
-      sloganContainer.classList.add("translate-y-[50vh]");
-      sloganContainer.classList.add("animate-rise-to");
-      sloganContainer.addEventListener("animationend", handleResetNavPrev);
-    }
-  };
 
-  adjustNavBarHeight();
-  handleNavPrev();
-</script>
+    handleScrollToNextSection();
+  </script>
+</LandingSectionLayout>
