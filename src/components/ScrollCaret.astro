@@ -1,0 +1,16 @@
+---
+import { Icon } from "astro-icon";
+import "../styles/tailwind.css";
+const { section } = Astro.props;
+---
+
+<div slot="scroll-caret" class="flex animate-scooch-up flex-col justify-end">
+  <Icon
+    pack="ph"
+    name={section === "landing" ? "caret-up" : "caret-down"}
+    height="60"
+    width="60"
+    data-scroll-icon
+    class="w-fit translate-y-4 animate-pulse cursor-pointer self-center text-center text-gray-400 opacity-30"
+  />
+</div>
