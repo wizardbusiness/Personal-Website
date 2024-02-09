@@ -4,16 +4,14 @@ const { animateBg, visible } = Astro.props;
 
 <div
   data-caption-container
-  class=`w-fit self-center ${
+  class=`w-fit self-center h-fit${
   !visible && "opacity-0"
 }`
 >
   <div
     data-caption
     class={`flex items-center h-fit justify-center whitespace-nowrap before:z-auto 
-        before:h-auto before:w-[70vw] before:self-end
-        before:rounded-md before:bg-foggy-glass before:sm:h-28 before:sm:w-[45vw] before:md:w-[35vw] lg:before:w-[43vw] xl:before:w-[32vw]
-        2xl:before:w-[22vw] ${
+        before:rounded-md xl:before:rounded-xl 2xl:before:rounded-2xl before:bg-foggy-glass  before:w-[30rem] before:max-w-[70vw] xl:before:min-w-[30vw] before:h-[12vh] ${
           animateBg &&
           "before:animate-squish-down-sm before:[transform-origin:bottom] lg:before:w-[70vw] lg:before:scale-y-[4%] lg:before:animate-squish-down-lg"
         }`}
