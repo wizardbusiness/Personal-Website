@@ -4,31 +4,28 @@ import ContactInfo from "./ContactInfo";
 ---
 
 <nav
-  class="fade-out-on-transition lg: flex items-center justify-between gap-1 text-gray-100 lg:h-[5vh] lg:justify-end lg:p-0 xl:h-16"
+  class="fade-out-on-transition flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]"
 >
-  <div class="col-start-2 flex h-fit justify-center lg:col-start-2">
-    <slot />
-  </div>
   <section
-    class="col-start-1 flex gap-2 text-xl lg:col-start-3 lg:justify-end lg:gap-3 lg:text-2xl"
+    class="flex gap-[5%] p-[0.5em] text-xl lg:justify-end lg:text-2xl xl:text-4xl 2xl:text-6xl"
   >
     <ContactInfo client:load />
     <a href="/Resume" class="decoration-double hover:underline">Resume</a>
   </section>
   <div
-    class="lg:text-bg-gray-100 col-start-2 justify-center p-2 text-center text-transparent lg:col-start-4 lg:text-3xl lg:text-gray-100"
+    class="lg:text-bg-gray-100 justify-center p-2 text-center text-transparent lg:text-3xl lg:text-gray-100 2xl:text-6xl"
   >
     |
   </div>
   <section
-    class="col-start-3 flex justify-end gap-1 lg:col-start-5 lg:justify-start"
+    class="col-start-3 flex justify-end gap-[5%] p-[0.5em] lg:col-start-5 lg:justify-start"
   >
     <a
       class="group flex items-center rounded-md pl-0 hover:bg-gray-100"
       href="https://github.com/wizardbusiness"
       target="_blank"
       ><Icon
-        class="justify-center group-hover:text-gray-800"
+        class="h-[4vh] w-[4vh] justify-center group-hover:text-gray-800"
         pack="ant-design"
         name="github-outlined"
         width="35"
@@ -40,7 +37,7 @@ import ContactInfo from "./ContactInfo";
       href="https://www.linkedin.com/in/gabriel-kime/"
       target="_blank"
       ><Icon
-        class="group-hover:text-gray-600"
+        class="h-[4vh] w-[4vh] group-hover:text-gray-600"
         pack="ant-design"
         name="linkedin-outlined"
         width="35"
