@@ -1,18 +1,15 @@
 ---
 import LandingSectionLayout from "../layouts/landing-section-layout.astro";
-import NavController from "../components/NavController";
 import Nav from "../components/Nav.astro";
-import TaglineContainer from "../components/TaglineContainer";
 import TaglineMsg from "../components/TaglineMsg";
 import Avatar from "../components/Avatar.astro";
-import avatarImg from "../images/BeachHeadshotB&Wjpg.jpg";
 import ScrollCaret from "../components/ScrollCaret.astro";
 import CaptionContainer from "../components/CaptionContainer.astro";
 ---
 
 <LandingSectionLayout>
   <Nav slot="nav" />
-  <Avatar slot="avatar" imgSrc={avatarImg} />
+  <Avatar slot="avatar" />
   <div slot="title" class="fade-out-on-transition h-fit text-gray-200 lg:p-8">
     <h1
       class="p-[1%] text-center font-mono text-4xl md:text-6xl lg:text-8xl lg:tracking-tighter xl:text-9xl 2xl:text-[15rem]"
@@ -25,134 +22,284 @@ import CaptionContainer from "../components/CaptionContainer.astro";
       Full-Stack Developer
     </h2>
   </div>
-  <!-- <TaglineContainer
-    slot="subheader"
-    client:load
-    repositTxt={false}
-    animateBg={false}
-  >
-    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
-  </TaglineContainer> -->
+
   <CaptionContainer slot="caption-container" visible animateBg={false}>
-    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
+    <TaglineMsg
+      msg="Dream it. Build it."
+      blinkCursor
+      client:load
+      scaleText={false}
+    />
   </CaptionContainer>
   <ScrollCaret section="landing" slot="scroll-caret" />
-  <!-- <NavController
-    pageUrl="/Main"
-    navDirection="next"
-    slot="scroll-caret"
-    client:load
-  >
-    <Icon
-      pack="ph"
-      name="caret-up"
-      height="60"
-      width="60"
-      data-scroll-icon
-      class="cursor-pointer self-center text-gray-100"
-    />
-  </NavController>
-</LandingSectionLayout> -->
-  <script>
-    import disableScroll from "../scripts/disableScroll";
-
-    const handleScrollToNextSection = () => {
-      disableScroll(true);
-      const elementsBeingFadedOut: NodeListOf<HTMLDivElement> =
-        document.querySelectorAll(".fade-out-on-transition");
-      const caret = document.querySelector("[data-scroll-btn]");
-      const captionContainerInstances: NodeListOf<HTMLDivElement> =
-        document.querySelectorAll("[data-caption-container]");
-      const captionContainer: HTMLDivElement = captionContainerInstances[0];
-      const captionContainerOnLanding: HTMLDivElement =
-        captionContainerInstances[1];
-      const startTransition = (e: WheelEvent) => {
-        if (e.deltaY > 0) {
-          elementsBeingFadedOut.forEach((element) =>
-            element.classList.add("transition", "opacity-0", "-translate-y-10"),
-          );
-          captionContainer.classList.add("animate-fall-next");
-        }
-      };
-
-      window.addEventListener("wheel", startTransition);
-
-      const scrollToBottomWithFocusedElement = () => {
-        const captionContainerRect = document
-          .querySelector("[data-caption-container]")
-          .getBoundingClientRect();
-
-        const rectHeightScaled = captionContainerRect.height;
-        const rectHeightRescaled = rectHeightScaled / 1.3;
-        const diffHeight = rectHeightScaled - rectHeightRescaled;
-
-        const rectWidthScaled = captionContainerRect.width;
-        const rectWidthRescaled = Math.floor(rectWidthScaled / 1.3);
-
-        const rectTop = captionContainerRect.top;
-        const rectTopRescaled = Math.floor(rectTop + diffHeight / 2);
-
-        const captionContainerTop = rectTopRescaled;
-        const captionContainerWidth = rectWidthRescaled;
-
-        // -20vh is the transform translate distance in the animation.
-        captionContainer.style.top = `calc(30vh + ${captionContainerTop}px`;
-        captionContainer.style.left = `calc(50% - ${
-          captionContainerWidth / 2
-        }px)`;
-        captionContainer.style.position = "fixed";
-
-        const calculateScrollDistance = (
-          element: HTMLElement,
-          section: HTMLElement,
-        ) => {
-          const elementRect = element.getBoundingClientRect();
-          const elementRectBottom = elementRect.bottom;
-          const sectionRect = section.getBoundingClientRect();
-          const sectionRectTop = sectionRect.top;
-          const distance = sectionRectTop - elementRectBottom;
-          return distance;
-        };
-
-        const infoContainer: HTMLElement = document.querySelector(
-          "[data-info-container]",
-        );
-        const scrollDistance = calculateScrollDistance(
-          captionContainer,
-          infoContainer,
-        );
-
-        window.scrollBy({ top: scrollDistance, behavior: "smooth" });
-        // if (window.scrollY === scrollDistance)
-      };
-
-      const reenableUserScrolling = () => {
-        disableScroll(false);
-        window.removeEventListener("wheel", startTransition);
-      };
-
-      const swapCaptionContainers = () => {
-        captionContainer.classList.add("hidden");
-        captionContainerOnLanding.classList.add("opacity-[0.8]");
-        captionContainerOnLanding.classList.add("animate-fall-to");
-      };
-
-      const transitionFocusedElementToAboutSection = () => {
-        swapCaptionContainers();
-        reenableUserScrolling();
-      };
-
-      captionContainer.addEventListener(
-        "animationend",
-        scrollToBottomWithFocusedElement,
-      );
-
-      window.addEventListener(
-        "scrollend",
-        transitionFocusedElementToAboutSection,
-      );
-    };
-
-    handleScrollToNextSection();
-  </script>
 </LandingSectionLayout>
+<script>
+  import disableScroll from "../scripts/disableScroll";
+  const handleScrollToNextSection = () => {
+    // disable user scroll during transition
+    disableScroll(true);
+    // fade out elements
+    let elementsBeingFadedOut: Array<HTMLDivElement> = Array.from(
+      document.querySelectorAll(".fade-out-on-transition"),
+    );
+    const scrollCaret: HTMLDivElement = document.querySelector("#scroll-caret");
+    elementsBeingFadedOut = [...elementsBeingFadedOut, scrollCaret];
+
+    // scaleCaptionContainer
+    const captionContainerInstances: NodeListOf<HTMLDivElement> =
+      document.querySelectorAll("[data-caption-container]");
+    const captionContainer: HTMLDivElement = captionContainerInstances[0];
+    const infoContainer: HTMLDivElement = document.querySelector(
+      "[data-info-container]",
+    );
+    const nextSectionContent: HTMLDivElement = document.querySelector(
+      "#about-section-content",
+    );
+    const swappedCaptionContainer = captionContainerInstances[1];
+
+    /**
+     * @param e
+     * @description
+     * Called when user initially scrolls up on landing section
+     * Fades out elements not being animated
+     * Scales up caption container
+     */
+
+    function handleScrollUpEvent(e: WheelEvent) {
+      if (e.deltaY > 0) {
+        fadeOutElements(elementsBeingFadedOut);
+        scaleCaptionContainer(captionContainer);
+        translateCaptionContainerWhileScrolling(captionContainer);
+      }
+    }
+
+    /**
+     * Detach Container And Scroll Down
+     * @description
+     *  - changes caption container position to fixed.
+     *  - programatically scrolls to the next section
+     */
+
+    const detachContainerAndScrollDown = containerToFixedAndScrollDown(
+      captionContainer,
+      fixContainerPositionAtCalculatedOffset,
+      computeScaledRectBounds,
+      programaticallyScrollToNextSection,
+    );
+
+    /**
+     * Handle Detect Container Collision
+     * @description
+     *  - detects collision between the captionContainer component
+     *    on the landing page and the info container div in the about section
+     *  - handles the collision by hiding the caption container and
+     *    "swapping in" (making visible) the captionContainer in the about section,
+     *    and animating the swapped in captionContainer
+     */
+
+    detectContainerCollision(
+      captionContainer,
+      infoContainer,
+      swappedCaptionContainer,
+      handleCollision,
+    );
+
+    detectWhenContainerAtTargetPosition(
+      captionContainer,
+      nextSectionContent,
+      handleContainerAtTarget,
+      window.innerHeight * 0.55,
+    );
+
+    // Attach event listeners to the window and the caption container
+
+    // When user scrolls up on landing page the transition starts
+    window.addEventListener("wheel", handleScrollUpEvent);
+    // When the captionContainer component finishes its initial animation,
+    // its detached (posit changed to static) and scrolled down
+    captionContainer.addEventListener(
+      "animationend",
+      detachContainerAndScrollDown,
+    );
+
+    // During the scroll the browser listens for the collision between
+    // the caption container and the next section and handles it.
+    // window.addEventListener("scroll", handleDetectContainerCollision);
+
+    // The end of the scroll signals the end of the transition, and user scrolling is reenabled
+    window.addEventListener("scrollend", () => {
+      translateCaptionContainerWhileScrolling(captionContainer);
+    });
+  };
+
+  handleScrollToNextSection();
+
+  function fadeOutElements(elementsGroup: Array<HTMLDivElement>) {
+    elementsGroup.forEach((element) => {
+      if (element.id === "scroll-caret") {
+        element.classList.add("animate-swipe-up");
+      } else {
+        element.classList.add("transition", "opacity-0", "-translate-y-10");
+      }
+    });
+  }
+
+  function scaleCaptionContainer(captionContainer: HTMLDivElement) {
+    captionContainer.classList.add("animate-scale-up");
+  }
+
+  // translateCaptionContainerDown
+  function translateCaptionContainerWhileScrolling(
+    captionContainer: HTMLDivElement,
+  ) {
+    captionContainer.style.top = `calc(${captionContainer.style.top} + 1px)`;
+    if (captionContainer.style.display === "none") return;
+    requestAnimationFrame(() =>
+      translateCaptionContainerWhileScrolling(captionContainer),
+    );
+  }
+
+  // detectWhenContainerPositionAtTarget
+  function detectWhenContainerAtTargetPosition(
+    container: HTMLDivElement,
+    nextSectionDiv: HTMLDivElement,
+    handleAtTarget: HandleContainerAtTarget,
+    targetPosit: number,
+  ) {
+    const containerBottomY = container.getBoundingClientRect().bottom;
+    if (
+      // need to check if caption container position is fixed, otherwise any
+      // target posit below the starting posit will trigger the callback
+      container.style.position === "fixed" &&
+      containerBottomY >= targetPosit
+    ) {
+      handleAtTarget(nextSectionDiv);
+      return;
+    }
+    requestAnimationFrame(() =>
+      detectWhenContainerAtTargetPosition(
+        container,
+        nextSectionDiv,
+        handleAtTarget,
+        targetPosit,
+      ),
+    );
+  }
+
+  type HandleContainerAtTarget = (nextSectionDiv: HTMLDivElement) => void;
+  function handleContainerAtTarget(nextSectionDiv: HTMLDivElement) {
+    nextSectionDiv.classList.replace("top-[100vh]", "top-[10vh]");
+    disableScroll(false);
+  }
+
+  // transitionNextSectionUp
+
+  // programaticallyScrollToNextSection
+
+  type ProgramaticallyScrollToNextSection = () => void;
+  function programaticallyScrollToNextSection() {
+    const body = document.querySelector("body");
+    body.classList.add("scrollbar-hide");
+    // captionContainer.classList.replace("animate-scale-up", "animate-fall-to");
+
+    // add px because smooth scrollBy decelerates scrollspeed at the end of the scroll
+    window.scrollBy({ top: window.innerHeight + 50, behavior: "smooth" });
+    // which messes with the impact animation effect
+  }
+
+  // setContainerPositionToFixedAtCurrenOffset
+  type ComputeScaledRectBounds = (
+    captionContainer: HTMLDivElement,
+    scale: number,
+  ) => Record<PositionKeys, number>;
+
+  type FixContainerPosition = (
+    captionContainer: HTMLDivElement,
+    calculateOffset: ComputeScaledRectBounds,
+  ) => void;
+
+  function fixContainerPositionAtCalculatedOffset(
+    captionContainer: HTMLDivElement,
+    calculateOffset: ComputeScaledRectBounds,
+  ): void {
+    const offset = calculateOffset(captionContainer, 1.3);
+    captionContainer.style.top = `calc(${window.innerHeight * 0.35}px + ${
+      offset.top
+    }px)`;
+    captionContainer.style.left = `${offset.left}px`;
+    captionContainer.style.position = "fixed";
+  }
+
+  type PositionKeys = "left" | "right" | "top" | "bottom";
+
+  // calculateScaledRectBound
+  function computeScaledRectBounds(
+    captionContainer: HTMLDivElement,
+    scale: number,
+  ): Record<PositionKeys, number> {
+    const postTransformRect = captionContainer.getBoundingClientRect();
+
+    const postTransformRectHeight = postTransformRect.height;
+    const preTransformRectHeight = postTransformRect.height / scale;
+    // difference in height between scaled and non scaled div height
+    const heightDiff = postTransformRectHeight - preTransformRectHeight;
+
+    const postTransformRectWidth = postTransformRect.width;
+    const preTransformRectWidth = postTransformRect.width / scale;
+    // difference in width between scaled and non scaled div height
+    const widthDiff = postTransformRectWidth - preTransformRectWidth;
+
+    const top = Math.floor(postTransformRect.top + heightDiff / 2);
+    const left = Math.floor(postTransformRect.left + widthDiff / 2);
+    const right = Math.floor(postTransformRect.right - widthDiff / 2);
+    const bottom = Math.floor(postTransformRect.bottom + heightDiff / 2);
+
+    return { top, left, right, bottom };
+  }
+
+  function containerToFixedAndScrollDown(
+    captionContainer: HTMLDivElement,
+    setContainerPositionToFixedAtCalculatedOffset: FixContainerPosition,
+    computeScaledRectBounds: ComputeScaledRectBounds,
+    programaticallyScrollToNextSection: ProgramaticallyScrollToNextSection,
+  ) {
+    return () => {
+      setContainerPositionToFixedAtCalculatedOffset(
+        captionContainer,
+        computeScaledRectBounds,
+      );
+      programaticallyScrollToNextSection();
+    };
+  }
+
+  type HandleCollision = (
+    container1: HTMLDivElement,
+    container1Swap: HTMLDivElement,
+  ) => void;
+
+  function handleCollision(
+    container: HTMLDivElement,
+    container1Swap: HTMLDivElement,
+  ) {
+    container.style.display = "none";
+    container1Swap.children[0].classList.replace("opacity-0", "opacity-[0.8]");
+    container1Swap.children[0].classList.add("before:animate-squish-down-lg");
+  }
+
+  // detectCaptionContainerCollision
+  function detectContainerCollision(
+    container1: HTMLDivElement,
+    container2: HTMLDivElement,
+    container1Swap: HTMLDivElement,
+    handleCollision: HandleCollision,
+  ) {
+    const intervalId = setInterval(() => {
+      const container1Bottom = container1.getBoundingClientRect().bottom;
+      const container2Top = container2.getBoundingClientRect().top;
+      if (container2Top - container1Bottom <= 0) {
+        handleCollision(container1, container1Swap);
+        clearInterval(intervalId);
+      }
+    }, 5);
+  }
+</script>
