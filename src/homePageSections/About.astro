@@ -11,25 +11,18 @@ import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
 import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
 import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
-import { Icon } from "astro-icon";
 import _ from "lodash";
 ---
 
 <AboutSectionLayout data-info-page slot="page">
-  <Nav slot="nav">
-    <!-- <NavController client:load navDirection="prev" pageUrl="/">
-      <Icon
-        pack="ph"
-        name="caret-down"
-        height="60"
-        width="60"
-        data-scroll-icon
-        class="cursor-pointer self-center text-gray-500"
-      />
-    </NavController> -->
-  </Nav>
-  <CaptionContainer slot="caption-container" visible={false} animateBg={false}>
-    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load />
+  <Nav slot="nav" />
+  <CaptionContainer slot="caption-container" visible={false} animateBg={true}>
+    <TaglineMsg
+      msg="Dream it. Build it."
+      blinkCursor
+      client:load
+      scaleText={true}
+    />
   </CaptionContainer>
   <Bio slot="about" />
   <Portfolio slot="portfolio" />
