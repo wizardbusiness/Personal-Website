@@ -21,18 +21,25 @@ module.exports = {
           "50%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
-        fallnext: {
+        scaleup: {
           "0%": {
             transform: "translateY(0vh)",
           },
+          "30%": {
+            transform: "translateY(-35vh) scale(130%)",
+            opacity: 0.8,
+          },
           "100%": {
-            transform: "translateY(-30vh) scale(130%)",
+            transform: "translateY(-35vh) scale(130%)",
             opacity: 0.8,
           },
         },
         fallto: {
-          "0%": { transform: "scale(130%)" },
-          "100%": { transform: "scale(130%)" },
+          "0%": { transform: "scale(130%)", top: "30vh" },
+          "100%": {
+            transform: "scale(130%)",
+            top: "35vh",
+          },
         },
         risefrom: {
           "0%": { transform: "translateY(0)" },
@@ -82,20 +89,24 @@ module.exports = {
         },
         "squish-lg": {
           "0%": {
+            transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%)",
             width: "30vw",
+          },
+          "40%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(60%)",
+            transformOrigin: "bottom",
+            width: "40vw",
           },
           "75%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(7%)",
             transformOrigin: "bottom",
-            transform: "scaleY(10%)",
-            width: "30vw",
+            width: "75vw",
           },
           "100%": {
+            transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            width: "70vw",
-            backgroundColor: "rgb(71 85 105)",
+            width: "75vw",
           },
         },
         "squelch-sm": {
@@ -242,14 +253,14 @@ module.exports = {
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
-        "fall-to": "fallto 0.3s forwards ease-in",
-        "fall-next": "fallnext 0.4s forwards ease-out",
+        "fall-to": "fallto 1s forwards ease-in",
+        "scale-up": "scaleup 1s forwards ease-out",
         "rise-to": "riseto 0.5s forwards",
         "rise-from": "risefrom 0.2s 0.3s forwards",
         "swipe-down": "swipe-down 0.2s forwards",
         "swipe-up": "swipe-up 0.2s forwards",
-        "squish-down-lg": "squish-lg 0.2s 0.1s forwards ease-in",
-        "squish-down-sm": "squish-sm 0.2s 0.1s forwards ease-in",
+        "squish-down-lg": "squish-lg 0.4s forwards",
+        "squish-down-sm": "squish-sm 0.2s forwards ease-in",
         "squelch-up-lg": "squelch-lg 0.5s forwards ease-in",
         "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
         grow: "grow 0.5s forwards ease-out",
