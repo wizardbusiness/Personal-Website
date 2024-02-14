@@ -60,7 +60,7 @@ const handleTransitionToNextSection = () => {
    * In sequence of effect
    */
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
-  // disableScroll(true);
+  disableScroll(true);
 
   // 2. When user scrolls up on landing page start the programmatic transition to the next section
   /**
@@ -100,6 +100,15 @@ const handleTransitionToNextSection = () => {
   overlayedTransitionElement.addEventListener(
     "animationend",
     programaticallyScrollToNextSection,
+  );
+
+  window.addEventListener(
+    "scroll",
+    () =>
+      translateOverlayedTransitionElementWhileScrolling(
+        overlayedTransitionElement,
+      ),
+    { once: true },
   );
 
   // 5. Wait until the caption container is at the target position in the viewport
@@ -164,9 +173,6 @@ function handleScrollUp(
     if (e.deltaY > 0) {
       fadeOutElements(fadeOnTransitionGroup);
       scaleOverlayedTransitionElement(overlayedTransitionElement);
-      translateOverlayedTransitionElementWhileScrolling(
-        overlayedTransitionElement,
-      );
     }
   };
 }
@@ -240,7 +246,7 @@ function computeScaledRectBounds(
 function translateOverlayedTransitionElementWhileScrolling(
   overlayedTransitionElement: HTMLDivElement,
 ): void {
-  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + 1px)`;
+  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + 5px)`;
   // a little bit funky, but because the element is removed when the scroll is complete,
   // this is an easy way to return out of the function execution
   if (overlayedTransitionElement.style.display === "none") return;
