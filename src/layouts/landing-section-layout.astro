@@ -1,12 +1,22 @@
 <section
   id="landing"
-  class="flex h-screen w-full flex-grow flex-col justify-between p-4 pt-2 lg:p-8 lg:pt-4"
+  class="flex h-screen w-full flex-grow flex-col p-4 pt-2 lg:p-8 lg:pt-4"
 >
-  <header class="h-fit w-full">
+  <header class="h-[10%] w-full">
     <slot name="nav" />
   </header>
-  <slot name="avatar" />
-  <slot name="title" />
-  <slot name="caption-container" />
-  <slot name="scroll-caret" />
+  <div class="flex h-[30%] items-center justify-center">
+    <slot name="avatar" />
+  </div>
+  <div
+    class="flex h-[20%] w-full items-center justify-center whitespace-nowrap"
+  >
+    <slot name="title" />
+  </div>
+  <div class="flex h-[20%] items-start justify-center lg:items-center">
+    <slot name="caption-container" />
+  </div>
+  <div class="h-[10%]">
+    <slot name="scroll-caret" />
+  </div>
 </section>
