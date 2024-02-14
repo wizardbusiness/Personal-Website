@@ -358,6 +358,23 @@ function enableScroll() {
  * ************************************
  */
 
-function handleTransitionToLandingSection() {}
+function handleTransitionToLandingSection() {
+  // about section
+  // about section caption container
+  // scroll caret section
+  // listen for scroll on about section
+  // if user scrolls to top of section,
+  // replace nav to about animation with nav to landing animation
+  // and detach container
+
+  // if user keeps scrolling up, disable scroll
+  // programatically scroll to landing section,
+  // while repositioning captioncontainer so it drifts down towards
+  // the bottom of the screen
+  // bring the moon down from the top of the screen and fade in other elements
+  // reenable scroll
+
+  // else if user scrolls back down, collide the captioncontainer with the text container again. 
+}
 
 export default handleTransitionToAboutSection;
