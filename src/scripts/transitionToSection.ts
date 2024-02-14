@@ -68,8 +68,6 @@ const handleTransitionToNextSection = () => {
    * @description curried function for handling scrolling up
    * - Fades out elements not being animated
    * - Scales up caption container
-   * - handles overlay element position in viewport while scrolling (slowly moves down)
-   *
    */
   const handleScrollUpEvent = handleScrollUp(
     fadeOnTransitionGroup,
@@ -96,12 +94,13 @@ const handleTransitionToNextSection = () => {
     detachOverlayedElement,
   );
 
-  // 4. scroll to the next section
+  // 4a. scroll to the next section
   overlayedTransitionElement.addEventListener(
     "animationend",
     programaticallyScrollToNextSection,
   );
 
+  // b.- handles overlay element position in viewport while scrolling (slowly moves down)
   window.addEventListener(
     "scroll",
     () =>
@@ -246,7 +245,7 @@ function computeScaledRectBounds(
 function translateOverlayedTransitionElementWhileScrolling(
   overlayedTransitionElement: HTMLDivElement,
 ): void {
-  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + 5px)`;
+  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + 10px)`;
   // a little bit funky, but because the element is removed when the scroll is complete,
   // this is an easy way to return out of the function execution
   if (overlayedTransitionElement.style.display === "none") return;
