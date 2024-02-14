@@ -26,11 +26,11 @@ module.exports = {
             transform: "translateY(0vh)",
           },
           "30%": {
-            transform: "translateY(-35vh) scale(130%)",
+            transform: "translateY(-77vh) scale(130%)",
             opacity: 0.8,
           },
           "100%": {
-            transform: "translateY(-35vh) scale(130%)",
+            transform: "translateY(-77vh) scale(130%)",
             opacity: 0.8,
           },
         },
@@ -43,7 +43,7 @@ module.exports = {
         },
         risefrom: {
           "0%": { transform: "translateY(0)" },
-          "100%": { transform: "translateY(-30vh)" },
+          "100%": { transform: "translateY(-50vh)" },
         },
         riseto: {
           "0%": { transform: "translateY(30vh)" },
@@ -254,9 +254,9 @@ module.exports = {
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "fall-to": "fallto 1s forwards ease-in",
-        "scale-up": "scaleup 1s forwards ease-out",
-        "rise-to": "riseto 0.5s forwards",
-        "rise-from": "risefrom 0.2s 0.3s forwards",
+        "scale-up": "scaleup 1.3s forwards ease-out",
+        "rise-to": "riseto 1s forwards",
+        "rise-from": "risefrom 0.5s forwards ease-out",
         "swipe-down": "swipe-down 0.2s forwards",
         "swipe-up": "swipe-up 0.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",

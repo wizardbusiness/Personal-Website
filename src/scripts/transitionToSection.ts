@@ -64,7 +64,7 @@ const handleTransitionToAboutSection = () => {
    * In sequence of effect
    */
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
-  disableScroll(true);
+  // disableScroll(true);
 
   // 2. When user scrolls up on landing page start the programmatic transition to the next section
   /**
@@ -110,6 +110,9 @@ const handleTransitionToAboutSection = () => {
     () =>
       translateOverlayedTransitionElementWhileScrolling(
         overlayedTransitionElement,
+        2, //base speed (px)
+        1.0055, // delta
+        20, // terminal velocity
       ),
     { once: true },
   );
@@ -209,7 +212,7 @@ function positionOverlayedElementAtCorrectOffset(
   return () => {
     const offset = calculateOffset(OverlayedTransitionElement, 1.3);
     OverlayedTransitionElement.style.top = `calc(${
-      window.innerHeight * 0.35
+      window.innerHeight * 0.77
     }px + ${offset.top}px)`;
     OverlayedTransitionElement.style.left = `${offset.left}px`;
     OverlayedTransitionElement.style.position = "fixed";
@@ -248,14 +251,23 @@ function computeScaledRectBounds(
 
 function translateOverlayedTransitionElementWhileScrolling(
   overlayedTransitionElement: HTMLDivElement,
+  baseSpeedInPx: number,
+  delta: number,
+  speedLimit,
 ): void {
-  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + 10px)`;
+  console.log(baseSpeedInPx);
+  if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
+  console.log(baseSpeedInPx);
+  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
   // a little bit funky, but because the element is removed when the scroll is complete,
   // this is an easy way to return out of the function execution
   if (overlayedTransitionElement.style.display === "none") return;
   requestAnimationFrame(() =>
     translateOverlayedTransitionElementWhileScrolling(
       overlayedTransitionElement,
+      baseSpeedInPx,
+      delta,
+      speedLimit,
     ),
   );
 }
@@ -366,15 +378,13 @@ function handleTransitionToLandingSection() {
   // if user scrolls to top of section,
   // replace nav to about animation with nav to landing animation
   // and detach container
-
   // if user keeps scrolling up, disable scroll
   // programatically scroll to landing section,
   // while repositioning captioncontainer so it drifts down towards
   // the bottom of the screen
   // bring the moon down from the top of the screen and fade in other elements
   // reenable scroll
-
-  // else if user scrolls back down, collide the captioncontainer with the text container again. 
+  // else if user scrolls back down, collide the captioncontainer with the text container again.
 }
 
 export default handleTransitionToAboutSection;
