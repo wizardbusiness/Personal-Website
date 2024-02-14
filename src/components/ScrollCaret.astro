@@ -4,7 +4,11 @@ import "../styles/tailwind.css";
 const { section } = Astro.props;
 ---
 
-<div slot="scroll-caret" class="flex animate-scooch-up flex-col justify-end">
+<div
+  slot="scroll-caret"
+  id="scroll-caret"
+  class="fade-out-on-transition flex animate-scooch-up flex-col justify-end"
+>
   <Icon
     pack="ph"
     name={section === "landing" ? "caret-up" : "caret-down"}
