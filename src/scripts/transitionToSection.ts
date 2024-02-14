@@ -3,10 +3,14 @@ import disableScroll from "./disableScroll";
  * Handles all the transitions, animations and effects when a user
  * navigates from the landing section to the about section.
  *
- * The code is wrapped in a single function to assist with cpu caching.
- *
  */
-const handleTransitionToNextSection = () => {
+
+/**
+ * *************************************
+ * * LANDING SECTION -> ABOUT SECTION *
+ * *************************************
+ */
+const handleTransitionToAboutSection = () => {
   /**
    * SELECTED ELEMENTS
    * -----------------
@@ -151,7 +155,7 @@ const handleTransitionToNextSection = () => {
   // The end of the scroll signals the end of the transition, and user scrolling is reenabled
 };
 
-handleTransitionToNextSection();
+handleTransitionToAboutSection();
 
 /**
  * @function handleScrollUpEvent
@@ -348,4 +352,12 @@ function enableScroll() {
   disableScroll(false);
 }
 
-export default handleTransitionToNextSection;
+/**
+ * ************************************
+ * * ABOUT SECTION -> LANDING SECTION *
+ * ************************************
+ */
+
+function handleTransitionToLandingSection() {}
+
+export default handleTransitionToAboutSection;
