@@ -3,16 +3,17 @@ import CommonHead from "./common-head-layout.astro";
 import Stars from "../components/bgEffects/Stars.astro";
 ---
 
-<html class="w-screen">
+<html class="scrollbar-hide w-screen">
   <CommonHead />
   <body
-    class="overflow-y scrollbar-hide flex h-fit w-full flex-grow flex-col justify-center overflow-y-auto bg-dusk font-sans"
+    class="overflow-y flex h-fit w-full flex-grow flex-col justify-center overflow-y-auto bg-dusk font-sans"
   >
     <Stars />
     <main>
       <slot name="landing-section" />
       <slot name="about-section" />
     </main>
+    <script src="../scripts/transitionToSection.ts"></script>
     <script>
       const handleOrientationChange = () => {
         const body = document.querySelector("body");
