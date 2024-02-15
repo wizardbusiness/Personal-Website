@@ -1,5 +1,6 @@
 ---
 import AboutSectionLayout from "../layouts/about-section-layout.astro";
+import ScrollCaret from "../components/ScrollCaret.astro";
 import Nav from "../components/Nav.astro";
 import NavController from "../components/NavController";
 import TaglineContainer from "../components/TaglineContainer";
@@ -15,6 +16,7 @@ import _ from "lodash";
 ---
 
 <AboutSectionLayout data-info-page slot="page">
+  <ScrollCaret slot="caret" />
   <Nav slot="nav" />
   <CaptionContainer slot="caption-container" visible={false} animateBg={true}>
     <TaglineMsg
