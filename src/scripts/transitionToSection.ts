@@ -27,7 +27,7 @@ const handleTransitionToAboutSection = () => {
    * @description Elements being faded out when the transition takes place
    */
   const fadeOnTransitionGroup: NodeListOf<HTMLDivElement> =
-    document.querySelectorAll(".fade-out-on-transition");
+    document.querySelectorAll(".fade-out-on-transition-away");
 
   /**
    * @constant captionContainerInstances
@@ -279,7 +279,11 @@ function programaticallyScrollToNextSection() {
   body.classList.add("scrollbar-hide");
   // add px because smooth scrollBy decelerates scrollspeed at the end of the scroll
   // which messes with the impact animation effect
-  window.scrollBy({ top: window.innerHeight + 50, behavior: "smooth" });
+  window.scrollBy({
+    // landing section height + nav check div height + padding on sections
+    top: window.innerHeight + window.innerHeight * 0.2 + 32,
+    behavior: "smooth",
+  });
 }
 
 // ----------------------------------------------------------------------------------
@@ -315,7 +319,7 @@ function checkIfElementAtTargetPosition(
 type HandleContainerAtTarget = (nextSectionTextContent: HTMLElement) => void;
 
 function handleContainerAtTarget(nextSectionTextContent: HTMLElement) {
-  nextSectionTextContent.classList.replace("top-[100vh]", "top-[10vh]");
+  nextSectionTextContent.classList.replace("top-[100vh]", "top-[30vh]");
 }
 
 // ----------------------------------------------------------------------------------
@@ -371,8 +375,20 @@ function enableScroll() {
  */
 
 function handleTransitionToLandingSection() {
-  // about section
-  // about section caption container
+  const aboutSection = document.querySelector("#about");
+  /**
+   * @constant captionContainerInstances
+   * @description Caption container component instances.
+   * 2 instances -
+   * - one in landing section
+   * - one in about section to mimic page transition
+   */
+  const captionContainerInstances: NodeListOf<HTMLDivElement> =
+    document.querySelectorAll("#caption-container");
+
+  const overlayedTransitionElement: HTMLDivElement =
+    captionContainerInstances[1];
+  const overlayedTransitionElementReplacement = captionContainerInstances[0];
   // scroll caret section
   // listen for scroll on about section
   // if user scrolls to top of section,
