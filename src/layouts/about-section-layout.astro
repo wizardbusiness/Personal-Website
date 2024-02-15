@@ -4,12 +4,12 @@ import "../styles/tailwind.css";
 
 <section
   id="about"
-  class="relative flex h-full w-full flex-col items-center overflow-x-clip p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
+  class="relative flex h-[100vh] w-full flex-col items-center overflow-x-clip p-4 pb-0 pt-4 lg:p-8 lg:pb-0"
 >
-  <div id="nav-check">
+  <div id="nav-check" class="h-[20vh] w-full bg-red-100">
     <slot name="caret" />
   </div>
-  <header class="h-[10%] w-full">
+  <header class="h-[10vh] w-full">
     <slot name="nav" />
   </header>
   <!-- the way transition is done, transitioned elements need to be position absolute relative to section -->
