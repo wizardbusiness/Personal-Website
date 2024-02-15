@@ -1,7 +1,6 @@
 ---
 import { Icon } from "astro-icon";
 import "../styles/tailwind.css";
-const { section } = Astro.props;
 ---
 
 <div
@@ -11,7 +10,7 @@ const { section } = Astro.props;
 >
   <Icon
     pack="ph"
-    name={section === "landing" ? "caret-up" : "caret-down"}
+    name="caret-up"
     height="60"
     width="60"
     data-scroll-icon
