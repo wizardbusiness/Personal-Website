@@ -17,6 +17,7 @@ const TaglineMsg = ({ msg, blinkCursor, scaleText }) => {
 
   return (
     <div
+      id="caption"
       className={`flex items-center gap-2 ${
         scaleText && "scale-[130%]"
       } [transform-origin:bottom]`}
