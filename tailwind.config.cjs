@@ -163,6 +163,35 @@ module.exports = {
             width: "30vw",
           },
         },
+        "squelch-down-lg": {
+          "100%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(4%)",
+            width: "70vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "75%": {
+            transform: "scaleY(4%)",
+            width: "70vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "50%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(10%)",
+            width: "30vw",
+          },
+          "25%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%)",
+            width: "30vw",
+            backgroundColor: "foggy-glass",
+          },
+          "0%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(100%) scaleX(100%) translateY(-15vh)",
+            width: "30vw",
+          },
+        },
         grow: {
           "0%": {
             transformOrigin: "bottom",
@@ -268,8 +297,10 @@ module.exports = {
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
         "squelch-up-lg": "squelch-lg 0.8s forwards ease-in-out",
+        "squelch-down-lg": "squish-down-lg 0.8s reverse ease-in-out",
         "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
         "float-up": "floatup 0.8s forwards ease-in-out",
+        "float-down": "floatup 0.8s reverse ease-in-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
