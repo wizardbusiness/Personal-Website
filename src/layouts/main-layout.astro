@@ -3,15 +3,17 @@ import CommonHead from "./common-head-layout.astro";
 import Stars from "../components/bgEffects/Stars.astro";
 ---
 
-<html class="scrollbar-hide w-screen">
+<html class="scrollbar-hide h-screen w-screen">
   <CommonHead />
   <body
-    class="overflow-y flex h-fit w-full flex-grow flex-col justify-center overflow-y-auto bg-dusk font-sans"
+    class="flex h-screen w-full flex-grow flex-col justify-center bg-dusk font-sans"
   >
     <Stars />
-    <main>
+    <main class="h-screen">
       <slot name="landing-section" />
-      <slot name="about-section" />
+      <div class="relative h-screen">
+        <slot name="about-section" />
+      </div>
     </main>
     <script src="../scripts/transitionToSection.ts"></script>
     <script>
