@@ -10,7 +10,7 @@ import disableScroll from "./disableScroll";
  * * LANDING SECTION -> ABOUT SECTION *
  * *************************************
  */
-const handleTransitionToAboutSection = () => {
+function handleTransitionToAboutSection() {
   /**
    * SELECTED ELEMENTS
    * -----------------
@@ -56,7 +56,7 @@ const handleTransitionToAboutSection = () => {
    * overlayedTransitionElement.
    */
   const nextSectionTransitionGroupContainer: HTMLDivElement =
-    document.querySelector("#translate-up-on-transition");
+    document.querySelector("[data-about-translate-up]");
 
   /**
    * EVENT HANDLING
@@ -64,7 +64,8 @@ const handleTransitionToAboutSection = () => {
    * In sequence of effect
    */
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
-  // disableScroll(true);
+
+  disableScroll(true);
 
   // 2. When user scrolls up on landing page start the programmatic transition to the next section
   /**
@@ -155,10 +156,12 @@ const handleTransitionToAboutSection = () => {
     enableScroll,
   );
 
-  // The end of the scroll signals the end of the transition, and user scrolling is reenabled
-};
+  // overlayedTransitionElementReplacement.addEventListener("animationend", () => {
+  //   landingSection.classList.add("hidden");
+  // });
 
-handleTransitionToAboutSection();
+  // The end of the scroll signals the end of the transition, and user scrolling is reenabled
+}
 
 /**
  * @function handleScrollUpEvent
@@ -255,9 +258,7 @@ function translateOverlayedTransitionElementWhileScrolling(
   delta: number,
   speedLimit,
 ): void {
-  console.log(baseSpeedInPx);
   if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
-  console.log(baseSpeedInPx);
   overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
   // a little bit funky, but because the element is removed when the scroll is complete,
   // this is an easy way to return out of the function execution
@@ -275,13 +276,9 @@ function translateOverlayedTransitionElementWhileScrolling(
 // ----------------------------------------------------------------------------------
 
 function programaticallyScrollToNextSection() {
-  const body = document.querySelector("body");
-  body.classList.add("scrollbar-hide");
-  // add px because smooth scrollBy decelerates scrollspeed at the end of the scroll
-  // which messes with the impact animation effect
   window.scrollBy({
-    // landing section height + nav check div height + padding on sections
-    top: window.innerHeight + window.innerHeight * 0.2 + 32,
+    // landing section height + nav check div height
+    top: window.innerHeight,
     behavior: "smooth",
   });
 }
@@ -299,7 +296,7 @@ function checkIfElementAtTargetPosition(
     overlayedTransitionElement.getBoundingClientRect().bottom;
   if (
     // need to check if caption container position is fixed, otherwise any
-    // target posit below the starting posit will trigger the callback
+    // target posit below the target posit will trigger the callback
     overlayedTransitionElement.style.position === "fixed" &&
     containerBottomY >= targetPosit
   ) {
@@ -316,10 +313,10 @@ function checkIfElementAtTargetPosition(
   );
 }
 
-type HandleContainerAtTarget = (nextSectionTextContent: HTMLElement) => void;
+type HandleContainerAtTarget = (nextSection: HTMLElement) => void;
 
-function handleContainerAtTarget(nextSectionTextContent: HTMLElement) {
-  nextSectionTextContent.classList.replace("top-[100vh]", "top-[30vh]");
+function handleContainerAtTarget(nextSection: HTMLElement) {
+  nextSection.classList.replace("top-[100vh]", "top-[0vh]");
 }
 
 // ----------------------------------------------------------------------------------
@@ -375,7 +372,10 @@ function enableScroll() {
  */
 
 function handleTransitionToLandingSection() {
-  const aboutSection = document.querySelector("#about");
+  const aboutSection: HTMLElement = document.querySelector("#about");
+  const landingSection: HTMLElement = document.querySelector("#landing");
+  const navCheckContainer: HTMLDivElement =
+    document.querySelector("#nav-check");
   /**
    * @constant captionContainerInstances
    * @description Caption container component instances.
@@ -391,6 +391,50 @@ function handleTransitionToLandingSection() {
   const overlayedTransitionElementReplacement = captionContainerInstances[0];
   // scroll caret section
   // listen for scroll on about section
+
+  function handleIntersect(entries: IntersectionObserverEntry[]) {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true) {
+        console.log("isIntersecting");
+        disableScroll(false);
+      }
+    });
+  }
+
+  function createObserver(threshold, handleIntersect) {
+    let observer: IntersectionObserver;
+
+    let options = {
+      root: null,
+      rootMargin: "0px",
+      threshold: threshold, // fraction of target that needs to be visible for callback to fire, expressed as value between 0 and 1
+    };
+
+    observer = new IntersectionObserver(handleIntersect, options);
+    observer.observe(aboutSection);
+  }
+
+  aboutSection.addEventListener("transitionend", () => {
+    landingSection.classList.replace("flex", "hidden");
+    window.addEventListener("wheel", (e) => {
+      if (e.deltaY <= 0 && window.scrollY === 0) {
+        navCheckContainer.classList.replace("hidden", "flex");
+        navCheckContainer.classList.replace("h-0", "h-[10vh]");
+      }
+    });
+  });
+
+  window.addEventListener("wheel", (e) => {
+    console.log("hmm");
+    console.log(navCheckContainer.classList);
+    if (e.deltaY > 0 && navCheckContainer.classList.contains("h-[10vh]")) {
+      console.log("mhmm");
+      navCheckContainer.classList.replace("h-[10vh]", "h-0");
+    }
+  });
+
+  createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
+
   // if user scrolls to top of section,
   // replace nav to about animation with nav to landing animation
   // and detach container
@@ -403,4 +447,7 @@ function handleTransitionToLandingSection() {
   // else if user scrolls back down, collide the captioncontainer with the text container again.
 }
 
-export default handleTransitionToAboutSection;
+handleTransitionToAboutSection();
+handleTransitionToLandingSection();
+
+// export default handleTransitionToAboutSection;
