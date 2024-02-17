@@ -34,17 +34,6 @@ module.exports = {
             opacity: 0.8,
           },
         },
-        fallto: {
-          "0%": { transform: "scale(130%)", top: "30vh" },
-          "100%": {
-            transform: "scale(130%)",
-            top: "35vh",
-          },
-        },
-        risefrom: {
-          "0%": { transform: "translateY(0)" },
-          "100%": { transform: "translateY(-50vh)" },
-        },
         floatup: {
           "0%": { transform: "translateY(0vh) scale(130%)" },
           "75%": { transform: "translateY(0vh)" },
@@ -226,7 +215,7 @@ module.exports = {
             opacity: "100%",
           },
         },
-        fadein2: {
+        "fade-in-resume": {
           "0%": {
             opacity: "0%",
           },
@@ -262,36 +251,11 @@ module.exports = {
             opacity: "30%",
           },
         },
-        buoy: {
-          "0%": {
-            transform: "translateY(5px)",
-          },
-          "100%": {
-            transform: "translateY(0)",
-          },
-        },
-        spread: {
-          "0%": {
-            transformOrigin: "center",
-            transform: "scaleX(0)",
-          },
-          "100%": {
-            transform: "scaleY(4%) scaleX(200%)",
-            backgroundColor: "rgb(71 85 105)",
-          },
-        },
-        slideDown: {
-          "100%": {
-            transform: "translateY(100%)",
-          },
-        },
       },
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
-        "fall-to": "fallto 1s forwards ease-in",
         "scale-up": "scaleup 1.3s forwards ease-out",
 
-        "rise-from": "risefrom 0.5s forwards ease-out",
         "swipe-down": "swipe-down 0.2s forwards",
         "swipe-up": "swipe-up 0.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
@@ -300,20 +264,15 @@ module.exports = {
         "squelch-down-lg": "squish-down-lg 0.8s reverse ease-in-out",
         "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
         "float-up": "floatup 0.8s forwards ease-in-out",
-        "float-down": "floatup 0.8s reverse ease-in-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
         "fade-in": "fadein 0.5s forwards ease",
-        "fade-in-resume": "fadein2 0.6s forwards ease",
+        "fade-in-resume": "fade-in-resume 0.6s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
         "fade-out-slow": "fadeout 0.4s forwards ease",
-        buoy: "buoy 0.1s 0.2s fowards ease-in",
-        spread: "spread 0.2s forwards ease-out",
         "scooch-up": "scoochup 1.2s infinite",
-        "scooch-down": "scoochup 1.2s infinite reverse",
         "long-blink": "longblink 1s forwards",
-        "slide-down": "slideDown 0.5s forwards",
       },
       gridTemplateColumns: {
         "nav-lg": "40% 20% 33% 2% 5%",
