@@ -386,6 +386,11 @@ function handleTransitionToLandingSection() {
   const captionContainerInstances: NodeListOf<HTMLDivElement> =
     document.querySelectorAll("#caption-container");
 
+  const captionMsgInstances: NodeListOf<HTMLDivElement> =
+    document.querySelectorAll("#caption");
+  const caption = captionMsgInstances[1];
+  const captionReplacement = captionContainerInstances[0];
+
   const overlayedTransitionElement: HTMLDivElement =
     captionContainerInstances[1];
   const overlayedTransitionElementReplacement = captionContainerInstances[0];
@@ -395,7 +400,6 @@ function handleTransitionToLandingSection() {
   function handleIntersect(entries: IntersectionObserverEntry[]) {
     entries.forEach((entry) => {
       if (entry.isIntersecting === true) {
-        console.log("isIntersecting");
         disableScroll(false);
       }
     });
@@ -418,20 +422,41 @@ function handleTransitionToLandingSection() {
     landingSection.classList.replace("flex", "hidden");
     window.addEventListener("wheel", (e) => {
       if (e.deltaY <= 0 && window.scrollY === 0) {
-        navCheckContainer.classList.replace("hidden", "flex");
         navCheckContainer.classList.replace("h-0", "h-[10vh]");
+        overlayedTransitionElement.children[0].classList.replace(
+          "before:animate-squish-down-lg",
+          "before:animate-squelch-up-lg",
+        );
+        caption.classList.add("animate-float-up");
       }
     });
   });
 
   window.addEventListener("wheel", (e) => {
-    console.log("hmm");
-    console.log(navCheckContainer.classList);
     if (e.deltaY > 0 && navCheckContainer.classList.contains("h-[10vh]")) {
-      console.log("mhmm");
       navCheckContainer.classList.replace("h-[10vh]", "h-0");
     }
   });
+
+  overlayedTransitionElement.addEventListener("animationend", () => {
+    // aboutSection.classList.replace("absolute", "fixed");
+    // disableScroll(true);
+
+    window.addEventListener(
+      "wheel",
+      (e) => {
+        if (e.deltaY < 0 && navCheckContainer.classList.contains("h-[10vh]")) {
+          disableScroll(true);
+          landingSection.classList.replace("hidden", "flex");
+          aboutSection.scrollIntoView(); // VERY IMPORTANT - page jumps all over without it
+          disableScroll(false);
+        }
+      },
+      { once: true },
+    );
+  });
+
+  window.addEventListener("scroll", () => console.log("scroll"));
 
   createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
 
