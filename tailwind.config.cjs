@@ -45,9 +45,10 @@ module.exports = {
           "0%": { transform: "translateY(0)" },
           "100%": { transform: "translateY(-50vh)" },
         },
-        riseto: {
-          "0%": { transform: "translateY(30vh)" },
-          "100%": { transform: "translateY(0vh)" },
+        floatup: {
+          "0%": { transform: "translateY(0vh) scale(130%)" },
+          "75%": { transform: "translateY(0vh)" },
+          "100%": { transform: "translateY(-15vh) scale(100%)" },
         },
         "swipe-down": {
           "0%": {
@@ -141,11 +142,16 @@ module.exports = {
             backgroundColor: "rgb(71 85 105)",
           },
           "25%": {
+            transform: "scaleY(4%)",
+            width: "70vw",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "50%": {
             transformOrigin: "bottom",
             transform: "scaleY(10%)",
             width: "30vw",
           },
-          "50%": {
+          "75%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%)",
             width: "30vw",
@@ -153,7 +159,7 @@ module.exports = {
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%) translateY(-40vh)",
+            transform: "scaleY(100%) scaleX(100%) translateY(-15vh)",
             width: "30vw",
           },
         },
@@ -255,14 +261,15 @@ module.exports = {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "fall-to": "fallto 1s forwards ease-in",
         "scale-up": "scaleup 1.3s forwards ease-out",
-        "rise-to": "riseto 1s forwards",
+
         "rise-from": "risefrom 0.5s forwards ease-out",
         "swipe-down": "swipe-down 0.2s forwards",
         "swipe-up": "swipe-up 0.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
-        "squelch-up-lg": "squelch-lg 0.5s forwards ease-in",
+        "squelch-up-lg": "squelch-lg 0.8s forwards ease-in-out",
         "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
+        "float-up": "floatup 0.8s forwards ease-in-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
