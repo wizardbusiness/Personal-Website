@@ -112,7 +112,7 @@ function handleTransitionToAboutSection() {
       translateOverlayedTransitionElementWhileScrolling(
         overlayedTransitionElement,
         2, //base speed (px)
-        1.0055, // delta
+        1.02, // delta
         20, // terminal velocity
       ),
     { once: true },
@@ -394,6 +394,8 @@ function handleTransitionToLandingSection() {
   const overlayedTransitionElement: HTMLDivElement =
     captionContainerInstances[1];
   const overlayedTransitionElementReplacement = captionContainerInstances[0];
+
+  const overlayedTransitionElementBg = overlayedTransitionElement.children[0];
   // scroll caret section
   // listen for scroll on about section
 
@@ -420,43 +422,76 @@ function handleTransitionToLandingSection() {
 
   aboutSection.addEventListener("transitionend", () => {
     landingSection.classList.replace("flex", "hidden");
-    window.addEventListener("wheel", (e) => {
-      if (e.deltaY <= 0 && window.scrollY === 0) {
-        navCheckContainer.classList.replace("h-0", "h-[10vh]");
-        overlayedTransitionElement.children[0].classList.replace(
-          "before:animate-squish-down-lg",
-          "before:animate-squelch-up-lg",
-        );
-        caption.classList.add("animate-float-up");
-      }
-    });
   });
 
-  window.addEventListener("wheel", (e) => {
-    if (e.deltaY > 0 && navCheckContainer.classList.contains("h-[10vh]")) {
-      navCheckContainer.classList.replace("h-[10vh]", "h-0");
-    }
-  });
+  function toggleTransitionReady() {
+    const transitionReady = navCheckContainer.getAttribute(
+      "data-transition-ready",
+    );
+    transitionReady
+      ? navCheckContainer.setAttribute("data-transition-ready", "false")
+      : navCheckContainer.setAttribute("data-transition-ready", "true");
+  }
+
+  navCheckContainer.addEventListener("transitionend", toggleTransitionReady);
 
   overlayedTransitionElement.addEventListener("animationend", () => {
-    // aboutSection.classList.replace("absolute", "fixed");
-    // disableScroll(true);
-
-    window.addEventListener(
-      "wheel",
-      (e) => {
-        if (e.deltaY < 0 && navCheckContainer.classList.contains("h-[10vh]")) {
-          disableScroll(true);
-          landingSection.classList.replace("hidden", "flex");
-          aboutSection.scrollIntoView(); // VERY IMPORTANT - page jumps all over without it
-          disableScroll(false);
-        }
-      },
-      { once: true },
-    );
+    aboutSection.setAttribute("data-transition-complete", "true");
   });
+  // aboutSection.classList.replace("absolute", "fixed");
+  // disableScroll(true);
 
-  window.addEventListener("scroll", () => console.log("scroll"));
+  function scrollToLandingSection() {
+    disableScroll(true);
+    landingSection.classList.replace("hidden", "flex");
+    aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
+    // aboutSection.style.display = "fixed";
+    landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+    disableScroll(false);
+  }
+
+  function openStagingContainer() {
+    navCheckContainer.classList.replace("h-0", "h-[10vh]");
+    overlayedTransitionElementBg.classList.replace(
+      "before:animate-squish-down-lg",
+      "before:animate-squelch",
+    );
+    caption.classList.add("animate-float-up");
+  }
+
+  function closeStagingContainer() {
+    navCheckContainer.setAttribute("data-transition-ready", "false");
+    navCheckContainer.classList.replace("h-[10vh]", "h-0");
+    landingSection.classList.replace("flex", "hidden");
+    overlayedTransitionElement.children[0].classList.replace(
+      "before:animate-squelch",
+      "before:animate-squish-down-lg",
+    );
+    caption.classList.replace("animate-float-up", "animate-float-down");
+  }
+
+  function handleOpenCloseStaging(e: WheelEvent) {
+    if (aboutSection.getAttribute("data-transition-complete") === "true") {
+      // if scrolling up and transition ready
+      if (
+        e.deltaY < 0 &&
+        navCheckContainer.getAttribute("data-transition-ready") === "true"
+      ) {
+        scrollToLandingSection();
+        // if staging container closed
+      } else if (e.deltaY < 0 && window.scrollY === 0) {
+        openStagingContainer();
+      } else if (
+        // if staging container open, close
+        e.deltaY > 0 &&
+        window.scrollY === 0
+      ) {
+        closeStagingContainer();
+      }
+    }
+  }
+
+  window.addEventListener("wheel", handleOpenCloseStaging);
 
   createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
 
