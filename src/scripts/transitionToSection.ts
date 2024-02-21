@@ -106,17 +106,17 @@ function handleTransitionToAboutSection() {
   );
 
   // b.- handles overlay element position in viewport while scrolling (slowly moves down)
-  window.addEventListener(
-    "scroll",
-    () =>
-      translateOverlayedTransitionElementWhileScrolling(
-        overlayedTransitionElement,
-        2, //base speed (px)
-        1.02, // delta
-        20, // terminal velocity
-      ),
-    { once: true },
+
+  const translateOverlayedElementWhileScrolling = translateOverlayedElement(
+    overlayedTransitionElement,
+    2, //base speed (px)
+    1.02, // delta
+    20, // terminal velocity
   );
+
+  window.addEventListener("scroll", translateOverlayedElementWhileScrolling, {
+    once: true,
+  });
 
   // 5. Wait until the caption container is at the target position in the viewport
   // Then translate the next section's transition group up towards the caption container
@@ -155,10 +155,6 @@ function handleTransitionToAboutSection() {
     "animationend",
     enableScroll,
   );
-
-  // overlayedTransitionElementReplacement.addEventListener("animationend", () => {
-  //   landingSection.classList.add("hidden");
-  // });
 
   // The end of the scroll signals the end of the transition, and user scrolling is reenabled
 }
@@ -252,25 +248,24 @@ function computeScaledRectBounds(
   return { top, left, right, bottom };
 }
 
-function translateOverlayedTransitionElementWhileScrolling(
+type TranslateElementPosit = () => void;
+
+function translateOverlayedElement(
   overlayedTransitionElement: HTMLDivElement,
   baseSpeedInPx: number,
   delta: number,
-  speedLimit,
-): void {
-  if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
-  overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
-  // a little bit funky, but because the element is removed when the scroll is complete,
-  // this is an easy way to return out of the function execution
-  if (overlayedTransitionElement.style.display === "none") return;
-  requestAnimationFrame(() =>
-    translateOverlayedTransitionElementWhileScrolling(
-      overlayedTransitionElement,
-      baseSpeedInPx,
-      delta,
-      speedLimit,
-    ),
-  );
+  speedLimit: number,
+): TranslateElementPosit {
+  function translateElementPosit(): void {
+    if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
+    overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
+    // a little bit funky, but because the element is removed when the scroll is complete,
+    // this is an easy way to return out of the function execution
+    if (overlayedTransitionElement.style.display === "none") return;
+    requestAnimationFrame(translateElementPosit);
+  }
+
+  return translateElementPosit;
 }
 
 // ----------------------------------------------------------------------------------
