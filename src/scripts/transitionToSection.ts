@@ -1,15 +1,49 @@
 import disableScroll from "./disableScroll";
-/**
- * Handles all the transitions, animations and effects when a user
- * navigates from the landing section to the about section.
- *
- */
+
+let options = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 1.0,
+};
+
+function observeSection(callback: Function) {
+  return (entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true) {
+        callback();
+      }
+    });
+  };
+}
+
+const observeLandingSection = observeSection(handleTransitionToAboutSection);
+const observeAboutSection = observeSection(handleTransitionToLandingSection);
+
+const landingSection = document.querySelector("#landing");
+const aboutSection = document.querySelector("#about");
+
+const landingSectionObserver = new IntersectionObserver(
+  observeLandingSection,
+  options,
+);
+
+const aboutSectionObserver = new IntersectionObserver(
+  observeAboutSection,
+  options,
+);
+
+landingSectionObserver.observe(landingSection);
+aboutSectionObserver.observe(aboutSection);
 
 /**
  * *************************************
  * * LANDING SECTION -> ABOUT SECTION *
  * *************************************
+ *
+ * Handles all the transitions, animations and effects when a user
+ * navigates from the landing section to the about section.
  */
+
 function handleTransitionToAboutSection() {
   /**
    * SELECTED ELEMENTS
@@ -398,6 +432,7 @@ function handleTransitionToLandingSection() {
     entries.forEach((entry) => {
       if (entry.isIntersecting === true) {
         disableScroll(false);
+        console.log("isIntersectingAbout");
       }
     });
   }
@@ -501,8 +536,5 @@ function handleTransitionToLandingSection() {
   // reenable scroll
   // else if user scrolls back down, collide the captioncontainer with the text container again.
 }
-
-handleTransitionToAboutSection();
-handleTransitionToLandingSection();
 
 // export default handleTransitionToAboutSection;
