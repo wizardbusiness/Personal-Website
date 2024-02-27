@@ -121,6 +121,7 @@ function handleTransitionToAboutSection() {
   landingSection.addEventListener("wheel", handleScrollUp);
 
   function positionOverlayedElementAtCorrectOffset() {
+    // LINK #computeScaledRectBounds
     const offset = computeScaledRectBounds(overlayedTransitionElement, 1.3);
     overlayedTransitionElement.style.top = `calc(${
       window.innerHeight * 0.77
@@ -171,7 +172,7 @@ function handleTransitionToAboutSection() {
   );
 
   // 4b.- slowly translate transition element down to simulate falling
-
+  // LINK #translateOverlayedElement
   const translateOverlayedElementWhileScrolling = translateOverlayedElement(
     overlayedTransitionElement,
     2, //base speed (px)
@@ -194,6 +195,7 @@ function handleTransitionToAboutSection() {
    * @param {number} targetPosit
    * @description Checks if captionContainer element is at the target position in the viewport
    * and handles the event by translating the next section up from viewport bottom
+   * ANCHOR[id=checkIfElementAtTargetPosition]
    * NOTE: uses request animation frame instead of event listener
    */
 
@@ -201,6 +203,7 @@ function handleTransitionToAboutSection() {
   function checkIfElementAtTargetPosition(
     overlayedTransitionElement: HTMLDivElement,
     nextSectionTransitionGroupContainer: HTMLElement,
+    // LINK #handleContainerAtTarget
     handleAtTarget: HandleContainerAtTarget,
     targetPosit: number,
   ) {
@@ -246,12 +249,14 @@ function handleTransitionToAboutSection() {
    *  - handles the collision by hiding the transitioned element and
    *    "swapping in" (making visible) the duplicate element in the about section,
    *    and then animating the swapped in element
+   * ANCHOR[id=checkForElementBoundsCollisionWithNextSection]
    */
 
   function checkForElementBoundsCollisionWithNextSection(
     overlayedTransitionElement: HTMLDivElement,
     nextSectionElement: HTMLElement,
     overlayedTransitionElementReplacement: HTMLDivElement,
+    // LINK #handleCollision
     handleCollision: HandleCollision,
   ) {
     const intervalId = setInterval(() => {
@@ -279,6 +284,7 @@ function handleTransitionToAboutSection() {
   // 7. The end of the scroll signals the end of the transition, and user scrolling is reenabled
 
   /**
+   *
    * @function enableScroll
    * @description reenables scroll on the window
    */
@@ -317,8 +323,16 @@ function scaleOverlayedTransitionElement(
 
 // ----------------------------------------------------------------------------------
 
-type PositionKeys = "left" | "right" | "top" | "bottom";
+/**
+ *
+ * @function computeScaledRectBounds
+ * @param OverlayedTransitionElement
+ * @param scale
+ * @returns {Object<PositionKeys>}
+ * ANCHOR[id=computeScaledRectBounds]
+ */
 
+type PositionKeys = "left" | "right" | "top" | "bottom";
 function computeScaledRectBounds(
   OverlayedTransitionElement: HTMLDivElement,
   scale: number,
@@ -343,8 +357,16 @@ function computeScaledRectBounds(
   return { top, left, right, bottom };
 }
 
+/**
+ * @function translateOverlayedElement
+ * @param overlayedTransitionElement
+ * @param baseSpeedInPx
+ * @param delta
+ * @param speedLimit
+ * @returns {TranslateElementPosit}
+ * LINK[id=translateOverlayedElement]
+ */
 type TranslateElementPosit = () => void;
-
 function translateOverlayedElement(
   overlayedTransitionElement: HTMLDivElement,
   baseSpeedInPx: number,
@@ -366,7 +388,16 @@ function translateOverlayedElement(
 // ----------------------------------------------------------------------------------
 
 type HandleContainerAtTarget = (nextSection: HTMLElement) => void;
-
+/**
+ * @function handleContainerAtTarget
+ * @param nextSection
+ * @description Helper function used in checkIfElementAtTargetPosition.
+ * Moves the next section content div up to the top of container
+ * ANCHOR[id=handleContainerAtTarget]
+ *
+ * Link to function call
+ * LINK #checkIfElementAtTargetPosition
+ */
 function handleContainerAtTarget(nextSection: HTMLElement) {
   nextSection.classList.replace("top-[100vh]", "top-[0vh]");
 }
@@ -377,7 +408,15 @@ type HandleCollision = (
   overlayedTransitionElement: HTMLDivElement,
   overlayedTransitionElementReplacement: HTMLDivElement,
 ) => void;
-
+/**
+ * @function handleCollision
+ * @param overlayedTransitionElement
+ * @param overlayedTransitionElementReplacement
+ * @description helper function triggers squish animation on overlayedTransitionElementReplacement
+ * ANCHOR[id=handleCollision]
+ * Called in checkForElementBoundsCollisionWithNextSection
+ * LINK #checkForElementBoundsCollisionWithNextSection
+ */
 function handleCollision(
   overlayedTransitionElement: HTMLDivElement,
   overlayedTransitionElementReplacement: HTMLDivElement,
