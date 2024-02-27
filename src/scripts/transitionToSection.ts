@@ -40,8 +40,9 @@ aboutSectionObserver.observe(aboutSection);
  * * LANDING SECTION -> ABOUT SECTION *
  * *************************************
  *
- * Handles all the transitions, animations and effects when a user
+ * @description Handles all the transitions, animations and effects when a user
  * navigates from the landing section to the about section.
+ * @link
  */
 
 function handleTransitionToAboutSection() {
@@ -98,27 +99,39 @@ function handleTransitionToAboutSection() {
    * In sequence of effect
    */
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
-
   disableScroll(true);
 
   // 2. When user scrolls up on landing page start the programmatic transition to the next section
+
   /**
-   * @constant handleScrollUpEvent
-   * @description curried function for handling scrolling up
+   * @function handleScrollUp
+   * @description
    * - Fades out elements not being animated
    * - Scales up caption container
    */
-  const handleScrollUpEvent = handleScrollUp(
-    fadeOnTransitionGroup,
-    overlayedTransitionElement,
-    scaleOverlayedTransitionElement,
-  );
-  landingSection.addEventListener("wheel", handleScrollUpEvent);
 
-  const detachOverlayedElement = positionOverlayedElementAtCorrectOffset(
-    overlayedTransitionElement,
-    computeScaledRectBounds,
-  );
+  function handleScrollUp(e: WheelEvent) {
+    if (e.deltaY > 0) {
+      fadeOutElements(fadeOnTransitionGroup);
+      scaleOverlayedTransitionElement(overlayedTransitionElement);
+      landingSection.removeEventListener("wheel", handleScrollUp);
+    }
+  }
+
+  landingSection.addEventListener("wheel", handleScrollUp);
+
+  function positionOverlayedElementAtCorrectOffset() {
+    const offset = computeScaledRectBounds(overlayedTransitionElement, 1.3);
+    overlayedTransitionElement.style.top = `calc(${
+      window.innerHeight * 0.77
+    }px + ${offset.top}px)`;
+    overlayedTransitionElement.style.left = `${offset.left}px`;
+    overlayedTransitionElement.style.position = "fixed";
+    overlayedTransitionElement.removeEventListener(
+      "animationend",
+      positionOverlayedElementAtCorrectOffset,
+    );
+  }
 
   // 3. Detach captionContainer from document flow by setting to position fixed at computed position
   /**
@@ -130,16 +143,34 @@ function handleTransitionToAboutSection() {
    */
   overlayedTransitionElement.addEventListener(
     "animationend",
-    detachOverlayedElement,
+    positionOverlayedElementAtCorrectOffset,
   );
 
   // 4a. scroll to the next section
+  /**
+   * @function programaticallyScrollToNextSection
+   * @description scrolls the height of the window
+   */
+
+  function programaticallyScrollToNextSection() {
+    window.scrollBy({
+      // landing section height + nav check div height
+      top: window.innerHeight,
+      behavior: "smooth",
+    });
+
+    overlayedTransitionElement.removeEventListener(
+      "animationend",
+      programaticallyScrollToNextSection,
+    );
+  }
+
   overlayedTransitionElement.addEventListener(
     "animationend",
     programaticallyScrollToNextSection,
   );
 
-  // b.- handles overlay element position in viewport while scrolling (slowly moves down)
+  // 4b.- slowly translate transition element down to simulate falling
 
   const translateOverlayedElementWhileScrolling = translateOverlayedElement(
     overlayedTransitionElement,
@@ -149,16 +180,50 @@ function handleTransitionToAboutSection() {
   );
 
   window.addEventListener("scroll", translateOverlayedElementWhileScrolling, {
-    once: true,
+    once: true, // automatically removes itself
   });
 
   // 5. Wait until the caption container is at the target position in the viewport
   // Then translate the next section's transition group up towards the caption container
+
   /**
-   * @description Custom Event Listener
-   * Checks if captionContainer element is at the target position in the viewport
+   * @function checkIfElementAtTargetPosition
+   * @param {HTMLDivElement} overlayedTransitionElement
+   * @param {HTMLElement} nextSectionTransitionGroupContainer
+   * @param {function} handleAtTarget
+   * @param {number} targetPosit
+   * @description Checks if captionContainer element is at the target position in the viewport
    * and handles the event by translating the next section up from viewport bottom
+   * NOTE: uses request animation frame instead of event listener
    */
+
+  // detectWhenContainerPositionAtTarget
+  function checkIfElementAtTargetPosition(
+    overlayedTransitionElement: HTMLDivElement,
+    nextSectionTransitionGroupContainer: HTMLElement,
+    handleAtTarget: HandleContainerAtTarget,
+    targetPosit: number,
+  ) {
+    const containerBottomY =
+      overlayedTransitionElement.getBoundingClientRect().bottom;
+    if (
+      // need to check if caption container position is fixed, otherwise any
+      // target posit below the target posit will trigger the callback which may cause unintended side effects.
+      overlayedTransitionElement.style.position === "fixed" &&
+      containerBottomY >= targetPosit
+    ) {
+      handleAtTarget(nextSectionTransitionGroupContainer);
+      return;
+    }
+    requestAnimationFrame(() =>
+      checkIfElementAtTargetPosition(
+        overlayedTransitionElement,
+        nextSectionTransitionGroupContainer,
+        handleAtTarget,
+        targetPosit,
+      ),
+    );
+  }
 
   checkIfElementAtTargetPosition(
     overlayedTransitionElement,
@@ -169,14 +234,40 @@ function handleTransitionToAboutSection() {
 
   // 6. Wait for the container to collide with the <header> element, then handle the collision by
   // swapping in the overlayedTransitionElementReplacement and animating it
+
   /**
-   *  @description Custom Event Listener
-   *  - detects collision between the OverlayedTransitionElement component
-   *    on the landing page and the info container div in the about section
-   *  - handles the collision by hiding the caption container and
-   *    "swapping in" (making visible) the OverlayedTransitionElement in the about section,
-   *    and animating the swapped in OverlayedTransitionElement
+   * @function checkForElementBoundsCollisionWithNextSection
+   * @param {HTMLDivElement} overlayedTransitionElement
+   * @param {HTMLElement} nextSectionElement
+   * @param {HTMLDivElement} overlayedTransitionElementReplacement
+   * @param {function} handleCollision
+   * @description
+   *  - detects collision with next section when transitioning to about section.
+   *  - handles the collision by hiding the transitioned element and
+   *    "swapping in" (making visible) the duplicate element in the about section,
+   *    and then animating the swapped in element
    */
+
+  function checkForElementBoundsCollisionWithNextSection(
+    overlayedTransitionElement: HTMLDivElement,
+    nextSectionElement: HTMLElement,
+    overlayedTransitionElementReplacement: HTMLDivElement,
+    handleCollision: HandleCollision,
+  ) {
+    const intervalId = setInterval(() => {
+      const overlayedTransitionElementBottom =
+        overlayedTransitionElement.getBoundingClientRect().bottom;
+      const nextSectionElementTop =
+        nextSectionElement.getBoundingClientRect().top;
+      if (nextSectionElementTop - overlayedTransitionElementBottom <= 0) {
+        handleCollision(
+          overlayedTransitionElement,
+          overlayedTransitionElementReplacement,
+        );
+        clearInterval(intervalId);
+      }
+    }, 5);
+  }
 
   checkForElementBoundsCollisionWithNextSection(
     overlayedTransitionElement,
@@ -185,36 +276,28 @@ function handleTransitionToAboutSection() {
     handleCollision,
   );
 
+  // 7. The end of the scroll signals the end of the transition, and user scrolling is reenabled
+
+  /**
+   * @function enableScroll
+   * @description reenables scroll on the window
+   */
+
+  function enableScroll() {
+    disableScroll(false);
+    overlayedTransitionElementReplacement.removeEventListener(
+      "animationend",
+      enableScroll,
+    );
+  }
+
   overlayedTransitionElementReplacement.addEventListener(
     "animationend",
     enableScroll,
   );
-
-  // The end of the scroll signals the end of the transition, and user scrolling is reenabled
 }
-
-/**
- * @function handleScrollUpEvent
- * @description
- * - Fades out elements not being animated
- * - Scales up caption container
- * - handles overlay element position in viewport while scrolling (slowly moves down)
- */
 
 // ----------------------------------------------------------------------------------
-
-function handleScrollUp(
-  fadeOnTransitionGroup: NodeListOf<HTMLDivElement>,
-  overlayedTransitionElement: HTMLDivElement,
-  scaleOverlayedTransitionElement: ScaleOverlayedTransitionElement,
-) {
-  return (e: WheelEvent) => {
-    if (e.deltaY > 0) {
-      fadeOutElements(fadeOnTransitionGroup);
-      scaleOverlayedTransitionElement(overlayedTransitionElement);
-    }
-  };
-}
 
 function fadeOutElements(elementsGroup: NodeListOf<HTMLDivElement>) {
   elementsGroup.forEach((element) => {
@@ -226,10 +309,6 @@ function fadeOutElements(elementsGroup: NodeListOf<HTMLDivElement>) {
   });
 }
 
-type ScaleOverlayedTransitionElement = (
-  overlayedTransitionElement: HTMLDivElement,
-) => void;
-
 function scaleOverlayedTransitionElement(
   overlayedTransitionElement: HTMLDivElement,
 ): void {
@@ -238,24 +317,6 @@ function scaleOverlayedTransitionElement(
 
 // ----------------------------------------------------------------------------------
 
-function positionOverlayedElementAtCorrectOffset(
-  OverlayedTransitionElement: HTMLDivElement,
-  calculateOffset: ComputeScaledRectBounds,
-): () => void {
-  return () => {
-    const offset = calculateOffset(OverlayedTransitionElement, 1.3);
-    OverlayedTransitionElement.style.top = `calc(${
-      window.innerHeight * 0.77
-    }px + ${offset.top}px)`;
-    OverlayedTransitionElement.style.left = `${offset.left}px`;
-    OverlayedTransitionElement.style.position = "fixed";
-  };
-}
-
-type ComputeScaledRectBounds = (
-  OverlayedTransitionElement: HTMLDivElement,
-  scale: number,
-) => Record<PositionKeys, number>;
 type PositionKeys = "left" | "right" | "top" | "bottom";
 
 function computeScaledRectBounds(
@@ -304,44 +365,6 @@ function translateOverlayedElement(
 
 // ----------------------------------------------------------------------------------
 
-function programaticallyScrollToNextSection() {
-  window.scrollBy({
-    // landing section height + nav check div height
-    top: window.innerHeight,
-    behavior: "smooth",
-  });
-}
-
-// ----------------------------------------------------------------------------------
-
-// detectWhenContainerPositionAtTarget
-function checkIfElementAtTargetPosition(
-  overlayedTransitionElement: HTMLDivElement,
-  nextSectionTransitionGroupContainer: HTMLElement,
-  handleAtTarget: HandleContainerAtTarget,
-  targetPosit: number,
-) {
-  const containerBottomY =
-    overlayedTransitionElement.getBoundingClientRect().bottom;
-  if (
-    // need to check if caption container position is fixed, otherwise any
-    // target posit below the target posit will trigger the callback
-    overlayedTransitionElement.style.position === "fixed" &&
-    containerBottomY >= targetPosit
-  ) {
-    handleAtTarget(nextSectionTransitionGroupContainer);
-    return;
-  }
-  requestAnimationFrame(() =>
-    checkIfElementAtTargetPosition(
-      overlayedTransitionElement,
-      nextSectionTransitionGroupContainer,
-      handleAtTarget,
-      targetPosit,
-    ),
-  );
-}
-
 type HandleContainerAtTarget = (nextSection: HTMLElement) => void;
 
 function handleContainerAtTarget(nextSection: HTMLElement) {
@@ -349,27 +372,6 @@ function handleContainerAtTarget(nextSection: HTMLElement) {
 }
 
 // ----------------------------------------------------------------------------------
-
-function checkForElementBoundsCollisionWithNextSection(
-  overlayedTransitionElement: HTMLDivElement,
-  nextSectionElement: HTMLElement,
-  overlayedTransitionElementReplacement: HTMLDivElement,
-  handleCollision: HandleCollision,
-) {
-  const intervalId = setInterval(() => {
-    const overlayedTransitionElementBottom =
-      overlayedTransitionElement.getBoundingClientRect().bottom;
-    const nextSectionElementTop =
-      nextSectionElement.getBoundingClientRect().top;
-    if (nextSectionElementTop - overlayedTransitionElementBottom <= 0) {
-      handleCollision(
-        overlayedTransitionElement,
-        overlayedTransitionElementReplacement,
-      );
-      clearInterval(intervalId);
-    }
-  }, 5);
-}
 
 type HandleCollision = (
   overlayedTransitionElement: HTMLDivElement,
@@ -388,10 +390,6 @@ function handleCollision(
   overlayedTransitionElementReplacement.children[0].classList.add(
     "before:animate-squish-down-lg",
   );
-}
-
-function enableScroll() {
-  disableScroll(false);
 }
 
 /**
