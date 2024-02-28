@@ -3,7 +3,7 @@ import disableScroll from "./disableScroll";
 let options = {
   root: null,
   rootMargin: "0px",
-  threshold: 1.0,
+  threshold: 0.8,
 };
 
 function observeSection(callback: Function) {
@@ -16,8 +16,8 @@ function observeSection(callback: Function) {
   };
 }
 
-const observeLandingSection = observeSection(handleTransitionToAboutSection);
-const observeAboutSection = observeSection(handleTransitionToLandingSection);
+const observeLandingSection = observeSection(handleTransitionToAboutSection); // LINK #landingSection
+const observeAboutSection = observeSection(handleTransitionToLandingSection); // LINK #aboutSection
 
 const landingSection = document.querySelector("#landing");
 const aboutSection = document.querySelector("#about");
@@ -36,36 +36,34 @@ landingSectionObserver.observe(landingSection);
 aboutSectionObserver.observe(aboutSection);
 
 /**
+ * ANCHOR[id=landingSection]
  * *************************************
  * * LANDING SECTION -> ABOUT SECTION *
  * *************************************
- *
  * @description Handles all the transitions, animations and effects when a user
  * navigates from the landing section to the about section.
- * @link
+ *
  */
 
 function handleTransitionToAboutSection() {
   /**
-   * SELECTED ELEMENTS
-   * -----------------
+   * -------------------------
+   * SECTION SELECTED ELEMENTS
+   * -------------------------
    */
 
   /**
-   * @constant landingSection
    * @description The landing <section> is where the user journey starts
    */
   const landingSection = document.querySelector("#landing");
 
   /**
-   * @constant fadeOnTransitionGroup
    * @description Elements being faded out when the transition takes place
    */
   const fadeOnTransitionGroup: NodeListOf<HTMLDivElement> =
     document.querySelectorAll(".fade-out-on-transition-away");
 
   /**
-   * @constant captionContainerInstances
    * @description Caption container component instances.
    * 2 instances -
    * - one in landing section
@@ -79,14 +77,12 @@ function handleTransitionToAboutSection() {
   const overlayedTransitionElementReplacement = captionContainerInstances[1];
 
   /**
-   * @constant aboutSectionTextContentContainer
    * @description The container that overlayedTransitionElement will transition to and "collide" with.
    */
   const aboutSectionTextContentContainer: HTMLElement =
     document.querySelector("#text-content");
 
   /**
-   * @constant nextSectionTransitionGroupContainer
    * @description The container that will be transitioned up to "collide" with the
    * overlayedTransitionElement.
    */
@@ -94,17 +90,19 @@ function handleTransitionToAboutSection() {
     document.querySelector("[data-about-translate-up]");
 
   /**
-   * EVENT HANDLING
-   * --------------
+   * -------------------------------------
+   * SECTION EVENT LISTENERS AND CALLBACKS
+   * -------------------------------------
    * In sequence of effect
    */
+
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
   disableScroll(true);
 
-  // 2. When user scrolls up on landing page start the programmatic transition to the next section
-
   /**
-   * @function handleScrollUp
+   * 2. When user scrolls up on landing page start the programmatic transition to the next section
+   *
+   * @param {WheelEvent} e
    * @description
    * - Fades out elements not being animated
    * - Scales up caption container
@@ -134,8 +132,9 @@ function handleTransitionToAboutSection() {
     );
   }
 
-  // 3. Detach captionContainer from document flow by setting to position fixed at computed position
   /**
+   * 3. Detach captionContainer from document flow by setting to position fixed at computed position
+   *
    * @const detachOverlayedElement
    * @description
    *  curried function
@@ -147,9 +146,8 @@ function handleTransitionToAboutSection() {
     positionOverlayedElementAtCorrectOffset,
   );
 
-  // 4a. scroll to the next section
   /**
-   * @function programaticallyScrollToNextSection
+   * 4a. Scroll to the next section
    * @description scrolls the height of the window
    */
 
@@ -171,8 +169,10 @@ function handleTransitionToAboutSection() {
     programaticallyScrollToNextSection,
   );
 
-  // 4b.- slowly translate transition element down to simulate falling
-  // LINK #translateOverlayedElement
+  /**
+   * 4b. slowly translate transition element down to simulate falling
+   * LINK #translateOverlayedElement
+   */
   const translateOverlayedElementWhileScrolling = translateOverlayedElement(
     overlayedTransitionElement,
     2, //base speed (px)
@@ -188,7 +188,6 @@ function handleTransitionToAboutSection() {
   // Then translate the next section's transition group up towards the caption container
 
   /**
-   * @function checkIfElementAtTargetPosition
    * @param {HTMLDivElement} overlayedTransitionElement
    * @param {HTMLElement} nextSectionTransitionGroupContainer
    * @param {function} handleAtTarget
@@ -199,7 +198,6 @@ function handleTransitionToAboutSection() {
    * NOTE: uses request animation frame instead of event listener
    */
 
-  // detectWhenContainerPositionAtTarget
   function checkIfElementAtTargetPosition(
     overlayedTransitionElement: HTMLDivElement,
     nextSectionTransitionGroupContainer: HTMLElement,
@@ -235,11 +233,10 @@ function handleTransitionToAboutSection() {
     window.innerHeight * 0.55,
   );
 
-  // 6. Wait for the container to collide with the <header> element, then handle the collision by
-  // swapping in the overlayedTransitionElementReplacement and animating it
-
   /**
-   * @function checkForElementBoundsCollisionWithNextSection
+   * 6. Wait for the container to collide with the <header> element, then handle the collision by
+   * swapping in the overlayedTransitionElementReplacement and animating it
+   *
    * @param {HTMLDivElement} overlayedTransitionElement
    * @param {HTMLElement} nextSectionElement
    * @param {HTMLDivElement} overlayedTransitionElementReplacement
@@ -281,11 +278,9 @@ function handleTransitionToAboutSection() {
     handleCollision,
   );
 
-  // 7. The end of the scroll signals the end of the transition, and user scrolling is reenabled
-
   /**
+   * 7. The end of the scroll signals the end of the transition, and user scrolling is reenabled
    *
-   * @function enableScroll
    * @description reenables scroll on the window
    */
 
@@ -303,7 +298,16 @@ function handleTransitionToAboutSection() {
   );
 }
 
-// ----------------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------
+ * SECTION HELPER FUNCTIONS FOR 'HANDLETRANSITIONTOABOUTSECTION'
+ * -------------------------------------------------------------
+ */
+
+/**
+ * @param elementsGroup
+ * @description Fades out elements on landing page
+ */
 
 function fadeOutElements(elementsGroup: NodeListOf<HTMLDivElement>) {
   elementsGroup.forEach((element) => {
@@ -315,6 +319,11 @@ function fadeOutElements(elementsGroup: NodeListOf<HTMLDivElement>) {
   });
 }
 
+/**
+ * @param overlayedTransitionElement
+ * @description Scales up the caption container element which remains in view during transition
+ */
+
 function scaleOverlayedTransitionElement(
   overlayedTransitionElement: HTMLDivElement,
 ): void {
@@ -325,10 +334,10 @@ function scaleOverlayedTransitionElement(
 
 /**
  *
- * @function computeScaledRectBounds
  * @param OverlayedTransitionElement
  * @param scale
  * @returns {Object<PositionKeys>}
+ * @description computes the actual bounds of the scaled element in the cssom layout
  * ANCHOR[id=computeScaledRectBounds]
  */
 
@@ -358,12 +367,12 @@ function computeScaledRectBounds(
 }
 
 /**
- * @function translateOverlayedElement
  * @param overlayedTransitionElement
  * @param baseSpeedInPx
  * @param delta
  * @param speedLimit
  * @returns {TranslateElementPosit}
+ * @description moves the caption container down the viewport so that it appears to fall
  * LINK[id=translateOverlayedElement]
  */
 type TranslateElementPosit = () => void;
@@ -389,7 +398,6 @@ function translateOverlayedElement(
 
 type HandleContainerAtTarget = (nextSection: HTMLElement) => void;
 /**
- * @function handleContainerAtTarget
  * @param nextSection
  * @description Helper function used in checkIfElementAtTargetPosition.
  * Moves the next section content div up to the top of container
@@ -409,7 +417,6 @@ type HandleCollision = (
   overlayedTransitionElementReplacement: HTMLDivElement,
 ) => void;
 /**
- * @function handleCollision
  * @param overlayedTransitionElement
  * @param overlayedTransitionElementReplacement
  * @description helper function triggers squish animation on overlayedTransitionElementReplacement
@@ -432,6 +439,7 @@ function handleCollision(
 }
 
 /**
+ * ANCHOR[id=aboutSection]
  * ************************************
  * * ABOUT SECTION -> LANDING SECTION *
  * ************************************
@@ -447,7 +455,7 @@ function handleTransitionToLandingSection() {
    * @description Caption container component instances.
    * 2 instances -
    * - one in landing section
-   * - one in about section to mimic page transition
+   * - one in about section
    */
   const captionContainerInstances: NodeListOf<HTMLDivElement> =
     document.querySelectorAll("#caption-container");
