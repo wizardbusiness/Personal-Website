@@ -497,6 +497,7 @@ function handleTransitionToLandingSection() {
 
   aboutSection.addEventListener("transitionend", () => {
     landingSection.classList.replace("flex", "hidden");
+    aboutSection.setAttribute("data-transition-complete", "true");
   });
 
   function toggleTransitionReady() {
@@ -510,19 +511,16 @@ function handleTransitionToLandingSection() {
 
   navCheckContainer.addEventListener("transitionend", toggleTransitionReady);
 
-  overlayedTransitionElement.addEventListener("animationend", () => {
-    aboutSection.setAttribute("data-transition-complete", "true");
-  });
   // aboutSection.classList.replace("absolute", "fixed");
   // disableScroll(true);
 
   function scrollToLandingSection() {
-    disableScroll(true);
+    console.log("blah");
+    // disableScroll(true);
     landingSection.classList.replace("hidden", "flex");
     aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
-    // aboutSection.style.display = "fixed";
     landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
-    disableScroll(false);
+    // disableScroll(false);
   }
 
   function openStagingContainer() {
@@ -538,14 +536,14 @@ function handleTransitionToLandingSection() {
     navCheckContainer.setAttribute("data-transition-ready", "false");
     navCheckContainer.classList.replace("h-[10vh]", "h-0");
     landingSection.classList.replace("flex", "hidden");
-    overlayedTransitionElement.children[0].classList.replace(
+    overlayedTransitionElementBg.classList.replace(
       "before:animate-squelch",
       "before:animate-squish-down-lg",
     );
     caption.classList.replace("animate-float-up", "animate-float-down");
   }
 
-  function handleOpenCloseStaging(e: WheelEvent) {
+  function handleScrollWhileStagingOpen(e: WheelEvent) {
     if (aboutSection.getAttribute("data-transition-complete") === "true") {
       // if scrolling up and transition ready
       if (
@@ -553,22 +551,25 @@ function handleTransitionToLandingSection() {
         navCheckContainer.getAttribute("data-transition-ready") === "true"
       ) {
         scrollToLandingSection();
+        window.removeEventListener("wheel", handleScrollWhileStagingOpen);
         // if staging container closed
       } else if (e.deltaY < 0 && window.scrollY === 0) {
+        disableScroll(true);
         openStagingContainer();
       } else if (
         // if staging container open, close
         e.deltaY > 0 &&
         window.scrollY === 0
       ) {
+        disableScroll(false);
         closeStagingContainer();
       }
     }
   }
 
-  window.addEventListener("wheel", handleOpenCloseStaging);
+  window.addEventListener("wheel", handleScrollWhileStagingOpen);
 
-  createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
+  // createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
 
   // if user scrolls to top of section,
   // replace nav to about animation with nav to landing animation
