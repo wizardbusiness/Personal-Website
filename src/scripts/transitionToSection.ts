@@ -99,6 +99,11 @@ function handleTransitionToAboutSection() {
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
   disableScroll(true);
 
+  const transitionReady = landingSection.getAttribute("data-transition-ready");
+  if (transitionReady === "false") return;
+
+  landingSection.setAttribute("data-transition-ready", "false");
+
   /**
    * 2. When user scrolls up on landing page start the programmatic transition to the next section
    *
@@ -246,9 +251,8 @@ function handleTransitionToAboutSection() {
    *  - handles the collision by hiding the transitioned element and
    *    "swapping in" (making visible) the duplicate element in the about section,
    *    and then animating the swapped in element
-   * ANCHOR[id=checkForElementBoundsCollisionWithNextSection]
    */
-
+  // ANCHOR[id=checkForElementBoundsCollisionWithNextSection]
   function checkForElementBoundsCollisionWithNextSection(
     overlayedTransitionElement: HTMLDivElement,
     nextSectionElement: HTMLElement,
@@ -338,10 +342,11 @@ function scaleOverlayedTransitionElement(
  * @param scale
  * @returns {Object<PositionKeys>}
  * @description computes the actual bounds of the scaled element in the cssom layout
- * ANCHOR[id=computeScaledRectBounds]
+ *
  */
 
 type PositionKeys = "left" | "right" | "top" | "bottom";
+// ANCHOR[id=computeScaledRectBounds]
 function computeScaledRectBounds(
   OverlayedTransitionElement: HTMLDivElement,
   scale: number,
@@ -463,7 +468,6 @@ function handleTransitionToLandingSection() {
   const captionMsgInstances: NodeListOf<HTMLDivElement> =
     document.querySelectorAll("#caption");
   const caption = captionMsgInstances[1];
-  const captionReplacement = captionContainerInstances[0];
 
   const overlayedTransitionElement: HTMLDivElement =
     captionContainerInstances[1];
@@ -472,28 +476,6 @@ function handleTransitionToLandingSection() {
   const overlayedTransitionElementBg = overlayedTransitionElement.children[0];
   // scroll caret section
   // listen for scroll on about section
-
-  function handleIntersect(entries: IntersectionObserverEntry[]) {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting === true) {
-        disableScroll(false);
-        console.log("isIntersectingAbout");
-      }
-    });
-  }
-
-  function createObserver(threshold, handleIntersect) {
-    let observer: IntersectionObserver;
-
-    let options = {
-      root: null,
-      rootMargin: "0px",
-      threshold: threshold, // fraction of target that needs to be visible for callback to fire, expressed as value between 0 and 1
-    };
-
-    observer = new IntersectionObserver(handleIntersect, options);
-    observer.observe(aboutSection);
-  }
 
   aboutSection.addEventListener("transitionend", () => {
     landingSection.classList.replace("flex", "hidden");
@@ -513,9 +495,10 @@ function handleTransitionToLandingSection() {
 
   // aboutSection.classList.replace("absolute", "fixed");
   // disableScroll(true);
-
+  /**
+   * ANCHOR[id=scrollToLanding]
+   */
   function scrollToLandingSection() {
-    console.log("blah");
     // disableScroll(true);
     landingSection.classList.replace("hidden", "flex");
     aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
@@ -550,7 +533,20 @@ function handleTransitionToLandingSection() {
         e.deltaY < 0 &&
         navCheckContainer.getAttribute("data-transition-ready") === "true"
       ) {
+        overlayedTransitionElement.classList.add("opacity-0");
+        overlayedTransitionElementReplacement.classList.remove(
+          "animate-scale-up",
+        );
+        overlayedTransitionElementReplacement.style.display = "inline";
+        overlayedTransitionElementReplacement.style.position = "fixed";
+        const elementTop =
+          overlayedTransitionElement.getBoundingClientRect().top;
+        // -15vh is the translate distance specified in animate-float-up, thus the calc
+        // LINK tailwind.config.cjs#animate-float-up
+        overlayedTransitionElementReplacement.style.top = `calc(${elementTop}px - 15vh)`;
+        // LINK #scrollToLanding
         scrollToLandingSection();
+
         window.removeEventListener("wheel", handleScrollWhileStagingOpen);
         // if staging container closed
       } else if (e.deltaY < 0 && window.scrollY === 0) {
