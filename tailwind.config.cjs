@@ -34,6 +34,7 @@ module.exports = {
             opacity: 0.8,
           },
         },
+        // ANCHOR[id=animate-float-up]
         floatup: {
           "0%": { transform: "translateY(0vh) scale(130%)" },
           "75%": { transform: "translateY(0vh)" },
@@ -60,24 +61,7 @@ module.exports = {
           "50%": { opacity: "0.8", transform: "translateY(-5px)" },
           "100%": { transform: "translateY(0px)", opacity: "0.5" },
         },
-        "squish-sm": {
-          "0%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%)",
-          },
-          "75%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(10%)",
-            width: "70vw",
-          },
-          "100%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            width: "90vw",
-            backgroundColor: "rgb(71 85 105)",
-          },
-        },
-        "squish-lg": {
+        collision: {
           "0%": {
             transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
@@ -99,86 +83,73 @@ module.exports = {
             width: "75vw",
           },
         },
-        "squelch-sm": {
+        "squish-lg": {
           "0%": {
+            transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            width: "90vw",
-            backgroundColor: "rgb(71 85 105)",
           },
-          "25%": {
+          "40%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(60%)",
             transformOrigin: "bottom",
-            transform: "scaleY(10%)",
-            width: "70vw",
           },
-          "50%": {
+          "75%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(7%)",
             transformOrigin: "bottom",
-            transform: "scaleY(100%)",
-            width: "70vw",
-            backgroundColor: "foggy-glass",
+            width: "30vw",
           },
           "100%": {
+            transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%) translateY(-40vh)",
-            width: "70vw",
+            width: "75vw",
           },
         },
-        "squelch-lg": {
+        squelch: {
           "0%": {
             transformOrigin: "bottom",
             transform: "scaleY(4%)",
-            width: "70vw",
             backgroundColor: "rgb(71 85 105)",
+            width: "75vw",
           },
           "25%": {
             transform: "scaleY(4%)",
-            width: "70vw",
             backgroundColor: "rgb(71 85 105)",
           },
           "50%": {
             transformOrigin: "bottom",
             transform: "scaleY(10%)",
-            width: "30vw",
           },
           "75%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%)",
-            width: "30vw",
             backgroundColor: "foggy-glass",
           },
           "100%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%) scaleX(100%) translateY(-15vh)",
-            width: "30vw",
           },
         },
         "squelch-down-lg": {
-          "100%": {
+          "0%": {
             transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            width: "70vw",
-            backgroundColor: "rgb(71 85 105)",
-          },
-          "75%": {
-            transform: "scaleY(4%)",
-            width: "70vw",
-            backgroundColor: "rgb(71 85 105)",
-          },
-          "50%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(10%)",
-            width: "30vw",
+            transform: "scaleY(100%) scaleX(100%) translateY(15vh)",
           },
           "25%": {
             transformOrigin: "bottom",
             transform: "scaleY(100%)",
-            width: "30vw",
             backgroundColor: "foggy-glass",
           },
-          "0%": {
+          "50%": {
             transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%) translateY(-15vh)",
-            width: "30vw",
+            transform: "scaleY(10%)",
+          },
+          "75%": {
+            transform: "scaleY(4%)",
+            backgroundColor: "rgb(71 85 105)",
+          },
+          "100%": {
+            transformOrigin: "bottom",
+            transform: "scaleY(4%)",
+            backgroundColor: "rgb(71 85 105)",
           },
         },
         grow: {
@@ -255,14 +226,11 @@ module.exports = {
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "scale-up": "scaleup 1.3s forwards ease-out",
-
         "swipe-down": "swipe-down 0.2s forwards",
         "swipe-up": "swipe-up 0.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
-        "squelch-up-lg": "squelch-lg 0.8s forwards ease-in-out",
-        "squelch-down-lg": "squish-down-lg 0.8s reverse ease-in-out",
-        "squelch-up-sm": "squelch-sm 0.5s forwards ease-in",
+        squelch: "squelch 0.8s forwards ease-in-out",
         "float-up": "floatup 0.8s forwards ease-in-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
