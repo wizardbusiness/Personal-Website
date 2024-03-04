@@ -61,7 +61,11 @@ function handleTransitionToAboutSection() {
    * @description Elements being faded out when the transition takes place
    */
   const fadeOnTransitionGroup: NodeListOf<HTMLDivElement> =
-    document.querySelectorAll(".fade-out-on-transition-away");
+    document.querySelectorAll(".transition-group");
+
+  /**
+   * @description The container containing the caption container on the landing page
+   */
 
   /**
    * @description Caption container component instances.
@@ -86,8 +90,8 @@ function handleTransitionToAboutSection() {
    * @description The container that will be transitioned up to "collide" with the
    * overlayedTransitionElement.
    */
-  const nextSectionTransitionGroupContainer: HTMLDivElement =
-    document.querySelector("[data-about-translate-up]");
+  const nextSectionTransitionGroup: NodeListOf<HTMLElement> =
+    document.querySelectorAll("[data-about-translate-up]");
 
   /**
    * -------------------------------------
@@ -99,6 +103,24 @@ function handleTransitionToAboutSection() {
   // 1. Disable user scroll when handleTransitionToNextSection is invoked
   disableScroll(true);
 
+  /**
+   *
+   * @param overlayedTransitionElement
+   * @description capture the starting position of the transition element for use on back transition to section
+   */
+  // NOTE see use case at link below
+  // LINK #capturePositionUsedHere
+  function captureCaptionStartingPosit(
+    overlayedTransitionElement: HTMLDivElement,
+  ) {
+    const bottom = overlayedTransitionElement.getBoundingClientRect().bottom;
+    overlayedTransitionElement.setAttribute(
+      "data-caption-position",
+      `${bottom}`,
+    );
+  }
+  captureCaptionStartingPosit(overlayedTransitionElement);
+  console.log(overlayedTransitionElement.getAttribute("data-caption-position"));
   const transitionReady = landingSection.getAttribute("data-transition-ready");
   if (transitionReady === "false") return;
 
@@ -176,13 +198,16 @@ function handleTransitionToAboutSection() {
 
   /**
    * 4b. slowly translate transition element down to simulate falling
+   * ANCHOR[id=translateOverlayedElementCall]
    * LINK #translateOverlayedElement
+   *
    */
   const translateOverlayedElementWhileScrolling = translateOverlayedElement(
     overlayedTransitionElement,
     2, //base speed (px)
     1.02, // delta
     20, // terminal velocity
+    Direction.Down,
   );
 
   window.addEventListener("scroll", translateOverlayedElementWhileScrolling, {
@@ -192,48 +217,11 @@ function handleTransitionToAboutSection() {
   // 5. Wait until the caption container is at the target position in the viewport
   // Then translate the next section's transition group up towards the caption container
 
-  /**
-   * @param {HTMLDivElement} overlayedTransitionElement
-   * @param {HTMLElement} nextSectionTransitionGroupContainer
-   * @param {function} handleAtTarget
-   * @param {number} targetPosit
-   * @description Checks if captionContainer element is at the target position in the viewport
-   * and handles the event by translating the next section up from viewport bottom
-   * ANCHOR[id=checkIfElementAtTargetPosition]
-   * NOTE: uses request animation frame instead of event listener
-   */
-
-  function checkIfElementAtTargetPosition(
-    overlayedTransitionElement: HTMLDivElement,
-    nextSectionTransitionGroupContainer: HTMLElement,
-    // LINK #handleContainerAtTarget
-    handleAtTarget: HandleContainerAtTarget,
-    targetPosit: number,
-  ) {
-    const containerBottomY =
-      overlayedTransitionElement.getBoundingClientRect().bottom;
-    if (
-      // need to check if caption container position is fixed, otherwise any
-      // target posit below the target posit will trigger the callback which may cause unintended side effects.
-      overlayedTransitionElement.style.position === "fixed" &&
-      containerBottomY >= targetPosit
-    ) {
-      handleAtTarget(nextSectionTransitionGroupContainer);
-      return;
-    }
-    requestAnimationFrame(() =>
-      checkIfElementAtTargetPosition(
-        overlayedTransitionElement,
-        nextSectionTransitionGroupContainer,
-        handleAtTarget,
-        targetPosit,
-      ),
-    );
-  }
-
+  // ANCHOR[id=checkIfElementAtTargetPositionCallLanding]
+  // LINK #checkIfElementAtTargetPosition
   checkIfElementAtTargetPosition(
     overlayedTransitionElement,
-    nextSectionTransitionGroupContainer,
+    nextSectionTransitionGroup,
     handleContainerAtTarget,
     window.innerHeight * 0.55,
   );
@@ -303,9 +291,9 @@ function handleTransitionToAboutSection() {
 }
 
 /**
- * -------------------------------------------------------------
- * SECTION HELPER FUNCTIONS FOR 'HANDLETRANSITIONTOABOUTSECTION'
- * -------------------------------------------------------------
+ * ------------------------
+ * SECTION HELPER FUNCTIONS
+ * ------------------------
  */
 
 /**
@@ -378,18 +366,24 @@ function computeScaledRectBounds(
  * @param speedLimit
  * @returns {TranslateElementPosit}
  * @description moves the caption container down the viewport so that it appears to fall
- * LINK[id=translateOverlayedElement]
+ * ANCHOR[id=translateOverlayedElement]
+ * LINK #translateOverlayedElementCall
  */
 type TranslateElementPosit = () => void;
+enum Direction {
+  Up = "-",
+  Down = "",
+}
 function translateOverlayedElement(
   overlayedTransitionElement: HTMLDivElement,
   baseSpeedInPx: number,
   delta: number,
   speedLimit: number,
+  direction: Direction,
 ): TranslateElementPosit {
   function translateElementPosit(): void {
     if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
-    overlayedTransitionElement.style.top = `calc(${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
+    overlayedTransitionElement.style.top = `calc(${direction}1 * ${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
     // a little bit funky, but because the element is removed when the scroll is complete,
     // this is an easy way to return out of the function execution
     if (overlayedTransitionElement.style.display === "none") return;
@@ -399,20 +393,73 @@ function translateOverlayedElement(
   return translateElementPosit;
 }
 
+/**
+ * @param {HTMLDivElement} overlayedTransitionElement
+ * @param {NodeListOf<HTMLDivElement>} nextSectionTransitionGroup
+ * @param {function} handleAtTarget
+ * @param {number} targetPosit
+ *
+ * @description Checks if captionContainer element is at the target position in the viewport
+ * and handles the event by translating the next section up from viewport bottom
+ *
+ */
+
+// ANCHOR[id=checkIfElementAtTargetPosition]
+// Landing:
+// LINK #checkIfElementAtTargetPositionCallLanding
+// About:
+// LINK #checkIfElementAtTargetPositionCallAbout
+// NOTE: uses request animation frame instead of event listener
+function checkIfElementAtTargetPosition(
+  overlayedTransitionElement: HTMLDivElement,
+  nextSectionTransitionGroup: NodeListOf<HTMLElement>,
+  // LINK #handleContainerAtTarget
+  handleAtTarget: HandleContainerAtTarget,
+  targetPosit: number,
+) {
+  const containerBottomY =
+    overlayedTransitionElement.getBoundingClientRect().bottom;
+  if (
+    // need to check if caption container position is fixed, otherwise any
+    // target posit below the target posit will trigger the callback which may cause unintended side effects.
+    overlayedTransitionElement.style.position === "fixed" &&
+    containerBottomY >= targetPosit
+  ) {
+    overlayedTransitionElement.setAttribute("data-at-target-posit", "true");
+    nextSectionTransitionGroup.forEach((htmlEl) =>
+      handleAtTarget(htmlEl, overlayedTransitionElement),
+    );
+    return;
+  }
+  requestAnimationFrame(() =>
+    checkIfElementAtTargetPosition(
+      overlayedTransitionElement,
+      nextSectionTransitionGroup,
+      handleAtTarget,
+      targetPosit,
+    ),
+  );
+}
+
 // ----------------------------------------------------------------------------------
 
-type HandleContainerAtTarget = (nextSection: HTMLElement) => void;
+type HandleContainerAtTarget = (
+  transitionGroup: HTMLElement,
+  overlayedTransitionElement?: HTMLDivElement,
+) => void;
 /**
  * @param nextSection
  * @description Helper function used in checkIfElementAtTargetPosition.
  * Moves the next section content div up to the top of container
  * ANCHOR[id=handleContainerAtTarget]
- *
- * Link to function call
  * LINK #checkIfElementAtTargetPosition
+ *
  */
-function handleContainerAtTarget(nextSection: HTMLElement) {
-  nextSection.classList.replace("top-[100vh]", "top-[0vh]");
+function handleContainerAtTarget(
+  transitionGroupMember: HTMLElement,
+  overlayedTransitionElement?: HTMLElement,
+) {
+  transitionGroupMember.classList.replace("top-[100vh]", "top-[0vh]");
 }
 
 // ----------------------------------------------------------------------------------
@@ -445,9 +492,9 @@ function handleCollision(
 
 /**
  * ANCHOR[id=aboutSection]
- * ************************************
- * * ABOUT SECTION -> LANDING SECTION *
- * ************************************
+ * ********************************************
+ * * SECTION ABOUT SECTION -> LANDING SECTION *
+ * ********************************************
  */
 
 function handleTransitionToLandingSection() {
@@ -474,9 +521,15 @@ function handleTransitionToLandingSection() {
   const overlayedTransitionElementReplacement = captionContainerInstances[0];
 
   const overlayedTransitionElementBg = overlayedTransitionElement.children[0];
+
+  const slideDownTransitionGroup: NodeListOf<HTMLElement> =
+    document.querySelectorAll(".transition-group");
+
+  const landingSectionTransitionElementContainer: HTMLDivElement =
+    document.querySelector(".caption-container-container");
+
   // scroll caret section
   // listen for scroll on about section
-
   aboutSection.addEventListener("transitionend", () => {
     landingSection.classList.replace("flex", "hidden");
     aboutSection.setAttribute("data-transition-complete", "true");
@@ -526,6 +579,15 @@ function handleTransitionToLandingSection() {
     caption.classList.replace("animate-float-up", "animate-float-down");
   }
 
+  function handleAtTarget(
+    transitionGroupMember: HTMLElement,
+    overlayedTransitionElement: HTMLDivElement,
+  ) {
+    overlayedTransitionElement.style.position = "inline";
+    transitionGroupMember.classList.replace("-translate-y-10", "translate-y-0");
+    transitionGroupMember.classList.replace("opacity-0", "opacity-1");
+  }
+
   function handleScrollWhileStagingOpen(e: WheelEvent) {
     if (aboutSection.getAttribute("data-transition-complete") === "true") {
       // if scrolling up and transition ready
@@ -546,6 +608,28 @@ function handleTransitionToLandingSection() {
         overlayedTransitionElementReplacement.style.top = `calc(${elementTop}px - 15vh)`;
         // LINK #scrollToLanding
         scrollToLandingSection();
+        const translateOverlayedElementWhileScrolling =
+          translateOverlayedElement(
+            overlayedTransitionElementReplacement,
+            15, //base speed (px)
+            1.0, // delta
+            20, // terminal velocity
+            Direction.Down,
+          );
+        translateOverlayedElementWhileScrolling();
+        // ANCHOR[id=checkIfElementAtTargetPositionCallAbout]
+        // LINK #checkIfElementAtTargetPosition
+        checkIfElementAtTargetPosition(
+          overlayedTransitionElementReplacement,
+          slideDownTransitionGroup,
+          handleAtTarget,
+          // ANCHOR[id=capturePositionUsedHere]
+          Number(
+            overlayedTransitionElementReplacement.getAttribute(
+              "data-caption-position",
+            ),
+          ),
+        );
 
         window.removeEventListener("wheel", handleScrollWhileStagingOpen);
         // if staging container closed
@@ -564,8 +648,6 @@ function handleTransitionToLandingSection() {
   }
 
   window.addEventListener("wheel", handleScrollWhileStagingOpen);
-
-  // createObserver(0, handleIntersect); // temporary, so i can work on this section without fucking up scroll
 
   // if user scrolls to top of section,
   // replace nav to about animation with nav to landing animation
