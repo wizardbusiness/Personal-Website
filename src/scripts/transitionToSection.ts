@@ -56,7 +56,6 @@ function handleTransitionToAboutSection() {
    * @description The landing <section> is where the user journey starts
    */
   const landingSection = document.querySelector("#landing");
-
   /**
    * @description Elements being faded out when the transition takes place
    */
@@ -91,7 +90,7 @@ function handleTransitionToAboutSection() {
    * overlayedTransitionElement.
    */
   const nextSectionTransitionGroup: NodeListOf<HTMLElement> =
-    document.querySelectorAll("[data-about-translate-up]");
+    document.querySelectorAll("#about");
 
   /**
    * -------------------------------------
@@ -120,11 +119,6 @@ function handleTransitionToAboutSection() {
     );
   }
   captureCaptionStartingPosit(overlayedTransitionElement);
-  console.log(overlayedTransitionElement.getAttribute("data-caption-position"));
-  const transitionReady = landingSection.getAttribute("data-transition-ready");
-  if (transitionReady === "false") return;
-
-  landingSection.setAttribute("data-transition-ready", "false");
 
   /**
    * 2. When user scrolls up on landing page start the programmatic transition to the next section
@@ -136,7 +130,10 @@ function handleTransitionToAboutSection() {
    */
 
   function handleScrollUp(e: WheelEvent) {
-    if (e.deltaY > 0) {
+    const transitionReady = landingSection.getAttribute(
+      "data-transition-ready",
+    );
+    if (e.deltaY > 0 && transitionReady) {
       fadeOutElements(fadeOnTransitionGroup);
       scaleOverlayedTransitionElement(overlayedTransitionElement);
       landingSection.removeEventListener("wheel", handleScrollUp);
@@ -184,21 +181,17 @@ function handleTransitionToAboutSection() {
       top: window.innerHeight,
       behavior: "smooth",
     });
-
-    overlayedTransitionElement.removeEventListener(
-      "animationend",
-      programaticallyScrollToNextSection,
-    );
   }
 
   overlayedTransitionElement.addEventListener(
     "animationend",
     programaticallyScrollToNextSection,
+    { once: true }, // automatically removes itself
   );
 
   /**
    * 4b. slowly translate transition element down to simulate falling
-   * ANCHOR[id=translateOverlayedElementCall]
+   * ANCHOR[id=translateOverlayedElementCallLanding]
    * LINK #translateOverlayedElement
    *
    */
@@ -210,9 +203,20 @@ function handleTransitionToAboutSection() {
     Direction.Down,
   );
 
-  window.addEventListener("scroll", translateOverlayedElementWhileScrolling, {
-    once: true, // automatically removes itself
-  });
+  function translateOverlayedElementWhileScrollingWrapper() {
+    const transitionReady = landingSection.getAttribute(
+      "data-transition-ready",
+    );
+    if (transitionReady === "true") translateOverlayedElementWhileScrolling();
+  }
+
+  window.addEventListener(
+    "scroll",
+    translateOverlayedElementWhileScrollingWrapper,
+    {
+      once: true, // automatically removes itself
+    },
+  );
 
   // 5. Wait until the caption container is at the target position in the viewport
   // Then translate the next section's transition group up towards the caption container
@@ -304,9 +308,9 @@ function handleTransitionToAboutSection() {
 function fadeOutElements(elementsGroup: NodeListOf<HTMLDivElement>) {
   elementsGroup.forEach((element) => {
     if (element.id === "scroll-caret") {
-      element.classList.add("animate-swipe-up");
+      element.classList.add("animate-slide-up");
     } else {
-      element.classList.add("transition", "opacity-0", "-translate-y-10");
+      element.classList.add("animate-slide-up");
     }
   });
 }
@@ -367,7 +371,8 @@ function computeScaledRectBounds(
  * @returns {TranslateElementPosit}
  * @description moves the caption container down the viewport so that it appears to fall
  * ANCHOR[id=translateOverlayedElement]
- * LINK #translateOverlayedElementCall
+ * LINK #translateOverlayedElementCallLanding
+ * LINK #translateOverlayedElementCallAbout
  */
 type TranslateElementPosit = () => void;
 enum Direction {
@@ -422,10 +427,9 @@ function checkIfElementAtTargetPosition(
   if (
     // need to check if caption container position is fixed, otherwise any
     // target posit below the target posit will trigger the callback which may cause unintended side effects.
-    overlayedTransitionElement.style.position === "fixed" &&
+    overlayedTransitionElement.style.position === "fixed" && // <- this is the problem
     containerBottomY >= targetPosit
   ) {
-    overlayedTransitionElement.setAttribute("data-at-target-posit", "true");
     nextSectionTransitionGroup.forEach((htmlEl) =>
       handleAtTarget(htmlEl, overlayedTransitionElement),
     );
@@ -444,7 +448,7 @@ function checkIfElementAtTargetPosition(
 // ----------------------------------------------------------------------------------
 
 type HandleContainerAtTarget = (
-  transitionGroup: HTMLElement,
+  transitionGroupMember: HTMLElement,
   overlayedTransitionElement?: HTMLDivElement,
 ) => void;
 /**
@@ -455,11 +459,16 @@ type HandleContainerAtTarget = (
  * LINK #checkIfElementAtTargetPosition
  *
  */
-function handleContainerAtTarget(
-  transitionGroupMember: HTMLElement,
-  overlayedTransitionElement?: HTMLElement,
-) {
-  transitionGroupMember.classList.replace("top-[100vh]", "top-[0vh]");
+function handleContainerAtTarget(transitionGroupMember: HTMLElement) {
+  const transitionReady = landingSection.getAttribute("data-transition-ready");
+  console.log("hello");
+  if (transitionReady === "true") {
+    console.log("triggered!");
+    transitionGroupMember.classList.replace(
+      "translate-y-[100vh]",
+      "translate-y-[0vh]",
+    );
+  }
 }
 
 // ----------------------------------------------------------------------------------
@@ -525,15 +534,16 @@ function handleTransitionToLandingSection() {
   const slideDownTransitionGroup: NodeListOf<HTMLElement> =
     document.querySelectorAll(".transition-group");
 
-  const landingSectionTransitionElementContainer: HTMLDivElement =
-    document.querySelector(".caption-container-container");
-
   // scroll caret section
-  // listen for scroll on about section
-  aboutSection.addEventListener("transitionend", () => {
-    landingSection.classList.replace("flex", "hidden");
-    aboutSection.setAttribute("data-transition-complete", "true");
-  });
+  // listen for scroll on about section to close out the transition
+  aboutSection.addEventListener(
+    "transitionend",
+    () => {
+      landingSection.classList.replace("flex", "hidden");
+      aboutSection.setAttribute("data-transition-complete", "true");
+    },
+    { once: true },
+  );
 
   function toggleTransitionReady() {
     const transitionReady = navCheckContainer.getAttribute(
@@ -556,6 +566,7 @@ function handleTransitionToLandingSection() {
     landingSection.classList.replace("hidden", "flex");
     aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
     landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+
     // disableScroll(false);
   }
 
@@ -583,9 +594,13 @@ function handleTransitionToLandingSection() {
     transitionGroupMember: HTMLElement,
     overlayedTransitionElement: HTMLDivElement,
   ) {
-    overlayedTransitionElement.style.position = "inline";
-    transitionGroupMember.classList.replace("-translate-y-10", "translate-y-0");
+    overlayedTransitionElement.style.position = "static";
+    transitionGroupMember.classList.replace(
+      "animate-slide-up",
+      "animate-slide-down",
+    );
     transitionGroupMember.classList.replace("opacity-0", "opacity-1");
+    landingSection.setAttribute("data-transition-ready", "true");
   }
 
   function handleScrollWhileStagingOpen(e: WheelEvent) {
@@ -595,12 +610,18 @@ function handleTransitionToLandingSection() {
         e.deltaY < 0 &&
         navCheckContainer.getAttribute("data-transition-ready") === "true"
       ) {
+        landingSection.setAttribute("data-transition-ready", "false");
+        aboutSection.classList.replace(
+          "translate-y-[0vh]",
+          "translate-y-[100vh]",
+        );
         overlayedTransitionElement.classList.add("opacity-0");
         overlayedTransitionElementReplacement.classList.remove(
           "animate-scale-up",
         );
         overlayedTransitionElementReplacement.style.display = "inline";
         overlayedTransitionElementReplacement.style.position = "fixed";
+
         const elementTop =
           overlayedTransitionElement.getBoundingClientRect().top;
         // -15vh is the translate distance specified in animate-float-up, thus the calc
@@ -608,6 +629,8 @@ function handleTransitionToLandingSection() {
         overlayedTransitionElementReplacement.style.top = `calc(${elementTop}px - 15vh)`;
         // LINK #scrollToLanding
         scrollToLandingSection();
+        // LINK #translateOverlayedElement
+        // ANCHOR[id=translateOverlayedElementCallAbout]
         const translateOverlayedElementWhileScrolling =
           translateOverlayedElement(
             overlayedTransitionElementReplacement,
@@ -616,7 +639,14 @@ function handleTransitionToLandingSection() {
             20, // terminal velocity
             Direction.Down,
           );
-        translateOverlayedElementWhileScrolling();
+        function translateOverlayedElementWhileScrollingWrapper() {
+          const transitionReady = landingSection.getAttribute(
+            "data-transition-ready",
+          );
+          transitionReady === "false" &&
+            translateOverlayedElementWhileScrolling();
+        }
+        translateOverlayedElementWhileScrollingWrapper();
         // ANCHOR[id=checkIfElementAtTargetPositionCallAbout]
         // LINK #checkIfElementAtTargetPosition
         checkIfElementAtTargetPosition(
@@ -630,7 +660,6 @@ function handleTransitionToLandingSection() {
             ),
           ),
         );
-
         window.removeEventListener("wheel", handleScrollWhileStagingOpen);
         // if staging container closed
       } else if (e.deltaY < 0 && window.scrollY === 0) {
