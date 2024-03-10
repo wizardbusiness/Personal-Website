@@ -55,7 +55,7 @@ function handleTransitionToAboutSection() {
   /**
    * @description The landing <section> is where the user journey starts
    */
-  const landingSection = document.querySelector("#landing");
+  const landingSection: HTMLElement = document.querySelector("#landing");
   /**
    * @description Elements being faded out when the transition takes place
    */
@@ -224,6 +224,7 @@ function handleTransitionToAboutSection() {
   // ANCHOR[id=checkIfElementAtTargetPositionCallLanding]
   // LINK #checkIfElementAtTargetPosition
   checkIfElementAtTargetPosition(
+    landingSection,
     overlayedTransitionElement,
     nextSectionTransitionGroup,
     handleContainerAtTarget,
@@ -416,27 +417,32 @@ function translateOverlayedElement(
 // LINK #checkIfElementAtTargetPositionCallAbout
 // NOTE: uses request animation frame instead of event listener
 function checkIfElementAtTargetPosition(
+  section: HTMLElement,
   overlayedTransitionElement: HTMLDivElement,
   nextSectionTransitionGroup: NodeListOf<HTMLElement>,
-  // LINK #handleContainerAtTarget
   handleAtTarget: HandleContainerAtTarget,
   targetPosit: number,
 ) {
   const containerBottomY =
     overlayedTransitionElement.getBoundingClientRect().bottom;
+  const transitionReady =
+    section.getAttribute("data-transition-ready") === "true" ? true : false;
   if (
     // need to check if caption container position is fixed, otherwise any
     // target posit below the target posit will trigger the callback which may cause unintended side effects.
-    overlayedTransitionElement.style.position === "fixed" && // <- this is the problem
+    transitionReady &&
+    overlayedTransitionElement.style.position === "fixed" &&
     containerBottomY >= targetPosit
   ) {
     nextSectionTransitionGroup.forEach((htmlEl) =>
+      // LINK #handleContainerAtTarget
       handleAtTarget(htmlEl, overlayedTransitionElement),
     );
     return;
   }
   requestAnimationFrame(() =>
     checkIfElementAtTargetPosition(
+      section,
       overlayedTransitionElement,
       nextSectionTransitionGroup,
       handleAtTarget,
@@ -650,6 +656,7 @@ function handleTransitionToLandingSection() {
         // ANCHOR[id=checkIfElementAtTargetPositionCallAbout]
         // LINK #checkIfElementAtTargetPosition
         checkIfElementAtTargetPosition(
+          aboutSection,
           overlayedTransitionElementReplacement,
           slideDownTransitionGroup,
           handleAtTarget,
