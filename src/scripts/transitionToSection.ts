@@ -467,9 +467,7 @@ type HandleContainerAtTarget = (
  */
 function handleContainerAtTarget(transitionGroupMember: HTMLElement) {
   const transitionReady = landingSection.getAttribute("data-transition-ready");
-  console.log("hello");
   if (transitionReady === "true") {
-    console.log("triggered!");
     transitionGroupMember.classList.replace(
       "translate-y-[100vh]",
       "translate-y-[0vh]",
@@ -496,7 +494,7 @@ function handleCollision(
   overlayedTransitionElementReplacement: HTMLDivElement,
 ) {
   overlayedTransitionElement.style.display = "none";
-  overlayedTransitionElementReplacement.children[0].classList.replace(
+  overlayedTransitionElementReplacement.classList.replace(
     "opacity-0",
     "opacity-[0.8]",
   );
@@ -605,6 +603,7 @@ function handleTransitionToLandingSection() {
       "animate-slide-up",
       "animate-slide-down",
     );
+
     transitionGroupMember.classList.replace("opacity-0", "opacity-1");
     landingSection.setAttribute("data-transition-ready", "true");
   }
@@ -621,7 +620,11 @@ function handleTransitionToLandingSection() {
           "translate-y-[0vh]",
           "translate-y-[100vh]",
         );
-        overlayedTransitionElement.classList.add("opacity-0");
+        overlayedTransitionElement.classList.replace(
+          "opacity-[0.8]",
+          "opacity-0",
+        );
+        console.log(overlayedTransitionElement.classList);
         overlayedTransitionElementReplacement.classList.remove(
           "animate-scale-up",
         );
