@@ -176,6 +176,7 @@ function handleTransitionToAboutSection() {
    */
 
   function programaticallyScrollToNextSection() {
+    overlayedTransitionElement.setAttribute("data-transitioning", "true");
     window.scrollBy({
       // landing section height + nav check div height
       top: window.innerHeight,
@@ -388,8 +389,9 @@ function translateOverlayedElement(
   direction: Direction,
 ): TranslateElementPosit {
   function translateElementPosit(): void {
-    if (baseSpeedInPx < speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
+    if (baseSpeedInPx <= speedLimit) baseSpeedInPx = baseSpeedInPx ** delta;
     overlayedTransitionElement.style.top = `calc(${direction}1 * ${overlayedTransitionElement.style.top} + ${baseSpeedInPx}px)`;
+    console.log(overlayedTransitionElement.style.top);
     // a little bit funky, but because the element is removed when the scroll is complete,
     // this is an easy way to return out of the function execution
     if (overlayedTransitionElement.style.display === "none") return;
@@ -550,10 +552,11 @@ function handleTransitionToLandingSection() {
   );
 
   function toggleTransitionReady() {
+    console.log("toggle");
     const transitionReady = navCheckContainer.getAttribute(
       "data-transition-ready",
     );
-    transitionReady
+    transitionReady === "true"
       ? navCheckContainer.setAttribute("data-transition-ready", "false")
       : navCheckContainer.setAttribute("data-transition-ready", "true");
   }
@@ -570,6 +573,7 @@ function handleTransitionToLandingSection() {
     landingSection.classList.replace("hidden", "flex");
     aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
     landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+    navCheckContainer.setAttribute("data-transition-ready", "false");
 
     // disableScroll(false);
   }
@@ -598,6 +602,7 @@ function handleTransitionToLandingSection() {
     transitionGroupMember: HTMLElement,
     overlayedTransitionElement: HTMLDivElement,
   ) {
+    overlayedTransitionElement.setAttribute("data-transitioning", "false");
     overlayedTransitionElement.style.position = "static";
     transitionGroupMember.classList.replace(
       "animate-slide-up",
@@ -615,6 +620,12 @@ function handleTransitionToLandingSection() {
         e.deltaY < 0 &&
         navCheckContainer.getAttribute("data-transition-ready") === "true"
       ) {
+        navCheckContainer.removeEventListener(
+          "transitionend",
+          toggleTransitionReady,
+        );
+        navCheckContainer.setAttribute("data-transition-ready", "false");
+        navCheckContainer.classList.replace("h-[10vh]", "h-0");
         landingSection.setAttribute("data-transition-ready", "false");
         aboutSection.classList.replace(
           "translate-y-[0vh]",
@@ -624,7 +635,6 @@ function handleTransitionToLandingSection() {
           "opacity-[0.8]",
           "opacity-0",
         );
-        console.log(overlayedTransitionElement.classList);
         overlayedTransitionElementReplacement.classList.remove(
           "animate-scale-up",
         );

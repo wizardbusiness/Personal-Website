@@ -4,18 +4,15 @@ const { animateBg } = Astro.props;
 
 <div
   id="caption-container"
-  class="h-[12vh] w-fit"
-  data-caption-position=""
-  data-at-target-posit="false"
+  class=`h-[12vh] w-fit ${
+  animateBg && "opacity-0"
+}`
 >
   <div
     data-caption
-    class={`flex items-center h-fit justify-center whitespace-nowrap before:z-auto 
-        before:rounded-md xl:before:rounded-xl 2xl:before:rounded-2xl before:bg-foggy-glass 
-        before:w-[30rem] before:max-w-[75vw] xl:before:min-w-[30vw] before:h-[12vh] ${
-          // before:[transform-origin:bottom] [transform-origin:bottom] scale-[130%]
-          animateBg && "opacity-0"
-        }`}
+    class="flex h-fit items-center justify-center whitespace-nowrap before:z-auto
+        before:h-[12vh] before:w-[30rem] before:max-w-[75vw] before:rounded-md
+        before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl"
   >
     <div class="absolute flex flex-nowrap">
       <slot />
