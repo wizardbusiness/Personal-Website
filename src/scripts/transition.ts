@@ -1,4 +1,8 @@
+import { DesktopIcon } from "@radix-ui/react-icons";
+import disableScroll from "./disableScroll";
+
 // elements
+const body: HTMLElement = document.querySelector("body");
 const landingSection: HTMLElement = document.querySelector("#landing");
 const aboutSection: HTMLElement = document.querySelector("#about");
 
@@ -17,94 +21,28 @@ const aboutSectionCaret: HTMLElement = sectionNavCarets[1];
 
 const aboutSectionPreNavArea: HTMLElement = document.querySelector("#nav-check");
 
-// data-attributes
-
 // ------------------------------------------------------------------------------------------------------
 // FUNCTIONS
 // ------------------------------------------------------------------------------------------------------
-
+// ANCHOR[id=cssUtilities]
 // ******************************************************************************************************
-// Move captionContainer
-function moveCaptionComponent(
-  captionComponent: HTMLElement,
-  speed: number,
-  acceleration: number,
-  limit: number,
-  direction: number,
-  destination: number,
-) {
-  if (speed <= limit) speed = speed ** acceleration;
-  let componentTopPosition = Number(captionComponent.style.top);
-  componentTopPosition = Number(`calc(${direction}1 * ${componentTopPosition} + ${speed}px)`);
-  if (componentTopPosition === destination) return;
-
-  requestAnimationFrame(() =>
-    moveCaptionComponent(captionComponent, speed, acceleration, limit, direction, destination),
-  );
-}
-
-function moveCaptionComponentDown() {
-  let destination = aboutComponentInitPosit.top;
-  moveCaptionComponent(captionComponentLanding, 15, 1.02, 20, 1, destination);
-}
-
-function moveCaptionComponentUp() {
-  let destination = landingComponentInitPosit.top;
-  moveCaptionComponent(captionComponentAbout, 15, 1.02, 20, -1, destination);
-}
-
-// ******************************************************************************************************
-
-function checkIfCaptionComponentAtPosition(
-  currComponentPosition: number,
-  targetPosition: number,
-  callback: Function,
-  cbArgs: HTMLElement[],
-) {
-  if (currComponentPosition === targetPosition) {
-    callback(cbArgs);
-  } else {
-    requestAnimationFrame(() => {
-      checkIfCaptionComponentAtPosition(currComponentPosition, targetPosition, callback, cbArgs);
-    });
-  }
-}
-
-function checkIfLandingCaptionAtCoords() {
-  const currComponentPosition = document
-    .querySelectorAll("#caption-container")[0]
-    .getBoundingClientRect().top;
-  const targetPosition = window.innerHeight * 0.55;
-  const cbArgs: HTMLElement[] = [aboutSectionContentGroup];
-  const handleAtTargetPosition = (cbArgs: HTMLElement[]) => {
-    cbArgs.forEach((element) => element.classList.replace("translate-y-[100vh]", "translate-y-[0vh]"));
+function replaceCSSClass(staleClass: string, freshClass: string) {
+  return (element: HTMLElement) => {
+    element.classList.replace(staleClass, freshClass);
   };
-  checkIfCaptionComponentAtPosition(currComponentPosition, targetPosition, handleAtTargetPosition, cbArgs);
 }
-
-function checkIfAboutCaptionAtCoords() {
-  const currComponentPosition = document
-    .querySelectorAll("#caption-container")[1]
-    .getBoundingClientRect().top;
-  const targetPosition = landingComponentInitPosit.top;
-  const cbArgs: HTMLElement[] = [...landingSectionContentGroup];
-  const handleAtTargetPosition = (cbArgs: HTMLElement[]) => {
-    cbArgs.forEach((element) => {
-      element.classList.replace("animate-slide-up", "animate-slide-down");
-      element.classList.replace("opacity-0", "opacity-1");
-    });
+// ******************************************************************************************************
+function addCSSClass(freshClass: string) {
+  return (element: HTMLElement) => {
+    element.classList.add(freshClass);
   };
-  checkIfCaptionComponentAtPosition(currComponentPosition, targetPosition, handleAtTargetPosition, cbArgs);
 }
-
 // ******************************************************************************************************
 
-function programaticallyScrollToNextSection() {
-  window.scrollBy({
-    // landing section height + nav check div height
-    top: window.innerHeight,
-    behavior: "smooth",
-  });
+function resetAllStyleProperties() {
+  return (element: HTMLElement) => {
+    element.attributeStyleMap.clear();
+  };
 }
 
 // ******************************************************************************************************
@@ -112,12 +50,16 @@ function programaticallyScrollToNextSection() {
 // all animations that can apply to an element involved in the transition
 // NOTE: not exhaustive to all animations used in project
 
-const animations = [
+// ANCHOR[id=animations]
+// LINK #listeners
+
+const animationLib = [
   "animate-slide-up",
   "animate-slide-down",
   "animate-scale-up",
   "animate-squish-down-lg",
   "animate-squish-down-sm",
+  "before:animate-squish-down-sm",
   "before:animate-squish-down-lg",
   "animate-squelch",
   "before:animate-squelch",
@@ -130,55 +72,297 @@ const animations = [
   "long-blink",
 ] as const;
 
-type Animations = (typeof animations)[number];
-
-function animateElements(animation: Animations) {
-  // const animations: Animations[] = Object.values(Animations);
-  return (elements: NodeListOf<HTMLElement>) => {
-    // remove all animations from the element before
+type Animations = (typeof animationLib)[number];
+// ANCHOR[id=animateElements]
+function animateElements(animations: Animations[]) {
+  return (elements: HTMLElement[]) => {
+    // remove all animations from the element before adding new ones
     elements.forEach((element) => {
-      animations.forEach((animation) => {
+      animationLib.forEach((animation) => {
         if (element.classList.contains(animation)) {
           element.classList.remove(animation);
         }
       });
     });
     elements.forEach((element) => {
-      element.classList.add(animation);
+      animations.forEach((animation) => {
+        element.classList.add(animation);
+      });
     });
   };
 }
 
-const slideUpAndFade = animateElements("animate-slide-up");
-const slideDown = animateElements("animate-slide-down");
+const scaleUp = animateElements(["animate-scale-up"]);
+const slideUpAndFade = animateElements(["animate-slide-up"]);
+const slideDown = animateElements(["animate-slide-down"]);
+const squelch = animateElements(["before:animate-squelch"]);
+const squish = animateElements(["before:animate-squish-down-lg"]);
 
 // ******************************************************************************************************
 const translations = ["translate-y-[0vh]", "translate-y-[100vh]"] as const;
 
 type Translations = (typeof translations)[number];
 
-function translateElements(freshTranslation: Translations, staleTranslation: Translations) {
+// ANCHOR[id=translateElements]
+function translateElements(staleTranslation: Translations, freshTranslation: Translations) {
   return (elements: HTMLElement[]) => {
     elements.forEach((element) => {
-      element.classList.replace(staleTranslation, freshTranslation);
+      const translateElement = replaceCSSClass(staleTranslation, freshTranslation);
+      translateElement(element);
     });
   };
 }
 
-const translateSectionContentUp = translateElements("translate-y-[100vh]", "translate-y-[0vh]");
-const translateSectionContentDown = translateElements("translate-y-[0vh]", "translate-y-[100vh]");
-// ------------------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------------
+const translateUp = translateElements("translate-y-[100vh]", "translate-y-[0vh]");
+const translateDown = translateElements("translate-y-[0vh]", "translate-y-[100vh]");
 
+// ******************************************************************************************************
+// ANCHOR[id=changeElementOpacity]
 const opacities = ["opacity-[0.8]", "opacity-0"] as const;
-
 type Opacities = (typeof opacities)[number];
 
-function changeElementOpacity(freshOpacity: Opacities, staleOpacity: Opacities) {
-  return (element: HTMLElement) => {
-    element.classList.replace(staleOpacity, freshOpacity);
+function changeElementOpacity(staleOpacity: Opacities, freshOpacity: Opacities) {
+  return (elements: HTMLElement[]) => {
+    elements.forEach((element) => {
+      const changeOpacity = replaceCSSClass(staleOpacity, freshOpacity);
+      changeOpacity(element);
+    });
   };
 }
 
-const increaseElementOpacity = changeElementOpacity("opacity-0", "opacity-[0.8]");
-const decreaseElementOpacity = changeElementOpacity("opacity-[0.8]", "opacity-0");
+const increaseOpacity = changeElementOpacity("opacity-0", "opacity-[0.8]");
+const decreaseOpacity = changeElementOpacity("opacity-[0.8]", "opacity-0");
+
+// ******************************************************************************************************
+
+const heights = ["h-0", "h[10vh]"] as const;
+type Heights = (typeof heights)[number];
+
+function changeElementHeight(staleHeight: Heights, freshHeight: Heights) {
+  return (element: HTMLElement) => {
+    const changeHeight = replaceCSSClass(staleHeight, freshHeight);
+    changeHeight(element);
+  };
+}
+
+const reduceHeight = changeElementHeight("h[10vh]", "h-0");
+const increaseHeight = changeElementHeight("h-0", "h[10vh]");
+
+// ******************************************************************************************************
+
+const cssDisplay = ["flex", "hidden"] as const;
+
+type CSSDisplay = (typeof cssDisplay)[number];
+function changeElementDisplayType(staleDisplay: CSSDisplay, freshDisplay: CSSDisplay) {
+  return (elements: HTMLElement[]) => {
+    elements.forEach((element) => {
+      const changeDisplay = replaceCSSClass(staleDisplay, freshDisplay);
+      changeDisplay(element);
+    });
+  };
+}
+
+// ANCHOR[id=hideSection]
+const hideSection = changeElementDisplayType("flex", "hidden");
+// ANCHOR[id=showSection]
+const showSection = changeElementDisplayType("hidden", "flex");
+
+const removeElement = changeElementDisplayType("flex", "hidden");
+
+// ******************************************************************************************************
+
+// ******************************************************************************************************
+
+const directions = ["up", "down"] as const;
+
+type Direction = (typeof directions)[number];
+
+// Move captionContainer
+// ANCHOR[id=moveElement]
+function moveElement(
+  captionComponent: HTMLElement,
+  replacementCaptionComponent: HTMLElement,
+  speed: number,
+  acceleration: number,
+  limit: number,
+  direction: number,
+) {
+  const destination = replacementCaptionComponent.getBoundingClientRect().bottom;
+  if (speed <= limit) speed = speed ** acceleration;
+  captionComponent.style.top = `calc(${direction} * ${captionComponent.style.top} + ${speed}px)`;
+  const captionComponentBottom = captionComponent.getBoundingClientRect().bottom;
+  if (captionComponentBottom >= destination) {
+    return;
+  }
+  requestAnimationFrame(() =>
+    moveElement(captionComponent, replacementCaptionComponent, speed, acceleration, limit, direction),
+  );
+}
+
+function moveCaptionComponentDown() {
+  captionComponentLanding.style.top = "0";
+  captionComponentLanding.style.position = "fixed";
+  moveElement(captionComponentLanding, captionComponentAbout, 15, 1, 20, 1);
+}
+
+function moveCaptionComponentUp() {
+  let destination = landingComponentInitPosit.bottom;
+  moveElement(captionComponentAbout, captionComponentLanding, 15, 1.02, 20, -1);
+}
+
+// ******************************************************************************************************
+const rectBounds = ["top", "bottom"] as const;
+
+type RectBounds = (typeof rectBounds)[number];
+
+type cbObj = {
+  cb: (elements: HTMLElement[]) => void;
+  elements: HTMLElement[];
+  tag: string;
+};
+
+type TargetElementObj = {
+  element: HTMLElement;
+  tag: string;
+  rectbound: "top" | "bottom";
+};
+// ANCHOR[id=checkPosition]
+// LINK #checkPositionCall
+function checkPositionRelativeToTarget(
+  movingElement: HTMLElement,
+  movingElRectbound: RectBounds,
+  targets: TargetElementObj[],
+
+  callbackObjs: cbObj[],
+) {
+  let elementCurrPosition = movingElement.getBoundingClientRect()[movingElRectbound];
+  for (let i = 0; i < targets.length; i++) {
+    const target = targets[i];
+    let targetElementCurrPosition = target.element.getBoundingClientRect()[target.rectbound];
+    if (elementCurrPosition >= targetElementCurrPosition) {
+      callbackObjs
+        .filter((callbackObj) => callbackObj.tag === target.tag)
+        .forEach((obj) => obj.cb(obj.elements));
+    }
+  }
+  requestAnimationFrame(() => {
+    checkPositionRelativeToTarget(movingElement, movingElRectbound, targets, callbackObjs);
+  });
+}
+
+// ******************************************************************************************************
+// ANCHOR[id=scroll]
+function programaticallyScrollToNextSection() {
+  window.scrollBy({
+    // landing section height + nav check div height
+    top: window.innerHeight,
+    behavior: "smooth",
+  });
+}
+// ******************************************************************************************************
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// data-attributes
+
+function setTransitionReadyFrom(currentSection: HTMLElement, nextSection: HTMLElement) {
+  return () => {
+    currentSection.setAttribute("data-transition-ready", "true");
+    nextSection.setAttribute("data-transition-ready", "false");
+  };
+}
+
+function getTransitionReady(currentSection: HTMLElement) {
+  const transitionReady = currentSection.getAttribute("data-transition-ready") === "true" ? true : false;
+  return transitionReady;
+}
+
+const setTransitionReadyLanding = setTransitionReadyFrom(landingSection, aboutSection);
+const setTransitionReadyAbout = setTransitionReadyFrom(aboutSection, landingSection);
+
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// Observers
+let options = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.8,
+};
+
+function observeSection(callback: Function) {
+  return (entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true) {
+        callback();
+      }
+    });
+  };
+}
+
+const observeLandingSection = observeSection(setTransitionReadyLanding); // LINK #landingSection
+const observeAboutSection = observeSection(setTransitionReadyAbout); // LINK #aboutSection
+
+// ------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+// Listeners
+// ANCHOR[id=listeners]
+// LINK #animations
+// LINK #transitions
+window.addEventListener("wheel", (e: WheelEvent) => {
+  const transitionReadyFromLanding = getTransitionReady(landingSection);
+  const transitionReadyFromAbout = getTransitionReady(aboutSection);
+  if (transitionReadyFromLanding && e.deltaY > 0) {
+    // disableScroll(true);
+    slideUpAndFade([...landingSectionContentGroup]);
+    scaleUp([captionComponentLanding]);
+  } else if (transitionReadyFromAbout) {
+    disableScroll(false);
+    const preNavReady = aboutSectionPreNavArea.getAttribute("data-pre-transition-ready");
+    if (!preNavReady && e.deltaY < 0) {
+      showSection([aboutSectionPreNavArea]);
+    } else if (preNavReady && e.deltaY > 0) {
+      hideSection([aboutSectionPreNavArea]);
+      squish([captionComponentAbout]);
+    } else if (preNavReady && e.deltaY < 0) {
+    }
+  }
+});
+
+// ANCHOR[id=checkPositionListen]
+
+captionComponentLanding.addEventListener("animationend", () => {
+  const transitionReadyFromLanding =
+    landingSection.getAttribute("data-transition-ready") === "true" ? true : false;
+  if (transitionReadyFromLanding) {
+    // LINK #moveElement
+    moveCaptionComponentDown();
+    programaticallyScrollToNextSection();
+    // LINK #checkPosition
+    // ANCHOR[id=checkPositionCall]
+    checkPositionRelativeToTarget(
+      captionComponentLanding,
+      "bottom",
+      [
+        { element: aboutSection, rectbound: "top", tag: "a" },
+        { element: captionComponentAbout, rectbound: "bottom", tag: "b" },
+      ],
+      [
+        // LINK #moveElementDown
+        // LINK #checkElementPosition
+        // LINK #changeElementOpacity
+        // LINK #animations
+        { cb: translateUp, elements: [aboutSection], tag: "a" },
+        { cb: removeElement, elements: [captionComponentLanding], tag: "b" },
+        { cb: increaseOpacity, elements: [captionComponentAbout], tag: "b" },
+        { cb: squish, elements: [captionComponentAbout], tag: "b" },
+      ],
+    );
+  }
+});
+
+window.addEventListener("scroll", () => {
+  const transitionReadyFromLanding = getTransitionReady(landingSection);
+  aboutSection.getAttribute("data-transition-ready") === "true" ? true : false;
+  const inTransition = body.getAttribute("data-in-transition") === "true" ? true : false;
+  if (transitionReadyFromLanding && inTransition) {
+  }
+});
