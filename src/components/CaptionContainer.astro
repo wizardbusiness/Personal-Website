@@ -1,21 +1,17 @@
 ---
-const { animateBg } = Astro.props;
+const { aboutSect } = Astro.props;
 ---
 
 <div
   id="caption-container"
-  class=`h-[12vh] w-fit ${
-  animateBg && "opacity-0"
+  data-transitioning="false"
+  class=`h-[12vh] w-fit flex h-fit items-center justify-center whitespace-nowrap before:z-auto
+  before:h-[12vh] before:w-[30rem] before:max-w-[75vw] before:rounded-md
+  before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl ${
+  aboutSect && "opacity-0 before:scale-[130%]"
 }`
 >
-  <div
-    data-caption
-    class="flex h-fit items-center justify-center whitespace-nowrap before:z-auto
-        before:h-[12vh] before:w-[30rem] before:max-w-[75vw] before:rounded-md
-        before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl"
-  >
-    <div class="absolute flex flex-nowrap">
-      <slot />
-    </div>
+  <div class="absolute flex flex-nowrap">
+    <slot />
   </div>
 </div>
