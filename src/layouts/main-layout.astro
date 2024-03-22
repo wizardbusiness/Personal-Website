@@ -6,6 +6,8 @@ import Stars from "../components/bgEffects/Stars.astro";
 <html class="scrollbar-hide h-screen w-screen">
   <CommonHead />
   <body
+    data-in-transition="false"
+    data-transition-direction="next"
     class="flex h-screen w-full flex-grow flex-col justify-center bg-dusk font-sans"
   >
     <Stars />
@@ -15,7 +17,7 @@ import Stars from "../components/bgEffects/Stars.astro";
         <slot name="about-section" />
       </div>
     </main>
-    <script src="../scripts/transitionToSection.ts"></script>
+    <script src="../scripts/transition.ts"></script>
     <script>
       const handleOrientationChange = () => {
         const body = document.querySelector("body");
