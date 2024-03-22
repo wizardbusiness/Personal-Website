@@ -36,31 +36,28 @@ module.exports = {
             opacity: 0.8,
           },
         },
-        // ANCHOR[id=animate-float-up]
         floatup: {
-          "0%": { transform: "translateY(0vh) scale(130%)" },
-          "75%": { transform: "translateY(0vh)" },
-          "100%": { transform: "translateY(-15vh) scale(100%)" },
-        },
-        "swipe-down": {
           "0%": {
-            opacity: "100%",
-            transform: "translateY(0%)",
+            transform: "translateY(0vh)",
+            transformOrigin: "bottom",
           },
-          "100%": {
-            opacity: "0%",
-            transform: "translateY(100%)",
-          },
+          "10%": { transform: "translateY(0vh) scaleY(110%) scaleX(100%)", transformOrigin: "bottom" },
+          "15%": { transform: "translateY(-3vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
+          "25%": { transform: "translateY(-3vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
+          // "30%": { transform: "translateY(-4vh)  scaleY(95%) scaleX(105%)", transformOrigin: "bottom" },
+
+          // "50%": { transform: "translateY(-4.5vh)" },
+          "100%": { transform: "translateY(-11vh)" },
         },
-        "swipe-up": {
+        "slide-up": {
           "100%": {
-            transform: "translateY(-75%)",
+            transform: "translateY(-10vh)",
             opacity: 0,
           },
         },
         "slide-down": {
           "0%": {
-            transform: "translateY(-75%)",
+            transform: "translateY(-75vh)",
           },
           "100%": {
             transform: "translateY(0)",
@@ -95,15 +92,15 @@ module.exports = {
         },
         "squish-lg": {
           "0%": {
-            transform: "perspective(600px) rotateX(0deg)",
+            transform: "perspective(600px) rotateX(0deg) scaleX(130%)",
             transformOrigin: "bottom",
           },
           "40%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(60%)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(60%) scaleX(130%)",
             transformOrigin: "bottom",
           },
           "75%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(7%)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(7%) scaleX(140%)",
             transformOrigin: "bottom",
             width: "30vw",
           },
@@ -126,40 +123,14 @@ module.exports = {
           },
           "50%": {
             transformOrigin: "bottom",
-            transform: "scaleY(10%)",
+            transform: "scaleY(20%) scaleX(110%)",
           },
           "75%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(100%)",
             backgroundColor: "foggy-glass",
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%) translateY(-15vh)",
-          },
-        },
-        "squelch-down-lg": {
-          "0%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(100%) scaleX(100%) translateY(15vh)",
-          },
-          "25%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(100%)",
-            backgroundColor: "foggy-glass",
-          },
-          "50%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(10%)",
-          },
-          "75%": {
-            transform: "scaleY(4%)",
-            backgroundColor: "rgb(71 85 105)",
-          },
-          "100%": {
-            transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            backgroundColor: "rgb(71 85 105)",
+            transform: "scale(110%)",
           },
         },
         grow: {
@@ -236,13 +207,12 @@ module.exports = {
       animation: {
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "scale-up": "scaleup 0.8s forwards ease-out",
-        "swipe-down": "swipe-down 0.2s forwards",
-        "swipe-up": "swipe-up 0.2s forwards",
-        "slide-down": "slide-down 0.2s forwards",
+        "slide-up": "slide-up 0.2s forwards",
+        "slide-down": "slide-down 1.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
         squelch: "squelch 0.8s forwards ease-in-out",
-        "float-up": "floatup 0.8s forwards ease-in-out",
+        "float-up": "floatup 2.4s forwards ease-out",
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
