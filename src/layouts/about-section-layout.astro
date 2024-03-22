@@ -4,18 +4,14 @@ import "../styles/tailwind.css";
 
 <section
   id="about"
-  data-about-translate-up
-  class="absolute top-[100vh] flex h-fit w-full flex-col items-center p-4 pb-0 pt-0 transition-[top] duration-[1300ms] ease-in-out lg:p-8 lg:pb-0 lg:pt-0"
+  class="absolute flex h-fit w-full translate-y-[100vh] flex-col items-center p-4 pb-0 pt-0 transition-transform duration-[1300ms] ease-in-out lg:p-8 lg:pb-0 lg:pt-0"
 >
-  <div
-    id="nav-check"
-    class="h-0 w-full  bg-red-100 opacity-40 transition-[height] duration-700 ease-out"
-  >
-    <slot name="caret" />
-  </div>
   <header class="h-[10vh] w-full">
-    <!-- <slot name="nav" /> -->
+    <slot name="nav" />
+    <slot name="caret" />
   </header>
+  <div data-pre-nav-open="false" id="nav-check" class="h-0 w-full transition-[height] duration-1000 ease-out">
+  </div>
   <div class="flex w-[90vw] flex-col items-center text-gray-200 lg:w-[75vw]">
     <header class="header flex w-full flex-col items-center">
       <slot name="caption-container" />
