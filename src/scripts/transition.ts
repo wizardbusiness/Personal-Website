@@ -97,6 +97,7 @@ const slideUpAndFade = animateElements(["animate-slide-up"]);
 const slideDown = animateElements(["animate-slide-down"]);
 const squelch = animateElements(["before:animate-squelch"]);
 const squish = animateElements(["before:animate-squish-down-lg"]);
+const floatUp = animateElements(["animate-float-up"]);
 
 // ******************************************************************************************************
 const translations = ["translate-y-[0vh]", "translate-y-[100vh]"] as const;
@@ -135,18 +136,19 @@ const decreaseOpacity = changeElementOpacity("opacity-[0.8]", "opacity-0");
 
 // ******************************************************************************************************
 
-const heights = ["h-0", "h[10vh]"] as const;
+const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
 
 function changeElementHeight(staleHeight: Heights, freshHeight: Heights) {
   return (element: HTMLElement) => {
+    console.log(element);
     const changeHeight = replaceCSSClass(staleHeight, freshHeight);
     changeHeight(element);
   };
 }
 
-const reduceHeight = changeElementHeight("h[10vh]", "h-0");
-const increaseHeight = changeElementHeight("h-0", "h[10vh]");
+const decreaseHeight = changeElementHeight("h-[10vh]", "h-0");
+const increaseHeight = changeElementHeight("h-0", "h-[10vh]");
 
 // ******************************************************************************************************
 
@@ -264,65 +266,69 @@ function programaticallyScrollToNextSection() {
 // ------------------------------------------------------------------------------------------------------
 // data-attributes
 
-function setTransitionReadyFrom(currentSection: HTMLElement, nextSection: HTMLElement) {
-  return () => {
-    currentSection.setAttribute("data-transition-ready", "true");
-    nextSection.setAttribute("data-transition-ready", "false");
-  };
+function checkTransitionDirection(): "next" | "prev" {
+  const direction = body.getAttribute("data-transition-direction");
+  if (direction === "next" || direction === "prev") {
+    return direction;
+  } else {
+    throw new Error("Invalid transition direction");
+  }
 }
 
-function getTransitionReady(currentSection: HTMLElement) {
-  const transitionReady = currentSection.getAttribute("data-transition-ready") === "true" ? true : false;
-  return transitionReady;
+function setTransitionDirection(direction: "next" | "prev") {
+  body.setAttribute("data-transition-direction", direction);
 }
 
-const setTransitionReadyLanding = setTransitionReadyFrom(landingSection, aboutSection);
-const setTransitionReadyAbout = setTransitionReadyFrom(aboutSection, landingSection);
-
-// ------------------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------------
-// Observers
-let options = {
-  root: null,
-  rootMargin: "0px",
-  threshold: 0.8,
-};
-
-function observeSection(callback: Function) {
-  return (entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting === true) {
-        callback();
-      }
-    });
-  };
+function checkIfInTransition() {
+  const inTransition = body.getAttribute("data-in-transition");
+  return inTransition === "true" ? true : false;
 }
 
-const observeLandingSection = observeSection(setTransitionReadyLanding); // LINK #landingSection
-const observeAboutSection = observeSection(setTransitionReadyAbout); // LINK #aboutSection
+function setInTransition(inTransition: string | boolean) {
+  body.setAttribute("data-in-transition", String(inTransition));
+}
+
+function checkIfPreNavOpen(): boolean {
+  const preNavOpen = aboutSectionPreNavArea.getAttribute("data-pre-nav-open");
+  return preNavOpen === "true" ? true : false;
+}
+
+function setPreNavOpen(open: boolean) {
+  aboutSectionPreNavArea.setAttribute("data-pre-nav-open", String(open));
+}
 
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
+// start with scroll disabled
+disableScroll(true);
 // Listeners
 // ANCHOR[id=listeners]
 // LINK #animations
 // LINK #transitions
 window.addEventListener("wheel", (e: WheelEvent) => {
-  const transitionReadyFromLanding = getTransitionReady(landingSection);
-  const transitionReadyFromAbout = getTransitionReady(aboutSection);
-  if (transitionReadyFromLanding && e.deltaY > 0) {
-    // disableScroll(true);
-    slideUpAndFade([...landingSectionContentGroup]);
+  const transitionDirection = checkTransitionDirection();
+  const inTransition = checkIfInTransition();
+  const preNavOpen = checkIfPreNavOpen();
+  if (inTransition) disableScroll(true);
+  if (transitionDirection === "next" && e.deltaY >= 0) {
+    setInTransition(true);
+    slideUpAndFade([...landingSectionContentGroup, landingSectionCaret]);
     scaleUp([captionComponentLanding]);
-  } else if (transitionReadyFromAbout) {
+  } else if (transitionDirection === "prev") {
     disableScroll(false);
-    const preNavReady = aboutSectionPreNavArea.getAttribute("data-pre-transition-ready");
-    if (!preNavReady && e.deltaY < 0) {
-      showSection([aboutSectionPreNavArea]);
-    } else if (preNavReady && e.deltaY > 0) {
-      hideSection([aboutSectionPreNavArea]);
+    if (!preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
+      disableScroll(true);
+      setPreNavOpen(true);
+      increaseHeight(aboutSectionPreNavArea);
+      squelch([captionComponentAbout]);
+    } else if (preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
+      disableScroll(true);
+      
+    } else if (preNavOpen && e.deltaY > 0) {
+      disableScroll(false);
+      setPreNavOpen(false);
+      decreaseHeight(aboutSectionPreNavArea);
       squish([captionComponentAbout]);
-    } else if (preNavReady && e.deltaY < 0) {
     }
   }
 });
@@ -330,9 +336,8 @@ window.addEventListener("wheel", (e: WheelEvent) => {
 // ANCHOR[id=checkPositionListen]
 
 captionComponentLanding.addEventListener("animationend", () => {
-  const transitionReadyFromLanding =
-    landingSection.getAttribute("data-transition-ready") === "true" ? true : false;
-  if (transitionReadyFromLanding) {
+  const transitionDirection = checkTransitionDirection();
+  if (transitionDirection === "next") {
     // LINK #moveElement
     moveCaptionComponentDown();
     programaticallyScrollToNextSection();
@@ -359,10 +364,15 @@ captionComponentLanding.addEventListener("animationend", () => {
   }
 });
 
-window.addEventListener("scroll", () => {
-  const transitionReadyFromLanding = getTransitionReady(landingSection);
-  aboutSection.getAttribute("data-transition-ready") === "true" ? true : false;
-  const inTransition = body.getAttribute("data-in-transition") === "true" ? true : false;
-  if (transitionReadyFromLanding && inTransition) {
+captionComponentAbout.addEventListener("animationend", () => {
+  const transitionDirection = checkTransitionDirection();
+  const preNavOpen = checkIfPreNavOpen();
+  if (transitionDirection === "next" && !preNavOpen) {
+    setTransitionDirection("prev");
+    hideSection([landingSection]);
+    setInTransition(false);
+    disableScroll(false);
+  } else if (transitionDirection === "prev" && preNavOpen) {
+    floatUp([captionComponentAbout]);
   }
 });
