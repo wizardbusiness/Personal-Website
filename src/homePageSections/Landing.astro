@@ -8,31 +8,21 @@ import CaptionContainer from "../components/CaptionContainer.astro";
 ---
 
 <LandingSectionLayout>
-  <Nav slot="nav" />
+  <Nav slot="nav" location="landing-section" />
   <Avatar slot="avatar" />
-  <div
-    slot="title"
-    class="fade-out-on-transition-away h-fit text-gray-200 lg:p-8"
-  >
+  <div slot="title" class="transition-group h-fit text-gray-200 lg:p-8">
     <h1
       class="p-[1%] text-center font-mono text-4xl md:text-6xl lg:text-8xl lg:tracking-tighter xl:text-9xl 2xl:text-[15rem]"
     >
       Gabriel Kime
     </h1>
-    <h2
-      class="p-[1%] text-center font-mono text-xl md:text-3xl lg:text-4xl xl:text-6xl 2xl:text-8xl"
-    >
+    <h2 class="p-[1%] text-center font-mono text-xl md:text-3xl lg:text-4xl xl:text-6xl 2xl:text-8xl">
       Full-Stack Developer
     </h2>
   </div>
 
-  <CaptionContainer slot="caption-container" visible animateBg={false}>
-    <TaglineMsg
-      msg="Dream it. Build it."
-      blinkCursor
-      client:load
-      scaleText={false}
-    />
+  <CaptionContainer slot="caption-container" visible aboutSect={false}>
+    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load scaleText={false} />
   </CaptionContainer>
   <ScrollCaret section="landing" slot="scroll-caret" />
 </LandingSectionLayout>

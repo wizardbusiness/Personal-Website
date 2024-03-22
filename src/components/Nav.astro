@@ -1,14 +1,13 @@
 ---
 import { Icon } from "astro-icon";
 import ContactInfo from "./ContactInfo";
+const { location } = Astro.props;
 ---
 
 <nav
-  class="fade-out-on-transition-away flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]"
+  class=`${location === "landing-section" && "transition-group"} flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]`
 >
-  <section
-    class="flex gap-[5%] p-[0.5em] text-xl lg:justify-end lg:text-2xl xl:text-4xl 2xl:text-6xl"
-  >
+  <section class="flex gap-[5%] p-[0.5em] text-xl lg:justify-end lg:text-2xl xl:text-4xl 2xl:text-6xl">
     <ContactInfo client:load />
     <a href="/Resume" class="decoration-double hover:underline">Resume</a>
   </section>
@@ -17,9 +16,7 @@ import ContactInfo from "./ContactInfo";
   >
     |
   </div>
-  <section
-    class="col-start-3 flex justify-end gap-[5%] p-[0.5em] lg:col-start-5 lg:justify-start"
-  >
+  <section class="col-start-3 flex justify-end gap-[5%] p-[0.5em] lg:col-start-5 lg:justify-start">
     <a
       class="group flex items-center rounded-md pl-0 hover:bg-gray-100"
       href="https://github.com/wizardbusiness"
