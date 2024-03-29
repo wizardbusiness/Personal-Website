@@ -16,11 +16,8 @@ import _ from "lodash";
 ---
 
 <AboutSectionLayout data-info-page slot="page">
-  <ScrollCaret slot="caret" />
   <Nav slot="nav" location="about-section" />
-  <CaptionContainer slot="caption-container" visible={false} aboutSect={true}>
-    <TaglineMsg msg="Dream it. Build it." blinkCursor client:load scaleText={true} />
-  </CaptionContainer>
+  <ScrollCaret slot="caret" />
   <Bio slot="about" />
   <Portfolio slot="portfolio" />
   <YouDreamIt slot="flav-text-a" />
