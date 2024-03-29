@@ -1,17 +1,11 @@
----
-const { aboutSect } = Astro.props;
----
-
 <div
   id="caption-container"
   data-transitioning="false"
-  class=`h-[12vh] w-fit flex h-fit items-center justify-center whitespace-nowrap before:z-auto
+  class="static flex h-[12vh] w-fit items-center justify-center whitespace-nowrap before:z-auto
   before:h-[12vh] before:w-[30rem] before:max-w-[75vw] before:rounded-md
-  before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl ${
-  aboutSect && "opacity-0 before:scale-[130%]"
-}`
+  before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl"
 >
-  <div class="absolute flex flex-nowrap">
+  <div class="absolute flex h-[12vh] scale-[110%] flex-nowrap">
     <slot />
   </div>
 </div>
