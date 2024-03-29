@@ -1,4 +1,3 @@
-import { DesktopIcon } from "@radix-ui/react-icons";
 import disableScroll from "./disableScroll";
 
 // elements
@@ -6,14 +5,13 @@ const body: HTMLElement = document.querySelector("body");
 const landingSection: HTMLElement = document.querySelector("#landing");
 const aboutSection: HTMLElement = document.querySelector("#about");
 
-const landingSectionContentGroup: NodeListOf<HTMLElement> = document.querySelectorAll(".transition-group");
+const landingSectionContentGroup: NodeListOf<HTMLElement> =
+  document.querySelectorAll(".landing-transition-group");
 const aboutSectionContentGroup: HTMLElement = document.querySelector("#text-content");
 
-const sectionCaptionComponents: NodeListOf<HTMLElement> = document.querySelectorAll("#caption-container");
-const captionComponentLanding: HTMLElement = sectionCaptionComponents[0];
-const captionComponentAbout: HTMLElement = sectionCaptionComponents[1];
-const landingComponentInitPosit: DOMRect = captionComponentLanding.getBoundingClientRect();
-const aboutComponentInitPosit: DOMRect = captionComponentAbout.getBoundingClientRect();
+const captionComponent: HTMLElement = document.querySelector("#caption-container");
+const captionLandingContainer: HTMLElement = document.querySelector(".caption-landing-container");
+const captionAboutContainer: HTMLElement = document.querySelector(".caption-about-container");
 
 const sectionNavCarets: NodeListOf<HTMLElement> = document.querySelectorAll("#scroll-caret");
 const landingSectionCaret: HTMLElement = sectionNavCarets[0];
@@ -74,65 +72,40 @@ const animationLib = [
 
 type Animations = (typeof animationLib)[number];
 // ANCHOR[id=animateElements]
-function animateElements(animations: Animations[]) {
-  return (elements: HTMLElement[]) => {
+function animateElement(newAnimation: Animations) {
+  return (element: HTMLElement) => {
     // remove all animations from the element before adding new ones
-    elements.forEach((element) => {
-      animationLib.forEach((animation) => {
-        if (element.classList.contains(animation)) {
-          element.classList.remove(animation);
-        }
-      });
+    animationLib.forEach((animation) => {
+      if (element.classList.contains(animation)) {
+        element.classList.remove(animation);
+      }
     });
-    elements.forEach((element) => {
-      animations.forEach((animation) => {
-        element.classList.add(animation);
-      });
-    });
+    element.classList.add(newAnimation);
   };
 }
 
-const scaleUp = animateElements(["animate-scale-up"]);
-const slideUpAndFade = animateElements(["animate-slide-up"]);
-const slideDown = animateElements(["animate-slide-down"]);
-const squelch = animateElements(["before:animate-squelch"]);
-const squish = animateElements(["before:animate-squish-down-lg"]);
-const floatUp = animateElements(["animate-float-up"]);
+const scaleUp = animateElement("animate-scale-up");
+const slideUpAndFade = animateElement("animate-slide-up");
+const slideDown = animateElement("animate-slide-down");
+const squelch = animateElement("before:animate-squelch");
+const squish = animateElement("before:animate-squish-down-lg");
+const floatUp = animateElement("animate-float-up");
 
 // ******************************************************************************************************
 const translations = ["translate-y-[0vh]", "translate-y-[100vh]"] as const;
 
 type Translations = (typeof translations)[number];
 
-// ANCHOR[id=translateElements]
-function translateElements(staleTranslation: Translations, freshTranslation: Translations) {
-  return (elements: HTMLElement[]) => {
-    elements.forEach((element) => {
-      const translateElement = replaceCSSClass(staleTranslation, freshTranslation);
-      translateElement(element);
-    });
+// ANCHOR[id=translations]
+function translateElement(staleTranslation: Translations, freshTranslation: Translations) {
+  return (element: HTMLElement) => {
+    const translateElement = replaceCSSClass(staleTranslation, freshTranslation);
+    translateElement(element);
   };
 }
 
-const translateUp = translateElements("translate-y-[100vh]", "translate-y-[0vh]");
-const translateDown = translateElements("translate-y-[0vh]", "translate-y-[100vh]");
-
-// ******************************************************************************************************
-// ANCHOR[id=changeElementOpacity]
-const opacities = ["opacity-[0.8]", "opacity-0"] as const;
-type Opacities = (typeof opacities)[number];
-
-function changeElementOpacity(staleOpacity: Opacities, freshOpacity: Opacities) {
-  return (elements: HTMLElement[]) => {
-    elements.forEach((element) => {
-      const changeOpacity = replaceCSSClass(staleOpacity, freshOpacity);
-      changeOpacity(element);
-    });
-  };
-}
-
-const increaseOpacity = changeElementOpacity("opacity-0", "opacity-[0.8]");
-const decreaseOpacity = changeElementOpacity("opacity-[0.8]", "opacity-0");
+const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]");
+const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 
 // ******************************************************************************************************
 
@@ -141,7 +114,6 @@ type Heights = (typeof heights)[number];
 
 function changeElementHeight(staleHeight: Heights, freshHeight: Heights) {
   return (element: HTMLElement) => {
-    console.log(element);
     const changeHeight = replaceCSSClass(staleHeight, freshHeight);
     changeHeight(element);
   };
@@ -169,90 +141,111 @@ const hideSection = changeElementDisplayType("flex", "hidden");
 // ANCHOR[id=showSection]
 const showSection = changeElementDisplayType("hidden", "flex");
 
-const removeElement = changeElementDisplayType("flex", "hidden");
-
+const hideElement = changeElementDisplayType("flex", "hidden");
+const showElement = changeElementDisplayType("hidden", "flex");
 // ******************************************************************************************************
 
+function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
+  return (childElement: HTMLElement) => {
+    if (![...oldParent.children].includes(childElement)) {
+      console.log("child doesnt exist on parent");
+      throw new Error("Child element does not exist on parent");
+    }
+    oldParent.removeChild(childElement);
+    newParent.appendChild(childElement);
+  };
+}
+
+const changeParentToLandingContainer = changeElementParent(captionAboutContainer, captionLandingContainer);
+const changeParentToAboutContainer = changeElementParent(captionLandingContainer, captionAboutContainer);
+
 // ******************************************************************************************************
+function changeElementPositionType(oldPositionType: "fixed" | "static", newPositionType: "fixed" | "static") {
+  return (element: HTMLElement) => {
+    const changePositionType = replaceCSSClass(oldPositionType, newPositionType);
+    changePositionType(element);
+  };
+}
 
-const directions = ["up", "down"] as const;
-
-type Direction = (typeof directions)[number];
+const changeElementPositionToStatic = changeElementPositionType("fixed", "static");
+const changeElementPositionToFixed = changeElementPositionType("static", "fixed");
+// ******************************************************************************************************
 
 // Move captionContainer
+
+//LINK #moveELementToAboutCall
+//LINK #moveElementToLandingCall
 // ANCHOR[id=moveElement]
 function moveElement(
-  captionComponent: HTMLElement,
-  replacementCaptionComponent: HTMLElement,
+  element: HTMLElement,
   speed: number,
   acceleration: number,
   limit: number,
-  direction: number,
+  overlapObserverEntries: OverlapObserverEntry[],
 ) {
-  const destination = replacementCaptionComponent.getBoundingClientRect().bottom;
-  if (speed <= limit) speed = speed ** acceleration;
-  captionComponent.style.top = `calc(${direction} * ${captionComponent.style.top} + ${speed}px)`;
-  const captionComponentBottom = captionComponent.getBoundingClientRect().bottom;
-  if (captionComponentBottom >= destination) {
-    return;
+  //setup
+  if (!element.style.top && !element.classList.contains("fixed")) {
+    element.style.top = `${element.getBoundingClientRect().top}px`;
+    changeElementPositionToFixed(element);
   }
-  requestAnimationFrame(() =>
-    moveElement(captionComponent, replacementCaptionComponent, speed, acceleration, limit, direction),
-  );
-}
+  // accelerate
+  if (speed <= limit) speed = speed ** acceleration;
+  element.style.top = `calc(${element.style.top} + ${speed}px)`;
+  const allEntriesProcessed = observeTargetsOverlap(overlapObserverEntries);
+  console.log(allEntriesProcessed);
+  if (allEntriesProcessed) return;
 
-function moveCaptionComponentDown() {
-  captionComponentLanding.style.top = "0";
-  captionComponentLanding.style.position = "fixed";
-  moveElement(captionComponentLanding, captionComponentAbout, 15, 1, 20, 1);
-}
-
-function moveCaptionComponentUp() {
-  let destination = landingComponentInitPosit.bottom;
-  moveElement(captionComponentAbout, captionComponentLanding, 15, 1.02, 20, -1);
+  requestAnimationFrame(() => moveElement(element, speed, acceleration, limit, overlapObserverEntries));
 }
 
 // ******************************************************************************************************
-const rectBounds = ["top", "bottom"] as const;
 
-type RectBounds = (typeof rectBounds)[number];
-
-type cbObj = {
-  cb: (elements: HTMLElement[]) => void;
-  elements: HTMLElement[];
-  tag: string;
+type ModifyElementEntry = {
+  callbackToModifyEls: (element: HTMLElement) => void;
+  elsBeingModified: HTMLElement[];
 };
 
-type TargetElementObj = {
-  element: HTMLElement;
-  tag: string;
-  rectbound: "top" | "bottom";
+type OverlapObserverEntry = {
+  observedElOne: HTMLElement;
+  observedElTwo: HTMLElement;
+  forModificationOnObservedOverlap: ModifyElementEntry[];
+  entryProcessed: boolean;
 };
+
 // ANCHOR[id=checkPosition]
 // LINK #checkPositionCall
-function checkPositionRelativeToTarget(
-  movingElement: HTMLElement,
-  movingElRectbound: RectBounds,
-  targets: TargetElementObj[],
-
-  callbackObjs: cbObj[],
-) {
-  let elementCurrPosition = movingElement.getBoundingClientRect()[movingElRectbound];
-  for (let i = 0; i < targets.length; i++) {
-    const target = targets[i];
-    let targetElementCurrPosition = target.element.getBoundingClientRect()[target.rectbound];
-    if (elementCurrPosition >= targetElementCurrPosition) {
-      callbackObjs
-        .filter((callbackObj) => callbackObj.tag === target.tag)
-        .forEach((obj) => obj.cb(obj.elements));
+// LINK #checkPositionCallBackNav
+function observeTargetsOverlap(overlapObserverEntries: OverlapObserverEntry[]): boolean {
+  overlapObserverEntries.forEach((observerEntry) => {
+    const firstElTop = observerEntry.observedElOne.getBoundingClientRect().top;
+    const firstElBottom = observerEntry.observedElOne.getBoundingClientRect().bottom;
+    const secondElTop = observerEntry.observedElTwo.getBoundingClientRect().top;
+    const secondElBottom = observerEntry.observedElTwo.getBoundingClientRect().bottom;
+    const entryProcessed = observerEntry.entryProcessed;
+    if (
+      (!entryProcessed && firstElBottom > secondElTop && firstElTop < secondElBottom) ||
+      (!entryProcessed && firstElTop < secondElBottom && firstElBottom > secondElBottom)
+    ) {
+      observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
+        entry.elsBeingModified.forEach((el) => {
+          entry.callbackToModifyEls(el);
+        });
+      });
+      observerEntry.entryProcessed = true;
     }
-  }
-  requestAnimationFrame(() => {
-    checkPositionRelativeToTarget(movingElement, movingElRectbound, targets, callbackObjs);
   });
+  const lastEntryProcessed = overlapObserverEntries[overlapObserverEntries.length - 1].entryProcessed;
+  if (lastEntryProcessed) return true;
+  else return false;
 }
 
 // ******************************************************************************************************
+// ANCHOR[id=getElementPosition]
+function getElementPosition(element: HTMLElement, rectBound: "top" | "bottom") {
+  return element.getBoundingClientRect()[rectBound];
+}
+// ******************************************************************************************************
+
 // ANCHOR[id=scroll]
 function programaticallyScrollToNextSection() {
   window.scrollBy({
@@ -305,74 +298,126 @@ disableScroll(true);
 // ANCHOR[id=listeners]
 // LINK #animations
 // LINK #transitions
-window.addEventListener("wheel", (e: WheelEvent) => {
-  const transitionDirection = checkTransitionDirection();
-  const inTransition = checkIfInTransition();
-  const preNavOpen = checkIfPreNavOpen();
-  if (inTransition) disableScroll(true);
-  if (transitionDirection === "next" && e.deltaY >= 0) {
-    setInTransition(true);
-    slideUpAndFade([...landingSectionContentGroup, landingSectionCaret]);
-    scaleUp([captionComponentLanding]);
-  } else if (transitionDirection === "prev") {
-    disableScroll(false);
-    if (!preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
-      disableScroll(true);
-      setPreNavOpen(true);
-      increaseHeight(aboutSectionPreNavArea);
-      squelch([captionComponentAbout]);
-    } else if (preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
-      disableScroll(true);
-      
-    } else if (preNavOpen && e.deltaY > 0) {
-      disableScroll(false);
-      setPreNavOpen(false);
-      decreaseHeight(aboutSectionPreNavArea);
-      squish([captionComponentAbout]);
+landingSection.addEventListener(
+  "wheel",
+  (e: WheelEvent) => {
+    const transitionDirection = checkTransitionDirection();
+    const preNavOpen = checkIfPreNavOpen();
+    const inTransition = checkIfInTransition();
+    if (inTransition) {
+      e.preventDefault();
     }
-  }
-});
+    if (transitionDirection === "next" && e.deltaY >= 0) {
+      setInTransition(true);
+      [...landingSectionContentGroup, landingSectionCaret].forEach((element) => {
+        slideUpAndFade(element);
+      });
+      scaleUp(captionComponent);
+    } else if (transitionDirection === "prev") {
+      disableScroll(false);
+      if (!preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
+        disableScroll(true);
+        increaseHeight(aboutSectionPreNavArea);
+        squelch(captionComponent);
+      } else if (preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
+        disableScroll(true);
+        showSection([landingSection]);
+        function scrollToLandingSection() {
+          // disableScroll(true);
+          // landingSection.classList.replace("hidden", "flex");
+          aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
+          landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+          // disableScroll(false);
+        }
+        // LINK #getElementPosition
+        const captionContainerAboutPosition = getElementPosition(captionComponent, "top");
+        // hideElement([captionComponentAbout]);
+        scrollToLandingSection();
+        showElement([captionComponent]);
+        captionComponent.style.top = "0";
+        captionComponent.classList.remove("animate-scale-up");
+        // LINK #moveElement
+        // ANCHOR[id=moveELementToLandingCall]
+        // LINK #checkPosition
+        // ANCHOR[id=checkPositionCallBackNav]
+        setInTransition(true);
+      } else if (preNavOpen && e.deltaY > 0) {
+        disableScroll(false);
+        setPreNavOpen(false);
+        decreaseHeight(aboutSectionPreNavArea);
+        squish(captionComponent);
+      }
+    }
+  },
+  { passive: false },
+);
 
 // ANCHOR[id=checkPositionListen]
-
-captionComponentLanding.addEventListener("animationend", () => {
+captionComponent.addEventListener("animationend", () => {
   const transitionDirection = checkTransitionDirection();
-  if (transitionDirection === "next") {
+  const inTransition = checkIfInTransition();
+  if (transitionDirection === "next" && inTransition) {
+    setTransitionDirection("prev");
     // LINK #moveElement
-    moveCaptionComponentDown();
+    // ANCHOR[id=moveElementToAboutCall]
     programaticallyScrollToNextSection();
     // LINK #checkPosition
-    // ANCHOR[id=checkPositionCall]
-    checkPositionRelativeToTarget(
-      captionComponentLanding,
-      "bottom",
-      [
-        { element: aboutSection, rectbound: "top", tag: "a" },
-        { element: captionComponentAbout, rectbound: "bottom", tag: "b" },
-      ],
-      [
-        // LINK #moveElementDown
-        // LINK #checkElementPosition
-        // LINK #changeElementOpacity
-        // LINK #animations
-        { cb: translateUp, elements: [aboutSection], tag: "a" },
-        { cb: removeElement, elements: [captionComponentLanding], tag: "b" },
-        { cb: increaseOpacity, elements: [captionComponentAbout], tag: "b" },
-        { cb: squish, elements: [captionComponentAbout], tag: "b" },
-      ],
-    );
+    // ANCHOR[id=checkPositionCallForwardNav]
+    moveElement(captionComponent, 10, 1.02, 20, [
+      {
+        observedElOne: captionComponent,
+        observedElTwo: aboutSection,
+        forModificationOnObservedOverlap: [
+          {
+            elsBeingModified: [aboutSection],
+            // LINK #translations
+            callbackToModifyEls: translateUp,
+          },
+        ],
+        entryProcessed: false,
+      },
+      {
+        observedElOne: captionComponent,
+        observedElTwo: aboutSectionContentGroup,
+        forModificationOnObservedOverlap: [
+          {
+            elsBeingModified: [captionComponent],
+            // LINK #animations
+            callbackToModifyEls: changeParentToAboutContainer,
+          },
+          {
+            elsBeingModified: [captionComponent],
+            // LINK #animations
+            callbackToModifyEls: changeElementPositionToStatic,
+          },
+          {
+            elsBeingModified: [captionComponent],
+            // LINK #animations
+            callbackToModifyEls: squish,
+          },
+        ],
+        entryProcessed: false,
+      },
+    ]);
+  } else if (transitionDirection === "prev" && inTransition) {
+    setInTransition(false);
+    disableScroll(false);
   }
 });
 
-captionComponentAbout.addEventListener("animationend", () => {
-  const transitionDirection = checkTransitionDirection();
-  const preNavOpen = checkIfPreNavOpen();
-  if (transitionDirection === "next" && !preNavOpen) {
-    setTransitionDirection("prev");
-    hideSection([landingSection]);
-    setInTransition(false);
-    disableScroll(false);
-  } else if (transitionDirection === "prev" && preNavOpen) {
-    floatUp([captionComponentAbout]);
-  }
+// captionComponent.addEventListener("animationend", () => {
+//   const transitionDirection = checkTransitionDirection();
+//   const preNavOpen = checkIfPreNavOpen();
+//   if (transitionDirection === "next" && !preNavOpen) {
+//     setTransitionDirection("prev");
+//     hideSection([landingSection]);
+//     setInTransition(false);
+//     disableScroll(false);
+//   } else if (transitionDirection === "prev") {
+//     floatUp([captionComponent]);
+//   }
+// });
+
+aboutSectionPreNavArea.addEventListener("transitionend", () => {
+  setPreNavOpen(true);
 });
