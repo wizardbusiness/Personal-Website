@@ -1,12 +1,14 @@
 ---
 import { Icon } from "astro-icon";
 import "../styles/tailwind.css";
+
+const { section } = Astro.props;
 ---
 
 <div
   slot="scroll-caret"
   id="scroll-caret"
-  class="fade-out-on-transition flex -translate-y-[5vh] flex-col justify-end"
+  class=`fade-out-on-transition flex ${ section === "about" && "-translate-y-[5vh]" } flex-col justify-end`
 >
   <Icon
     pack="ph"
