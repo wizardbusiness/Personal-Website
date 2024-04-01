@@ -8,10 +8,12 @@
   <div class="flex h-[20%] w-full items-center justify-center whitespace-nowrap">
     <slot name="title" />
   </div>
-  <div class="caption-landing-container flex h-[20%] items-start justify-center lg:items-center">
-    <slot name="caption-container" />
+  <div class="flex h-[20%] items-start justify-center lg:items-center">
+    <div class="caption-landing-container flex h-[12vh] items-start justify-center lg:items-center">
+      <slot name="caption-container" />
+    </div>
   </div>
-  <div class="h-[10%]">
+  <div class="h-[20%]">
     <slot name="scroll-caret" />
   </div>
 </section>
