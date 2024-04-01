@@ -71,15 +71,19 @@ const animationLib = [
 ] as const;
 
 type Animations = (typeof animationLib)[number];
+function removeAllAnimationsFromElement(element: HTMLElement) {
+  animationLib.forEach((animation) => {
+    if (element.classList.contains(animation)) {
+      element.classList.remove(animation);
+    }
+  });
+}
+
 // ANCHOR[id=animateElements]
 function animateElement(newAnimation: Animations) {
   return (element: HTMLElement) => {
     // remove all animations from the element before adding new ones
-    animationLib.forEach((animation) => {
-      if (element.classList.contains(animation)) {
-        element.classList.remove(animation);
-      }
-    });
+    removeAllAnimationsFromElement(element);
     element.classList.add(newAnimation);
   };
 }
@@ -92,6 +96,9 @@ const squish = animateElement("before:animate-squish-down-lg");
 const floatUp = animateElement("animate-float-up");
 
 // ******************************************************************************************************
+
+// ******************************************************************************************************
+
 const translations = ["translate-y-[0vh]", "translate-y-[100vh]"] as const;
 
 type Translations = (typeof translations)[number];
@@ -148,8 +155,7 @@ const showElement = changeElementDisplayType("hidden", "flex");
 function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
   return (childElement: HTMLElement) => {
     if (![...oldParent.children].includes(childElement)) {
-      console.log("child doesnt exist on parent");
-      throw new Error("Child element does not exist on parent");
+      console.error("child doesnt exist on parent");
     }
     oldParent.removeChild(childElement);
     newParent.appendChild(childElement);
@@ -181,21 +187,23 @@ function moveElement(
   speed: number,
   acceleration: number,
   limit: number,
+  direction: "up" | "down",
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
   //setup
-  if (!element.style.top && !element.classList.contains("fixed")) {
+  if (!element.style.top || !element.classList.contains("fixed")) {
     element.style.top = `${element.getBoundingClientRect().top}px`;
     changeElementPositionToFixed(element);
   }
   // accelerate
   if (speed <= limit) speed = speed ** acceleration;
   element.style.top = `calc(${element.style.top} + ${speed}px)`;
-  const allEntriesProcessed = observeTargetsOverlap(overlapObserverEntries);
-  console.log(allEntriesProcessed);
+  const allEntriesProcessed = observeTargetsOverlap(overlapObserverEntries, direction);
   if (allEntriesProcessed) return;
 
-  requestAnimationFrame(() => moveElement(element, speed, acceleration, limit, overlapObserverEntries));
+  requestAnimationFrame(() =>
+    moveElement(element, speed, acceleration, limit, direction, overlapObserverEntries),
+  );
 }
 
 // ******************************************************************************************************
@@ -215,7 +223,10 @@ type OverlapObserverEntry = {
 // ANCHOR[id=checkPosition]
 // LINK #checkPositionCall
 // LINK #checkPositionCallBackNav
-function observeTargetsOverlap(overlapObserverEntries: OverlapObserverEntry[]): boolean {
+function observeTargetsOverlap(
+  overlapObserverEntries: OverlapObserverEntry[],
+  direction: "up" | "down",
+): boolean {
   overlapObserverEntries.forEach((observerEntry) => {
     const firstElTop = observerEntry.observedElOne.getBoundingClientRect().top;
     const firstElBottom = observerEntry.observedElOne.getBoundingClientRect().bottom;
@@ -223,8 +234,11 @@ function observeTargetsOverlap(overlapObserverEntries: OverlapObserverEntry[]): 
     const secondElBottom = observerEntry.observedElTwo.getBoundingClientRect().bottom;
     const entryProcessed = observerEntry.entryProcessed;
     if (
-      (!entryProcessed && firstElBottom > secondElTop && firstElTop < secondElBottom) ||
-      (!entryProcessed && firstElTop < secondElBottom && firstElBottom > secondElBottom)
+      (!entryProcessed &&
+        direction === "down" &&
+        firstElBottom >= secondElTop &&
+        firstElTop <= secondElBottom) ||
+      (!entryProcessed && direction === "up" && firstElTop <= secondElTop)
     ) {
       observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
         entry.elsBeingModified.forEach((el) => {
@@ -241,7 +255,7 @@ function observeTargetsOverlap(overlapObserverEntries: OverlapObserverEntry[]): 
 
 // ******************************************************************************************************
 // ANCHOR[id=getElementPosition]
-function getElementPosition(element: HTMLElement, rectBound: "top" | "bottom") {
+function accountForTransformInCalcdRectBound(element: HTMLElement, rectBound: "top" | "bottom") {
   return element.getBoundingClientRect()[rectBound];
 }
 // ******************************************************************************************************
@@ -298,6 +312,62 @@ disableScroll(true);
 // ANCHOR[id=listeners]
 // LINK #animations
 // LINK #transitions
+
+function moveFromLandingToAboutOnAnimationEnd() {
+  setTransitionDirection("prev");
+  // LINK #moveElement
+  // ANCHOR[id=moveElementToAboutCall]
+  programaticallyScrollToNextSection();
+  // LINK #checkPosition
+  // ANCHOR[id=checkPositionCallForwardNav]
+  moveElement(captionComponent, 10, 1.02, 20, "down", [
+    {
+      observedElOne: captionComponent,
+      observedElTwo: aboutSection,
+      forModificationOnObservedOverlap: [
+        {
+          elsBeingModified: [aboutSection],
+          // LINK #translations
+          callbackToModifyEls: translateUp,
+        },
+      ],
+      entryProcessed: false,
+    },
+    {
+      observedElOne: captionComponent,
+      observedElTwo: aboutSectionContentGroup,
+      forModificationOnObservedOverlap: [
+        {
+          elsBeingModified: [captionComponent],
+          // LINK #animations
+          callbackToModifyEls: changeParentToAboutContainer,
+        },
+        {
+          elsBeingModified: [captionComponent],
+          // LINK #animations
+          callbackToModifyEls: changeElementPositionToStatic,
+        },
+        {
+          elsBeingModified: [captionComponent],
+          // LINK #animations
+          callbackToModifyEls: squish,
+        },
+      ],
+      entryProcessed: false,
+    },
+  ]);
+}
+
+function moveFromAboutToLandingOnScrollOrSwipe() {}
+
+function beginTransitionFromLandingToAboutOnScrollOrSwipe() {
+  setInTransition(true);
+  [...landingSectionContentGroup, landingSectionCaret].forEach((element) => {
+    slideUpAndFade(element);
+  });
+  scaleUp(captionComponent);
+}
+
 landingSection.addEventListener(
   "wheel",
   (e: WheelEvent) => {
@@ -308,11 +378,7 @@ landingSection.addEventListener(
       e.preventDefault();
     }
     if (transitionDirection === "next" && e.deltaY >= 0) {
-      setInTransition(true);
-      [...landingSectionContentGroup, landingSectionCaret].forEach((element) => {
-        slideUpAndFade(element);
-      });
-      scaleUp(captionComponent);
+      beginTransitionFromLandingToAboutOnScrollOrSwipe();
     } else if (transitionDirection === "prev") {
       disableScroll(false);
       if (!preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
@@ -320,17 +386,6 @@ landingSection.addEventListener(
         increaseHeight(aboutSectionPreNavArea);
         squelch(captionComponent);
       } else if (preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
-        disableScroll(true);
-        showSection([landingSection]);
-        function scrollToLandingSection() {
-          // disableScroll(true);
-          // landingSection.classList.replace("hidden", "flex");
-          aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
-          landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
-          // disableScroll(false);
-        }
-        // LINK #getElementPosition
-        const captionContainerAboutPosition = getElementPosition(captionComponent, "top");
         // hideElement([captionComponentAbout]);
         scrollToLandingSection();
         showElement([captionComponent]);
@@ -341,83 +396,75 @@ landingSection.addEventListener(
         // LINK #checkPosition
         // ANCHOR[id=checkPositionCallBackNav]
         setInTransition(true);
-      } else if (preNavOpen && e.deltaY > 0) {
-        disableScroll(false);
-        setPreNavOpen(false);
-        decreaseHeight(aboutSectionPreNavArea);
-        squish(captionComponent);
       }
     }
   },
   { passive: false },
 );
 
+function scrollToLandingSection() {
+  showSection([landingSection]);
+  // disableScroll(true);
+  // landingSection.classList.replace("hidden", "flex");
+  aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
+  landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+  // translateDown(aboutSection);
+  // LINK #moveElement
+  moveElement(captionComponent, -12, 1.01, -15, "up", [
+    {
+      observedElOne: captionComponent,
+      observedElTwo: captionLandingContainer,
+      forModificationOnObservedOverlap: [
+        { callbackToModifyEls: changeElementPositionToStatic, elsBeingModified: [captionComponent] },
+        {
+          callbackToModifyEls: changeParentToLandingContainer,
+          elsBeingModified: [captionComponent],
+        },
+        {
+          callbackToModifyEls: removeAllAnimationsFromElement,
+          elsBeingModified: [captionComponent],
+        },
+        {
+          callbackToModifyEls: slideDown,
+          elsBeingModified: [...landingSectionContentGroup],
+        },
+      ],
+      entryProcessed: false,
+    },
+  ]);
+}
+
+aboutSection.addEventListener("wheel", (e: WheelEvent) => {
+  const preNavOpen = checkIfPreNavOpen();
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+  }
+  if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+    increaseHeight(aboutSectionPreNavArea);
+    squelch(captionComponent);
+    disableScroll(true);
+    setPreNavOpen(true);
+  } else if (preNavOpen && e.deltaY > 0) {
+    decreaseHeight(aboutSectionPreNavArea);
+    squish(captionComponent);
+    disableScroll(false);
+    setPreNavOpen(false);
+  } else if (preNavOpen && e.deltaY <= 0) {
+    scrollToLandingSection();
+  }
+});
+
 // ANCHOR[id=checkPositionListen]
+
 captionComponent.addEventListener("animationend", () => {
   const transitionDirection = checkTransitionDirection();
   const inTransition = checkIfInTransition();
   if (transitionDirection === "next" && inTransition) {
-    setTransitionDirection("prev");
-    // LINK #moveElement
-    // ANCHOR[id=moveElementToAboutCall]
-    programaticallyScrollToNextSection();
-    // LINK #checkPosition
-    // ANCHOR[id=checkPositionCallForwardNav]
-    moveElement(captionComponent, 10, 1.02, 20, [
-      {
-        observedElOne: captionComponent,
-        observedElTwo: aboutSection,
-        forModificationOnObservedOverlap: [
-          {
-            elsBeingModified: [aboutSection],
-            // LINK #translations
-            callbackToModifyEls: translateUp,
-          },
-        ],
-        entryProcessed: false,
-      },
-      {
-        observedElOne: captionComponent,
-        observedElTwo: aboutSectionContentGroup,
-        forModificationOnObservedOverlap: [
-          {
-            elsBeingModified: [captionComponent],
-            // LINK #animations
-            callbackToModifyEls: changeParentToAboutContainer,
-          },
-          {
-            elsBeingModified: [captionComponent],
-            // LINK #animations
-            callbackToModifyEls: changeElementPositionToStatic,
-          },
-          {
-            elsBeingModified: [captionComponent],
-            // LINK #animations
-            callbackToModifyEls: squish,
-          },
-        ],
-        entryProcessed: false,
-      },
-    ]);
+    moveFromLandingToAboutOnAnimationEnd();
   } else if (transitionDirection === "prev" && inTransition) {
     setInTransition(false);
     disableScroll(false);
+    hideSection([landingSection]);
   }
-});
-
-// captionComponent.addEventListener("animationend", () => {
-//   const transitionDirection = checkTransitionDirection();
-//   const preNavOpen = checkIfPreNavOpen();
-//   if (transitionDirection === "next" && !preNavOpen) {
-//     setTransitionDirection("prev");
-//     hideSection([landingSection]);
-//     setInTransition(false);
-//     disableScroll(false);
-//   } else if (transitionDirection === "prev") {
-//     floatUp([captionComponent]);
-//   }
-// });
-
-aboutSectionPreNavArea.addEventListener("transitionend", () => {
-  setPreNavOpen(true);
 });
