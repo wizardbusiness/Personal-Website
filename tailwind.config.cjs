@@ -26,12 +26,12 @@ module.exports = {
             transform: "translateY(0vh)",
           },
           "40%": {
-            transform: "translateY(-80vh) scale(130%)",
+            transform: "translateY(-70vh) scale(130%)",
             transformOrigin: "bottom",
             opacity: 0.8,
           },
           "100%": {
-            transform: "translateY(-80vh) scale(130%)",
+            transform: "translateY(-70vh) scale(130%)",
             transformOrigin: "bottom",
             opacity: 0.8,
           },
@@ -44,9 +44,6 @@ module.exports = {
           "10%": { transform: "translateY(0vh) scaleY(110%) scaleX(100%)", transformOrigin: "bottom" },
           "15%": { transform: "translateY(-3vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
           "25%": { transform: "translateY(-3vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
-          // "30%": { transform: "translateY(-4vh)  scaleY(95%) scaleX(105%)", transformOrigin: "bottom" },
-
-          // "50%": { transform: "translateY(-4.5vh)" },
           "100%": { transform: "translateY(-11vh)" },
         },
         "slide-up": {
@@ -130,7 +127,7 @@ module.exports = {
           },
           "100%": {
             transformOrigin: "bottom",
-            transform: "scale(110%)",
+            transform: "scale(100%)",
           },
         },
         grow: {
