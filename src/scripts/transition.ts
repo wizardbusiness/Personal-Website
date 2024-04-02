@@ -540,3 +540,29 @@ aboutSectionPreNavArea.addEventListener("transitionend", () => {
   setPreNavOpening(false);
   setPreNavOpen(true);
 });
+
+let options = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.8,
+};
+
+function observeSection(callback: Function) {
+  return (entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true) {
+        callback();
+      }
+    });
+  };
+}
+
+// const observeLandingSection = observeSection(handleTransitionToAboutSection); // LINK #landingSection
+// const observeAboutSection = observeSection(handleTransitionToLandingSection); // LINK #aboutSection
+
+// const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
+
+// const aboutSectionObserver = new IntersectionObserver(observeAboutSection, options);
+
+// landingSectionObserver.observe(landingSection);
+// aboutSectionObserver.observe(aboutSection);
