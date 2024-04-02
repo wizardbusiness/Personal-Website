@@ -17,6 +17,7 @@ const sectionNavCarets: NodeListOf<HTMLElement> = document.querySelectorAll("#sc
 const landingSectionCaret: HTMLElement = sectionNavCarets[0];
 const aboutSectionCaret: HTMLElement = sectionNavCarets[1];
 
+const aboutSectionNavBar: HTMLElement = document.querySelector(".about-section-nav-bar");
 const aboutSectionPreNavArea: HTMLElement = document.querySelector("#nav-check");
 
 // ------------------------------------------------------------------------------------------------------
@@ -132,8 +133,8 @@ const increaseHeight = changeElementHeight("h-0", "h-[10vh]");
 // ******************************************************************************************************
 
 const cssDisplay = ["flex", "hidden"] as const;
-
 type CSSDisplay = (typeof cssDisplay)[number];
+
 function changeElementDisplayType(staleDisplay: CSSDisplay, freshDisplay: CSSDisplay) {
   return (elements: HTMLElement[]) => {
     elements.forEach((element) => {
@@ -150,6 +151,21 @@ const showSection = changeElementDisplayType("hidden", "flex");
 
 const hideElement = changeElementDisplayType("flex", "hidden");
 const showElement = changeElementDisplayType("hidden", "flex");
+
+// ******************************************************************************************************
+
+const opacities = ["opacity-0", "opacity-1"] as const;
+type Opacity = (typeof opacities)[number];
+
+function changeElementOpacity(staleOpacity: Opacity, freshOpacity: Opacity) {
+  return (element: HTMLElement) => {
+    const changeOpacity = replaceCSSClass(staleOpacity, freshOpacity);
+    changeOpacity(element);
+  };
+}
+
+const changeElementOpacityToOne = changeElementOpacity("opacity-0", "opacity-1");
+const changeElementOpacityToZero = changeElementOpacity("opacity-1", "opacity-0");
 // ******************************************************************************************************
 
 function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
@@ -164,8 +180,8 @@ function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
 
 const changeParentToLandingContainer = changeElementParent(captionAboutContainer, captionLandingContainer);
 const changeParentToAboutContainer = changeElementParent(captionLandingContainer, captionAboutContainer);
-
 // ******************************************************************************************************
+
 function changeElementPositionType(oldPositionType: "fixed" | "static", newPositionType: "fixed" | "static") {
   return (element: HTMLElement) => {
     const changePositionType = replaceCSSClass(oldPositionType, newPositionType);
@@ -176,8 +192,23 @@ function changeElementPositionType(oldPositionType: "fixed" | "static", newPosit
 const changeElementPositionToStatic = changeElementPositionType("fixed", "static");
 const changeElementPositionToFixed = changeElementPositionType("static", "fixed");
 // ******************************************************************************************************
+function setElTopStylePropertyToCurrentPosition(element: HTMLElement) {
+  element.style.top = `${element.getBoundingClientRect().top}px`;
+}
+// ******************************************************************************************************
 
 // Move captionContainer
+
+function setupElementForMove(
+  element: HTMLElement,
+  setElTopStyleToCurrentPosition: (element: HTMLElement) => void,
+  changeElementPositionToFixed: (element: HTMLElement) => void,
+) {
+  if (!element.style.top || !element.classList.contains("fixed")) {
+    changeElementPositionToFixed(element);
+    setElTopStyleToCurrentPosition(element);
+  }
+}
 
 //LINK #moveELementToAboutCall
 //LINK #moveElementToLandingCall
@@ -191,10 +222,10 @@ function moveElement(
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
   //setup
-  if (!element.style.top || !element.classList.contains("fixed")) {
-    element.style.top = `${element.getBoundingClientRect().top}px`;
-    changeElementPositionToFixed(element);
-  }
+  // if (!element.style.top || !element.classList.contains("fixed")) {
+  //   element.style.top = `${element.getBoundingClientRect().top}px`;
+  //   changeElementPositionToFixed(element);
+  // }
   // accelerate
   if (speed <= limit) speed = speed ** acceleration;
   element.style.top = `calc(${element.style.top} + ${speed}px)`;
@@ -204,6 +235,19 @@ function moveElement(
   requestAnimationFrame(() =>
     moveElement(element, speed, acceleration, limit, direction, overlapObserverEntries),
   );
+}
+
+function moveElementV2(
+  element: HTMLElement,
+  direction: "up" | "down",
+  overlapObserverEntries: OverlapObserverEntry[],
+) {
+  translateDown(element);
+  observeTargetsOverlap(overlapObserverEntries, direction);
+
+  // requestAnimationFrame(() =>
+  //   moveElement(element, speed, acceleration, limit, direction, overlapObserverEntries),
+  // );
 }
 
 // ******************************************************************************************************
@@ -249,8 +293,15 @@ function observeTargetsOverlap(
     }
   });
   const lastEntryProcessed = overlapObserverEntries[overlapObserverEntries.length - 1].entryProcessed;
-  if (lastEntryProcessed) return true;
-  else return false;
+  if (lastEntryProcessed) {
+    changeElementPositionToStatic(captionComponent);
+    captionComponent.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
+    return;
+  } else {
+    requestAnimationFrame(() => {
+      observeTargetsOverlap(overlapObserverEntries, direction);
+    });
+  }
 }
 
 // ******************************************************************************************************
@@ -273,7 +324,7 @@ function programaticallyScrollToNextSection() {
 // ------------------------------------------------------------------------------------------------------
 // data-attributes
 
-function checkTransitionDirection(): "next" | "prev" {
+function getTransitionDirection(): "next" | "prev" {
   const direction = body.getAttribute("data-transition-direction");
   if (direction === "next" || direction === "prev") {
     return direction;
@@ -304,6 +355,15 @@ function setPreNavOpen(open: boolean) {
   aboutSectionPreNavArea.setAttribute("data-pre-nav-open", String(open));
 }
 
+function checkIfPreNavOpening(): boolean {
+  const preNavOpening = aboutSectionPreNavArea.getAttribute("data-pre-nav-opening");
+  return preNavOpening === "true" ? true : false;
+}
+
+function setPreNavOpening(opening: boolean) {
+  aboutSectionPreNavArea.setAttribute("data-pre-nav-opening", String(opening));
+}
+
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // start with scroll disabled
@@ -313,21 +373,21 @@ disableScroll(true);
 // LINK #animations
 // LINK #transitions
 
-function moveFromLandingToAboutOnAnimationEnd() {
-  setTransitionDirection("prev");
+function moveElementFromLandingToAboutOnAnimEnd() {
   // LINK #moveElement
   // ANCHOR[id=moveElementToAboutCall]
   programaticallyScrollToNextSection();
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
-  moveElement(captionComponent, 10, 1.02, 20, "down", [
+  moveElementV2(captionComponent, "down", [
     {
       observedElOne: captionComponent,
       observedElTwo: aboutSection,
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [aboutSection],
-          // LINK #translations
+          // LINK #translationsflask125
+
           callbackToModifyEls: translateUp,
         },
       ],
@@ -358,59 +418,66 @@ function moveFromLandingToAboutOnAnimationEnd() {
   ]);
 }
 
-function moveFromAboutToLandingOnScrollOrSwipe() {}
-
-function beginTransitionFromLandingToAboutOnScrollOrSwipe() {
-  setInTransition(true);
+function landingToAboutInitOnScrollOrSwipe() {
   [...landingSectionContentGroup, landingSectionCaret].forEach((element) => {
     slideUpAndFade(element);
   });
-  scaleUp(captionComponent);
+  // scaleUp(captionComponent);
 }
+
+captionComponent.addEventListener("transitionend", () => {
+  const transitionDirection = getTransitionDirection();
+  if (transitionDirection === "next") {
+    captionComponent.classList.replace("-translate-y-[80vh]", "translate-y-[100vh]");
+  }
+});
 
 landingSection.addEventListener(
   "wheel",
   (e: WheelEvent) => {
-    const transitionDirection = checkTransitionDirection();
-    const preNavOpen = checkIfPreNavOpen();
+    const transitionDirection = getTransitionDirection();
     const inTransition = checkIfInTransition();
     if (inTransition) {
       e.preventDefault();
     }
     if (transitionDirection === "next" && e.deltaY >= 0) {
-      beginTransitionFromLandingToAboutOnScrollOrSwipe();
-    } else if (transitionDirection === "prev") {
-      disableScroll(false);
-      if (!preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
-        disableScroll(true);
-        increaseHeight(aboutSectionPreNavArea);
-        squelch(captionComponent);
-      } else if (preNavOpen && e.deltaY < 0 && window.scrollY === 0) {
-        // hideElement([captionComponentAbout]);
-        scrollToLandingSection();
-        showElement([captionComponent]);
-        captionComponent.style.top = "0";
-        captionComponent.classList.remove("animate-scale-up");
-        // LINK #moveElement
-        // ANCHOR[id=moveELementToLandingCall]
-        // LINK #checkPosition
-        // ANCHOR[id=checkPositionCallBackNav]
-        setInTransition(true);
-      }
+      setInTransition(true);
+      setupElementForMove(
+        captionComponent,
+        changeElementPositionToFixed,
+        setElTopStylePropertyToCurrentPosition,
+      );
+      captionComponent.classList.replace("translate-y-[0vh]", "-translate-y-[80vh]");
+
+      // landingToAboutInitOnScrollOrSwipe();
     }
   },
   { passive: false },
 );
 
+// ANCHOR[id=checkPositionListen]
+
+captionComponent.addEventListener("transitionend", () => {
+  const transitionDirection = getTransitionDirection();
+  const inTransition = checkIfInTransition();
+  if (transitionDirection === "next" && inTransition) {
+    setTransitionDirection("prev");
+    moveElementFromLandingToAboutOnAnimEnd();
+  } else if (transitionDirection === "prev" && inTransition) {
+    setInTransition(false);
+    disableScroll(false);
+    hideSection([landingSection]);
+  } else if (transitionDirection === "prev" && !inTransition) {
+    floatUp(captionComponent);
+  }
+});
+
 function scrollToLandingSection() {
   showSection([landingSection]);
-  // disableScroll(true);
-  // landingSection.classList.replace("hidden", "flex");
-  aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps horribly as landing section is painted
+  aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page to landing section as soon as it is painted
   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
-  // translateDown(aboutSection);
   // LINK #moveElement
-  moveElement(captionComponent, -12, 1.01, -15, "up", [
+  moveElement(captionComponent, -9, 1.02, -15, "up", [
     {
       observedElOne: captionComponent,
       observedElTwo: captionLandingContainer,
@@ -432,39 +499,44 @@ function scrollToLandingSection() {
       entryProcessed: false,
     },
   ]);
+  setInTransition(false);
 }
 
 aboutSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
-  const inTransition = checkIfInTransition();
-  if (inTransition) {
-    e.preventDefault();
-  }
-  if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+  const preNavOpening = checkIfPreNavOpening();
+  if (preNavOpening) {
+    return;
+  } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+    disableScroll(true);
+    setPreNavOpening(true);
     increaseHeight(aboutSectionPreNavArea);
     squelch(captionComponent);
-    disableScroll(true);
-    setPreNavOpen(true);
   } else if (preNavOpen && e.deltaY > 0) {
     decreaseHeight(aboutSectionPreNavArea);
     squish(captionComponent);
     disableScroll(false);
     setPreNavOpen(false);
-  } else if (preNavOpen && e.deltaY <= 0) {
+  } else if (preNavOpen && e.deltaY <= 25) {
+    setTransitionDirection("next");
+    setInTransition(true);
+    disableScroll(true);
+    setPreNavOpen(false);
+    decreaseHeight(aboutSectionPreNavArea);
+    setupElementForMove(
+      captionComponent,
+      changeElementPositionToFixed,
+      setElTopStylePropertyToCurrentPosition,
+    );
     scrollToLandingSection();
   }
 });
 
-// ANCHOR[id=checkPositionListen]
+aboutSection.addEventListener("transitionend", () => {
+  changeElementOpacityToOne(aboutSectionNavBar);
+});
 
-captionComponent.addEventListener("animationend", () => {
-  const transitionDirection = checkTransitionDirection();
-  const inTransition = checkIfInTransition();
-  if (transitionDirection === "next" && inTransition) {
-    moveFromLandingToAboutOnAnimationEnd();
-  } else if (transitionDirection === "prev" && inTransition) {
-    setInTransition(false);
-    disableScroll(false);
-    hideSection([landingSection]);
-  }
+aboutSectionPreNavArea.addEventListener("transitionend", () => {
+  setPreNavOpening(false);
+  setPreNavOpen(true);
 });
