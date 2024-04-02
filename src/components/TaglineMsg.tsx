@@ -16,12 +16,7 @@ const TaglineMsg = ({ msg, blinkCursor, scaleText }) => {
   }, [msgIndex]);
 
   return (
-    <div
-      id="caption"
-      className={`flex items-center gap-2 ${
-        scaleText && "scale-[130%]"
-      } [transform-origin:bottom]`}
-    >
+    <div id="caption" className="flex items-center gap-2 [transform-origin:center]">
       <h1 className="no-wrap h-fit text-center font-mono text-xl text-gray-200 lg:text-3xl xl:text-5xl 2xl:text-7xl">
         {(msgIndex === msg.length &&
           text.split(" ").map((str, index) => {
