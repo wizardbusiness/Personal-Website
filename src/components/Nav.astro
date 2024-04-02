@@ -5,13 +5,12 @@ const { location } = Astro.props;
 ---
 
 <nav
-  class=`${location === "landing-section" && "landing-transition-group"} flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]`
+  class=`${location === "landing-section" && "landing-transition-group"} ${location === "about-section" && "about-section-nav-bar opacity-0 transition-opacity duration-[500ms]"} flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]`
 >
   <section class="flex gap-[5%] p-[0.5em] text-xl lg:justify-end lg:text-2xl xl:text-4xl 2xl:text-6xl">
     <ContactInfo client:load />
     <a href="/Resume" class="decoration-double hover:underline">Resume</a>
   </section>
-
   <div
     class="lg:text-bg-gray-100 justify-center p-2 text-center text-transparent lg:text-3xl lg:text-gray-100 2xl:text-6xl"
   >
