@@ -3,22 +3,22 @@ import disableScroll from "./disableScroll";
 // elements
 const body: HTMLElement = document.querySelector("body");
 const landingSection: HTMLElement = document.querySelector("#landing");
-const aboutSection: HTMLElement = document.querySelector("#about");
+const infoSection: HTMLElement = document.querySelector("#info");
 
 const landingSectionContentGroup: NodeListOf<HTMLElement> =
   document.querySelectorAll(".landing-transition-group");
-const aboutSectionContentGroup: HTMLElement = document.querySelector("#text-content");
+const infoSectionContentGroup: HTMLElement = document.querySelector("#text-content");
 
 const captionComponent: HTMLElement = document.querySelector("#caption-container");
 const captionLandingContainer: HTMLElement = document.querySelector(".caption-landing-container");
-const captionAboutContainer: HTMLElement = document.querySelector(".caption-about-container");
+const captionInfoContainer: HTMLElement = document.querySelector(".caption-info-container");
 
 const sectionNavCarets: NodeListOf<HTMLElement> = document.querySelectorAll("#scroll-caret");
 const landingSectionCaret: HTMLElement = sectionNavCarets[0];
-const aboutSectionCaret: HTMLElement = sectionNavCarets[1];
+const infoSectionCaret: HTMLElement = sectionNavCarets[1];
 
-const aboutSectionNavBar: HTMLElement = document.querySelector(".about-section-nav-bar");
-const aboutSectionPreNavArea: HTMLElement = document.querySelector("#nav-check");
+const infoSectionNavBar: HTMLElement = document.querySelector(".info-section-nav-bar");
+const infoSectionPreNavArea: HTMLElement = document.querySelector("#nav-check");
 
 // ------------------------------------------------------------------------------------------------------
 // FUNCTIONS
@@ -186,8 +186,8 @@ function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
   };
 }
 
-const changeParentToLandingContainer = changeElementParent(captionAboutContainer, captionLandingContainer);
-const changeParentToAboutContainer = changeElementParent(captionLandingContainer, captionAboutContainer);
+const changeParentToLandingContainer = changeElementParent(captionInfoContainer, captionLandingContainer);
+const changeParentToinfoContainer = changeElementParent(captionLandingContainer, captionInfoContainer);
 // ******************************************************************************************************
 
 function changeElementPositionType(oldPositionType: "fixed" | "static", newPositionType: "fixed" | "static") {
@@ -218,7 +218,7 @@ function setupElementForMove(
   }
 }
 
-//LINK #moveELementToAboutCall
+//LINK #moveELementToinfoCall
 //LINK #moveElementToLandingCall
 // ANCHOR[id=moveElement]
 function moveElement(
@@ -351,21 +351,21 @@ function setInTransition(inTransition: string | boolean) {
 }
 
 function checkIfPreNavOpen(): boolean {
-  const preNavOpen = aboutSectionPreNavArea.getAttribute("data-pre-nav-open");
+  const preNavOpen = infoSectionPreNavArea.getAttribute("data-pre-nav-open");
   return preNavOpen === "true" ? true : false;
 }
 
 function setPreNavOpen(open: boolean) {
-  aboutSectionPreNavArea.setAttribute("data-pre-nav-open", String(open));
+  infoSectionPreNavArea.setAttribute("data-pre-nav-open", String(open));
 }
 
 function checkIfPreNavOpening(): boolean {
-  const preNavOpening = aboutSectionPreNavArea.getAttribute("data-pre-nav-opening");
+  const preNavOpening = infoSectionPreNavArea.getAttribute("data-pre-nav-opening");
   return preNavOpening === "true" ? true : false;
 }
 
 function setPreNavOpening(opening: boolean) {
-  aboutSectionPreNavArea.setAttribute("data-pre-nav-opening", String(opening));
+  infoSectionPreNavArea.setAttribute("data-pre-nav-opening", String(opening));
 }
 
 // ------------------------------------------------------------------------------------------------------
@@ -377,19 +377,19 @@ disableScroll(true);
 // LINK #animations
 // LINK #transitions
 
-function moveElementFromLandingToAbout() {
+function moveElementFromLandingToinfo() {
   // LINK #moveElement
-  // ANCHOR[id=moveElementToAboutCall]
+  // ANCHOR[id=moveElementToinfoCall]
   programaticallyScrollToNextSection();
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
   moveElementV2(captionComponent, "down", [
     {
       observedElOne: captionComponent,
-      observedElTwo: aboutSection,
+      observedElTwo: infoSection,
       forModificationOnObservedOverlap: [
         {
-          elsBeingModified: [aboutSection],
+          elsBeingModified: [infoSection],
           // LINK #translations
 
           callbackToModifyEls: translateUp,
@@ -399,12 +399,12 @@ function moveElementFromLandingToAbout() {
     },
     {
       observedElOne: captionComponent,
-      observedElTwo: aboutSectionContentGroup,
+      observedElTwo: infoSectionContentGroup,
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [captionComponent],
           // LINK #animations
-          callbackToModifyEls: changeParentToAboutContainer,
+          callbackToModifyEls: changeParentToinfoContainer,
         },
         {
           elsBeingModified: [captionComponent],
@@ -459,13 +459,13 @@ captionComponent.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
   if (currSection === "landing" && inTransition) {
     setTransitionDuration(captionComponent, "duration-[3000ms]");
-    moveElementFromLandingToAbout();
+    moveElementFromLandingToinfo();
   }
 });
 
 function scrollToLandingSection() {
   showSection([landingSection]);
-  aboutSection.scrollIntoView(); // VERY IMPORTANT - otherwise page to landing section as soon as it is painted
+  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page to landing section as soon as it is painted
   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
   // LINK #moveElement
   moveElement(captionComponent, -9, 1.02, -15, "up", [
@@ -493,7 +493,7 @@ function scrollToLandingSection() {
   setInTransition(false);
 }
 
-aboutSection.addEventListener("wheel", (e: WheelEvent) => {
+infoSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
   if (preNavOpening) {
@@ -502,10 +502,10 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
   } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
     disableScroll(true);
     setPreNavOpening(true);
-    increaseHeight(aboutSectionPreNavArea);
+    increaseHeight(infoSectionPreNavArea);
     squelch(captionComponent);
   } else if (preNavOpen && e.deltaY > 0) {
-    decreaseHeight(aboutSectionPreNavArea);
+    decreaseHeight(infoSectionPreNavArea);
     squish(captionComponent);
     disableScroll(false);
     setPreNavOpen(false);
@@ -513,7 +513,7 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
     setInTransition(true);
     disableScroll(true);
     setPreNavOpen(false);
-    decreaseHeight(aboutSectionPreNavArea);
+    decreaseHeight(infoSectionPreNavArea);
     setupElementForMove(
       captionComponent,
       changeElementPositionToFixed,
@@ -523,10 +523,10 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
   }
 });
 
-aboutSection.addEventListener("transitionend", () => {
+infoSection.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
   if (inTransition) {
-    changeElementOpacityToOne(aboutSectionNavBar);
+    changeElementOpacityToOne(infoSectionNavBar);
     setInTransition(false);
     disableScroll(false);
     hideSection([landingSection]);
@@ -535,7 +535,7 @@ aboutSection.addEventListener("transitionend", () => {
   }
 });
 
-aboutSectionPreNavArea.addEventListener("transitionend", () => {
+infoSectionPreNavArea.addEventListener("transitionend", () => {
   setPreNavOpening(false);
   setPreNavOpen(true);
 });
@@ -565,10 +565,10 @@ const observeInfoSection = observeSection(() => {
     disableScroll(false);
   }
   setCurrSection("info");
-}); // LINK #aboutSection
+}); // LINK #infoSection
 
 const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
-const aboutSectionObserver = new IntersectionObserver(observeInfoSection, options);
+const infoSectionObserver = new IntersectionObserver(observeInfoSection, options);
 
 landingSectionObserver.observe(landingSection);
-aboutSectionObserver.observe(aboutSection);
+infoSectionObserver.observe(infoSection);
