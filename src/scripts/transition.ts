@@ -114,8 +114,16 @@ function translateElement(staleTranslation: Translations, freshTranslation: Tran
 
 const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]");
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
-
 // ******************************************************************************************************
+
+function clearPropertiesAndReplace(classRootStr) {
+  return (element: HTMLElement, freshDuration) => {
+    element.classList.forEach((c) => c.includes(classRootStr) && element.classList.remove(c));
+    element.classList.add(freshDuration);
+  };
+}
+
+const setTransitionDuration = clearPropertiesAndReplace("duration");
 
 const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
@@ -244,10 +252,6 @@ function moveElementV2(
 ) {
   translateDown(element);
   observeTargetsOverlap(overlapObserverEntries, direction);
-
-  // requestAnimationFrame(() =>
-  //   moveElement(element, speed, acceleration, limit, direction, overlapObserverEntries),
-  // );
 }
 
 // ******************************************************************************************************
@@ -324,17 +328,17 @@ function programaticallyScrollToNextSection() {
 // ------------------------------------------------------------------------------------------------------
 // data-attributes
 
-function getTransitionDirection(): "next" | "prev" {
-  const direction = body.getAttribute("data-transition-direction");
-  if (direction === "next" || direction === "prev") {
-    return direction;
+function getCurrSection(): "landing" | "info" {
+  const currSection = body.getAttribute("data-section");
+  if (currSection === "landing" || currSection === "info") {
+    return currSection;
   } else {
     throw new Error("Invalid transition direction");
   }
 }
 
-function setTransitionDirection(direction: "next" | "prev") {
-  body.setAttribute("data-transition-direction", direction);
+function setCurrSection(section: "landing" | "info") {
+  body.setAttribute("data-section", section);
 }
 
 function checkIfInTransition() {
@@ -373,7 +377,7 @@ disableScroll(true);
 // LINK #animations
 // LINK #transitions
 
-function moveElementFromLandingToAboutOnAnimEnd() {
+function moveElementFromLandingToAbout() {
   // LINK #moveElement
   // ANCHOR[id=moveElementToAboutCall]
   programaticallyScrollToNextSection();
@@ -386,7 +390,7 @@ function moveElementFromLandingToAboutOnAnimEnd() {
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [aboutSection],
-          // LINK #translationsflask125
+          // LINK #translations
 
           callbackToModifyEls: translateUp,
         },
@@ -418,29 +422,23 @@ function moveElementFromLandingToAboutOnAnimEnd() {
   ]);
 }
 
-function landingToAboutInitOnScrollOrSwipe() {
-  [...landingSectionContentGroup, landingSectionCaret].forEach((element) => {
-    slideUpAndFade(element);
-  });
-  // scaleUp(captionComponent);
-}
-
 captionComponent.addEventListener("transitionend", () => {
-  const transitionDirection = getTransitionDirection();
-  if (transitionDirection === "next") {
+  const currSection = getCurrSection();
+  if (currSection === "landing") {
     captionComponent.classList.replace("-translate-y-[80vh]", "translate-y-[100vh]");
   }
 });
 
-landingSection.addEventListener(
+window.addEventListener(
   "wheel",
   (e: WheelEvent) => {
-    const transitionDirection = getTransitionDirection();
+    const currSection = getCurrSection();
     const inTransition = checkIfInTransition();
     if (inTransition) {
       e.preventDefault();
+      return;
     }
-    if (transitionDirection === "next" && e.deltaY >= 0) {
+    if (currSection === "landing" && e.deltaY >= 0) {
       setInTransition(true);
       setupElementForMove(
         captionComponent,
@@ -448,8 +446,7 @@ landingSection.addEventListener(
         setElTopStylePropertyToCurrentPosition,
       );
       captionComponent.classList.replace("translate-y-[0vh]", "-translate-y-[80vh]");
-
-      // landingToAboutInitOnScrollOrSwipe();
+      [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
     }
   },
   { passive: false },
@@ -458,17 +455,11 @@ landingSection.addEventListener(
 // ANCHOR[id=checkPositionListen]
 
 captionComponent.addEventListener("transitionend", () => {
-  const transitionDirection = getTransitionDirection();
+  const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
-  if (transitionDirection === "next" && inTransition) {
-    setTransitionDirection("prev");
-    moveElementFromLandingToAboutOnAnimEnd();
-  } else if (transitionDirection === "prev" && inTransition) {
-    setInTransition(false);
-    disableScroll(false);
-    hideSection([landingSection]);
-  } else if (transitionDirection === "prev" && !inTransition) {
-    floatUp(captionComponent);
+  if (currSection === "landing" && inTransition) {
+    setTransitionDuration(captionComponent, "duration-[3000ms]");
+    moveElementFromLandingToAbout();
   }
 });
 
@@ -506,6 +497,7 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
   if (preNavOpening) {
+    e.preventDefault();
     return;
   } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
     disableScroll(true);
@@ -518,7 +510,6 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
     disableScroll(false);
     setPreNavOpen(false);
   } else if (preNavOpen && e.deltaY <= 25) {
-    setTransitionDirection("next");
     setInTransition(true);
     disableScroll(true);
     setPreNavOpen(false);
@@ -528,12 +519,20 @@ aboutSection.addEventListener("wheel", (e: WheelEvent) => {
       changeElementPositionToFixed,
       setElTopStylePropertyToCurrentPosition,
     );
-    scrollToLandingSection();
+    // scrollToLandingSection();
   }
 });
 
 aboutSection.addEventListener("transitionend", () => {
-  changeElementOpacityToOne(aboutSectionNavBar);
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    changeElementOpacityToOne(aboutSectionNavBar);
+    setInTransition(false);
+    disableScroll(false);
+    hideSection([landingSection]);
+    window.scrollTo(0, 0);
+    setInTransition(false);
+  }
 });
 
 aboutSectionPreNavArea.addEventListener("transitionend", () => {
@@ -544,7 +543,7 @@ aboutSectionPreNavArea.addEventListener("transitionend", () => {
 let options = {
   root: null,
   rootMargin: "0px",
-  threshold: 0.8,
+  threshold: 0.87,
 };
 
 function observeSection(callback: Function) {
@@ -557,12 +556,15 @@ function observeSection(callback: Function) {
   };
 }
 
-// const observeLandingSection = observeSection(handleTransitionToAboutSection); // LINK #landingSection
-// const observeAboutSection = observeSection(handleTransitionToLandingSection); // LINK #aboutSection
+const observeLandingSection = observeSection(() => {
+  setCurrSection("landing");
+}); // LINK #landingSection
+const observeAboutSection = observeSection(() => {
+  setCurrSection("info");
+}); // LINK #aboutSection
 
-// const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
+const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
+const aboutSectionObserver = new IntersectionObserver(observeAboutSection, options);
 
-// const aboutSectionObserver = new IntersectionObserver(observeAboutSection, options);
-
-// landingSectionObserver.observe(landingSection);
-// aboutSectionObserver.observe(aboutSection);
+landingSectionObserver.observe(landingSection);
+aboutSectionObserver.observe(aboutSection);
