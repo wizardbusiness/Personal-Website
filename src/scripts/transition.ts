@@ -559,12 +559,16 @@ function observeSection(callback: Function) {
 const observeLandingSection = observeSection(() => {
   setCurrSection("landing");
 }); // LINK #landingSection
-const observeAboutSection = observeSection(() => {
+const observeInfoSection = observeSection(() => {
+  const inTransition = checkIfInTransition();
+  if (!inTransition) {
+    disableScroll(false);
+  }
   setCurrSection("info");
 }); // LINK #aboutSection
 
 const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
-const aboutSectionObserver = new IntersectionObserver(observeAboutSection, options);
+const aboutSectionObserver = new IntersectionObserver(observeInfoSection, options);
 
 landingSectionObserver.observe(landingSection);
 aboutSectionObserver.observe(aboutSection);
