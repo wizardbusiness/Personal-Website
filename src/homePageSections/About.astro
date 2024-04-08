@@ -2,22 +2,17 @@
 import AboutSectionLayout from "../layouts/about-section-layout.astro";
 import ScrollCaret from "../components/ScrollCaret.astro";
 import Nav from "../components/Nav.astro";
-import NavController from "../components/NavController";
-import TaglineContainer from "../components/TaglineContainer";
-import CaptionContainer from "../components/CaptionContainer.astro";
-import TaglineMsg from "../components/TaglineMsg";
 import Skyline from "../components/bgEffects/Skyline";
 import Bio from "../components/Bio.astro";
 import Portfolio from "../components/Portfolio.astro";
 import Tech from "../components/Tech.astro";
 import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
 import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
-import _ from "lodash";
 ---
 
 <AboutSectionLayout data-info-page slot="page">
-  <Nav slot="nav" location="about-section" />
-  <ScrollCaret slot="caret" section="about" />
+  <Nav slot="nav" location="info-section" />
+  <ScrollCaret slot="caret" section="info" />
   <Bio slot="about" />
   <Portfolio slot="portfolio" />
   <YouDreamIt slot="flav-text-a" />
