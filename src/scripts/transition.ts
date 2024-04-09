@@ -368,6 +368,15 @@ function setPreNavOpening(opening: boolean) {
   infoSectionPreNavArea.setAttribute("data-pre-nav-opening", String(opening));
 }
 
+function checkIfPreNavClosing(): boolean {
+  const preNavClosing = infoSectionPreNavArea.getAttribute("data-pre-nav-Closing");
+  return preNavClosing === "true" ? true : false;
+}
+
+function setPreNavClosing(Closing: boolean) {
+  infoSectionPreNavArea.setAttribute("data-pre-nav-Closing", String(Closing));
+}
+
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
 // start with scroll disabled
@@ -465,10 +474,10 @@ captionComponent.addEventListener("transitionend", () => {
 
 function scrollToLandingSection() {
   showSection([landingSection]);
-  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page to landing section as soon as it is painted
+  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
   // LINK #moveElement
-  moveElement(captionComponent, -9, 1.02, -15, "up", [
+  moveElementV2(captionComponent, "up", [
     {
       observedElOne: captionComponent,
       observedElTwo: captionLandingContainer,
@@ -496,22 +505,21 @@ function scrollToLandingSection() {
 infoSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
-  if (preNavOpening) {
-    e.preventDefault();
-    return;
+  const preNavClosing = checkIfPreNavClosing();
+  if (preNavOpening || preNavClosing) {
+    // e.preventDefault();
+    // return;
   } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
     disableScroll(true);
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
     squelch(captionComponent);
   } else if (preNavOpen && e.deltaY > 0) {
+    setPreNavClosing(true);
     decreaseHeight(infoSectionPreNavArea);
     squish(captionComponent);
-    disableScroll(false);
-    setPreNavOpen(false);
   } else if (preNavOpen && e.deltaY <= 25) {
     setInTransition(true);
-    disableScroll(true);
     setPreNavOpen(false);
     decreaseHeight(infoSectionPreNavArea);
     setupElementForMove(
@@ -520,6 +528,14 @@ infoSection.addEventListener("wheel", (e: WheelEvent) => {
       setElTopStylePropertyToCurrentPosition,
     );
     // scrollToLandingSection();
+  }
+});
+
+captionComponent.addEventListener("animationend", () => {
+  const currSection = getCurrSection();
+  const preNavOpening = checkIfPreNavOpening();
+  if (preNavOpening && currSection === "info") {
+    floatUp(captionComponent);
   }
 });
 
@@ -536,8 +552,16 @@ infoSection.addEventListener("transitionend", () => {
 });
 
 infoSectionPreNavArea.addEventListener("transitionend", () => {
-  setPreNavOpening(false);
-  setPreNavOpen(true);
+  const preNavOpening = checkIfPreNavOpening();
+  const preNavClosing = checkIfPreNavClosing();
+  if (preNavOpening) {
+    setPreNavOpening(false);
+    setPreNavOpen(true);
+  } else if (preNavClosing) {
+    setPreNavClosing(false);
+    setPreNavOpen(false);
+    disableScroll(false);
+  }
 });
 
 let options = {
