@@ -543,6 +543,7 @@ infoSection.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
   if (inTransition) {
     changeElementOpacityToOne(infoSectionNavBar);
+    changeElementOpacityToOne(infoSectionCaret);
     setInTransition(false);
     disableScroll(false);
     hideSection([landingSection]);
