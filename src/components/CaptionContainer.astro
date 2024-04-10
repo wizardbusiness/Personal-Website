@@ -1,11 +1,9 @@
-<div
-  id="caption-container"
-  data-transitioning="false"
-  class="static flex h-[12vh] w-fit translate-y-[0vh] items-center justify-center whitespace-nowrap transition-transform duration-[1000ms] ease-out will-change-transform before:z-auto
-  before:h-[12vh] before:w-[30rem] before:max-w-[75vw] before:rounded-md
-  before:bg-foggy-glass xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl"
->
-  <div class="absolute flex h-[12vh] scale-[110%] flex-nowrap">
+<div id="caption-container" data-transitioning="false" class="relative h-[12vh] w-[30vw]">
+  <!-- class="static flex h-[12vh] w-fit translate-y-[0vh] items-center justify-center whitespace-nowrap transition-transform duration-[1000ms] ease-out will-change-transform before:z-auto before:h-[12vh] before:w-[30rem] before:max-w-[75vw]
+  before:translate-y-[0vh] before:rounded-md before:bg-foggy-glass before:transition-transform
+  before:duration-[1000ms] xl:before:min-w-[30vw] xl:before:rounded-xl 2xl:before:rounded-2xl" -->
+  <div class="absolute block h-[12vh] w-[30vw] rounded-xl bg-foggy-glass"></div>
+  <div class="absolute flex h-[12vh] w-[30vw] flex-nowrap justify-center">
     <slot />
   </div>
 </div>
