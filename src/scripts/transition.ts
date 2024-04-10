@@ -116,14 +116,17 @@ const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]")
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 // ******************************************************************************************************
 
-function clearPropertiesAndReplace(classRootStr) {
-  return (element: HTMLElement, freshDuration) => {
-    element.classList.forEach((c) => c.includes(classRootStr) && element.classList.remove(c));
-    element.classList.add(freshDuration);
+function clearPropertiesAndReplace(classRootStr: string) {
+  return (element: HTMLElement, freshClasses: string[]) => {
+    element.classList.forEach(
+      (cssClass) => cssClass.includes(classRootStr) && element.classList.remove(cssClass),
+    );
+    freshClasses.forEach((freshClass) => element.classList.add(freshClass));
   };
 }
 
 const setTransitionDuration = clearPropertiesAndReplace("duration");
+const setTranslateDistance = clearPropertiesAndReplace("translate");
 
 const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
@@ -250,6 +253,8 @@ function moveElementV2(
   direction: "up" | "down",
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
+  element.classList.replace("before:translate-y-[0vh]", "before:translate-y-[100vh]");
+
   translateDown(element);
   observeTargetsOverlap(overlapObserverEntries, direction);
 }
@@ -257,13 +262,20 @@ function moveElementV2(
 // ******************************************************************************************************
 
 type ModifyElementEntry = {
-  callbackToModifyEls: (element: HTMLElement) => void;
+  callbackArgs: string[];
+  callbackToModifyEls: (element: HTMLElement, args: string[]) => void;
   elsBeingModified: HTMLElement[];
+};
+
+type TweakOverlapValueBy = {
+  elOne?: { top?: number; bottom?: number };
+  elTwo?: { top?: number; bottom?: number };
 };
 
 type OverlapObserverEntry = {
   observedElOne: HTMLElement;
   observedElTwo: HTMLElement;
+  tweakOverlapValueBy: TweakOverlapValueBy;
   forModificationOnObservedOverlap: ModifyElementEntry[];
   entryProcessed: boolean;
 };
@@ -276,10 +288,18 @@ function observeTargetsOverlap(
   direction: "up" | "down",
 ): boolean {
   overlapObserverEntries.forEach((observerEntry) => {
-    const firstElTop = observerEntry.observedElOne.getBoundingClientRect().top;
-    const firstElBottom = observerEntry.observedElOne.getBoundingClientRect().bottom;
-    const secondElTop = observerEntry.observedElTwo.getBoundingClientRect().top;
-    const secondElBottom = observerEntry.observedElTwo.getBoundingClientRect().bottom;
+    const firstElTop =
+      observerEntry.observedElOne.getBoundingClientRect().top +
+      (observerEntry.tweakOverlapValueBy?.elOne?.top || 0);
+    const firstElBottom =
+      observerEntry.observedElOne.getBoundingClientRect().bottom +
+      (observerEntry.tweakOverlapValueBy?.elOne?.bottom || 0);
+    const secondElTop =
+      observerEntry.observedElTwo.getBoundingClientRect().top +
+      (observerEntry.tweakOverlapValueBy?.elTwo?.top || 0);
+    const secondElBottom =
+      observerEntry.observedElTwo.getBoundingClientRect().bottom +
+      (observerEntry.tweakOverlapValueBy?.elTwo?.bottom || 0);
     const entryProcessed = observerEntry.entryProcessed;
     if (
       (!entryProcessed &&
@@ -290,7 +310,7 @@ function observeTargetsOverlap(
     ) {
       observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
         entry.elsBeingModified.forEach((el) => {
-          entry.callbackToModifyEls(el);
+          entry.callbackToModifyEls(el, entry.callbackArgs);
         });
       });
       observerEntry.entryProcessed = true;
@@ -300,6 +320,7 @@ function observeTargetsOverlap(
   if (lastEntryProcessed) {
     changeElementPositionToStatic(captionComponent);
     captionComponent.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
+    captionComponent.classList.replace("before:translate-y-[100vh]", "before:translate-y-[0vh]");
     return;
   } else {
     requestAnimationFrame(() => {
@@ -369,12 +390,12 @@ function setPreNavOpening(opening: boolean) {
 }
 
 function checkIfPreNavClosing(): boolean {
-  const preNavClosing = infoSectionPreNavArea.getAttribute("data-pre-nav-Closing");
+  const preNavClosing = infoSectionPreNavArea.getAttribute("data-pre-nav-closing");
   return preNavClosing === "true" ? true : false;
 }
 
 function setPreNavClosing(Closing: boolean) {
-  infoSectionPreNavArea.setAttribute("data-pre-nav-Closing", String(Closing));
+  infoSectionPreNavArea.setAttribute("data-pre-nav-closing", String(Closing));
 }
 
 // ------------------------------------------------------------------------------------------------------
@@ -396,11 +417,12 @@ function moveElementFromLandingToinfo() {
     {
       observedElOne: captionComponent,
       observedElTwo: infoSection,
+      tweakOverlapValueBy: { elOne: { bottom: 50 } },
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [infoSection],
+          callbackArgs: [],
           // LINK #translations
-
           callbackToModifyEls: translateUp,
         },
       ],
@@ -409,18 +431,36 @@ function moveElementFromLandingToinfo() {
     {
       observedElOne: captionComponent,
       observedElTwo: infoSectionContentGroup,
+      tweakOverlapValueBy: { elOne: { bottom: 50 } },
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [captionComponent],
-          // LINK #animations
-          callbackToModifyEls: changeParentToinfoContainer,
-        },
-        {
-          elsBeingModified: [captionComponent],
+          callbackArgs: [],
           // LINK #animations
           callbackToModifyEls: changeElementPositionToStatic,
         },
         {
+          elsBeingModified: [captionComponent],
+          callbackArgs: [],
+          // LINK #animations
+          callbackToModifyEls: changeParentToinfoContainer,
+        },
+        {
+          callbackArgs: ["-translate-y-[50px]", "before:translate-y-[50px]"],
+          elsBeingModified: [captionComponent],
+          // LINK #animations
+          callbackToModifyEls: setTranslateDistance,
+        },
+      ],
+      entryProcessed: false,
+    },
+    {
+      observedElOne: captionComponent,
+      observedElTwo: infoSectionContentGroup,
+      tweakOverlapValueBy: { elOne: { bottom: 0 } },
+      forModificationOnObservedOverlap: [
+        {
+          callbackArgs: [],
           elsBeingModified: [captionComponent],
           // LINK #animations
           callbackToModifyEls: squish,
@@ -467,40 +507,40 @@ captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
   if (currSection === "landing" && inTransition) {
-    setTransitionDuration(captionComponent, "duration-[3000ms]");
+    setTransitionDuration(captionComponent, ["duration-[3000ms]", "before:duration-[3000ms]"]);
     moveElementFromLandingToinfo();
   }
 });
 
-function scrollToLandingSection() {
-  showSection([landingSection]);
-  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
-  landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
-  // LINK #moveElement
-  moveElementV2(captionComponent, "up", [
-    {
-      observedElOne: captionComponent,
-      observedElTwo: captionLandingContainer,
-      forModificationOnObservedOverlap: [
-        { callbackToModifyEls: changeElementPositionToStatic, elsBeingModified: [captionComponent] },
-        {
-          callbackToModifyEls: changeParentToLandingContainer,
-          elsBeingModified: [captionComponent],
-        },
-        {
-          callbackToModifyEls: removeAllAnimationsFromElement,
-          elsBeingModified: [captionComponent],
-        },
-        {
-          callbackToModifyEls: slideDown,
-          elsBeingModified: [...landingSectionContentGroup],
-        },
-      ],
-      entryProcessed: false,
-    },
-  ]);
-  setInTransition(false);
-}
+// function scrollToLandingSection() {
+//   showSection([landingSection]);
+//   infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
+//   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+//   // LINK #moveElement
+//   moveElementV2(captionComponent, "up", [
+//     {
+//       observedElOne: captionComponent,
+//       observedElTwo: captionLandingContainer,
+//       forModificationOnObservedOverlap: [
+//         { callbackToModifyEls: changeElementPositionToStatic, elsBeingModified: [captionComponent] },
+//         {
+//           callbackToModifyEls: changeParentToLandingContainer,
+//           elsBeingModified: [captionComponent],
+//         },
+//         {
+//           callbackToModifyEls: removeAllAnimationsFromElement,
+//           elsBeingModified: [captionComponent],
+//         },
+//         {
+//           callbackToModifyEls: slideDown,
+//           elsBeingModified: [...landingSectionContentGroup],
+//         },
+//       ],
+//       entryProcessed: false,
+//     },
+//   ]);
+//   setInTransition(false);
+// }
 
 infoSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
