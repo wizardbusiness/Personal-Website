@@ -10,6 +10,8 @@ const landingSectionContentGroup: NodeListOf<HTMLElement> =
 const infoSectionContentGroup: HTMLElement = document.querySelector("#text-content");
 
 const captionComponent: HTMLElement = document.querySelector("#caption-container");
+const captionComponentBg: HTMLElement = document.querySelector("#caption-container-bg");
+const captionComponentFg: HTMLElement = document.querySelector("#caption-container-fg");
 const captionLandingContainer: HTMLElement = document.querySelector(".caption-landing-container");
 const captionInfoContainer: HTMLElement = document.querySelector(".caption-info-container");
 
@@ -92,8 +94,8 @@ function animateElement(newAnimation: Animations) {
 const scaleUp = animateElement("animate-scale-up");
 const slideUpAndFade = animateElement("animate-slide-up");
 const slideDown = animateElement("animate-slide-down");
-const squelch = animateElement("before:animate-squelch");
-const squish = animateElement("before:animate-squish-down-lg");
+const squelch = animateElement("animate-squelch");
+const squish = animateElement("animate-squish-down-lg");
 const floatUp = animateElement("animate-float-up");
 
 // ******************************************************************************************************
@@ -116,17 +118,20 @@ const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]")
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 // ******************************************************************************************************
 
-function clearPropertiesAndReplace(classRootStr: string) {
+function clearPropertiesAndReplace(classRootStrs: string[]) {
   return (element: HTMLElement, freshClasses: string[]) => {
-    element.classList.forEach(
-      (cssClass) => cssClass.includes(classRootStr) && element.classList.remove(cssClass),
-    );
+    classRootStrs.forEach((classRootStr) => {
+      element.classList.forEach(
+        (cssClass) => cssClass.includes(classRootStr) && element.classList.remove(cssClass),
+      );
+    });
     freshClasses.forEach((freshClass) => element.classList.add(freshClass));
   };
 }
 
-const setTransitionDuration = clearPropertiesAndReplace("duration");
-const setTranslateDistance = clearPropertiesAndReplace("translate");
+const setTransitionDuration = clearPropertiesAndReplace(["duration"]);
+const clearTransitionProperties = clearPropertiesAndReplace(["duration", "transition", "translate"]);
+const setTranslateDistance = clearPropertiesAndReplace(["translate"]);
 
 const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
@@ -193,31 +198,29 @@ const changeParentToLandingContainer = changeElementParent(captionInfoContainer,
 const changeParentToinfoContainer = changeElementParent(captionLandingContainer, captionInfoContainer);
 // ******************************************************************************************************
 
-function changeElementPositionType(oldPositionType: "fixed" | "static", newPositionType: "fixed" | "static") {
+function changeElementPositionType(
+  oldPositionType: "fixed" | "relative",
+  newPositionType: "fixed" | "relative",
+) {
   return (element: HTMLElement) => {
     const changePositionType = replaceCSSClass(oldPositionType, newPositionType);
     changePositionType(element);
   };
 }
 
-const changeElementPositionToStatic = changeElementPositionType("fixed", "static");
-const changeElementPositionToFixed = changeElementPositionType("static", "fixed");
-// ******************************************************************************************************
-function setElTopStylePropertyToCurrentPosition(element: HTMLElement) {
-  element.style.top = `${element.getBoundingClientRect().top}px`;
-}
+const changeElementPositionToRelative = changeElementPositionType("fixed", "relative");
+const changeElementPositionToFixed = changeElementPositionType("relative", "fixed");
+
 // ******************************************************************************************************
 
 // Move captionContainer
 
 function setupElementForMove(
   element: HTMLElement,
-  setElTopStyleToCurrentPosition: (element: HTMLElement) => void,
   changeElementPositionToFixed: (element: HTMLElement) => void,
 ) {
-  if (!element.style.top || !element.classList.contains("fixed")) {
+  if (!element.classList.contains("fixed")) {
     changeElementPositionToFixed(element);
-    setElTopStyleToCurrentPosition(element);
   }
 }
 
@@ -253,7 +256,7 @@ function moveElementV2(
   direction: "up" | "down",
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
-  element.classList.replace("before:translate-y-[0vh]", "before:translate-y-[100vh]");
+  element.classList.replace("translate-y-[0vh]", "translate-y-[100vh]");
 
   translateDown(element);
   observeTargetsOverlap(overlapObserverEntries, direction);
@@ -318,9 +321,14 @@ function observeTargetsOverlap(
   });
   const lastEntryProcessed = overlapObserverEntries[overlapObserverEntries.length - 1].entryProcessed;
   if (lastEntryProcessed) {
-    changeElementPositionToStatic(captionComponent);
-    captionComponent.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
-    captionComponent.classList.replace("before:translate-y-[100vh]", "before:translate-y-[0vh]");
+    changeElementPositionToRelative(captionComponent);
+    clearTransitionProperties(captionComponent, []);
+    // captionComponent.classList.remove("transition-transform", "duration-[3000ms]");
+    setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
+    setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
+
+    // captionComponentBg.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
+    // captionComponent.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
     return;
   } else {
     requestAnimationFrame(() => {
@@ -431,13 +439,13 @@ function moveElementFromLandingToinfo() {
     {
       observedElOne: captionComponent,
       observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 50 } },
+      tweakOverlapValueBy: { elOne: { bottom: 0 } },
       forModificationOnObservedOverlap: [
         {
           elsBeingModified: [captionComponent],
           callbackArgs: [],
           // LINK #animations
-          callbackToModifyEls: changeElementPositionToStatic,
+          callbackToModifyEls: changeElementPositionToRelative,
         },
         {
           elsBeingModified: [captionComponent],
@@ -445,12 +453,13 @@ function moveElementFromLandingToinfo() {
           // LINK #animations
           callbackToModifyEls: changeParentToinfoContainer,
         },
-        {
-          callbackArgs: ["-translate-y-[50px]", "before:translate-y-[50px]"],
-          elsBeingModified: [captionComponent],
-          // LINK #animations
-          callbackToModifyEls: setTranslateDistance,
-        },
+
+        // {
+        //   callbackArgs: ["-translate-y-[50px]", "translate-y-[50px]"],
+        //   elsBeingModified: [captionComponentFg],
+        //   // LINK #animations
+        //   callbackToModifyEls: setTranslateDistance,
+        // },
       ],
       entryProcessed: false,
     },
@@ -461,7 +470,7 @@ function moveElementFromLandingToinfo() {
       forModificationOnObservedOverlap: [
         {
           callbackArgs: [],
-          elsBeingModified: [captionComponent],
+          elsBeingModified: [captionComponentBg],
           // LINK #animations
           callbackToModifyEls: squish,
         },
@@ -489,11 +498,7 @@ window.addEventListener(
     }
     if (currSection === "landing" && e.deltaY >= 0) {
       setInTransition(true);
-      setupElementForMove(
-        captionComponent,
-        changeElementPositionToFixed,
-        setElTopStylePropertyToCurrentPosition,
-      );
+      setupElementForMove(captionComponent, changeElementPositionToFixed);
       captionComponent.classList.replace("translate-y-[0vh]", "-translate-y-[80vh]");
       [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
     }
@@ -507,7 +512,7 @@ captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
   if (currSection === "landing" && inTransition) {
-    setTransitionDuration(captionComponent, ["duration-[3000ms]", "before:duration-[3000ms]"]);
+    setTransitionDuration(captionComponent, ["duration-[3000ms]"]);
     moveElementFromLandingToinfo();
   }
 });
@@ -557,16 +562,12 @@ infoSection.addEventListener("wheel", (e: WheelEvent) => {
   } else if (preNavOpen && e.deltaY > 0) {
     setPreNavClosing(true);
     decreaseHeight(infoSectionPreNavArea);
-    squish(captionComponent);
+    squish(captionComponentBg);
   } else if (preNavOpen && e.deltaY <= 25) {
     setInTransition(true);
     setPreNavOpen(false);
     decreaseHeight(infoSectionPreNavArea);
-    setupElementForMove(
-      captionComponent,
-      changeElementPositionToFixed,
-      setElTopStylePropertyToCurrentPosition,
-    );
+    setupElementForMove(captionComponent, changeElementPositionToFixed);
     // scrollToLandingSection();
   }
 });
