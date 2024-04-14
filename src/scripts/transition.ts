@@ -65,6 +65,8 @@ const animationLib = [
   "animate-squelch",
   "before:animate-squelch",
   "animate-float-up",
+  "animate-float-in-place",
+  "animate-bring-down",
   "animate-grow",
   "animate-fade-in",
   "animate-fade-out",
@@ -82,6 +84,30 @@ function removeAllAnimationsFromElement(element: HTMLElement) {
   });
 }
 
+function waitForAnimationToFinish(element, eventName) {
+  return new Promise((resolve, reject) => {
+    function eventHandler(event) {
+      element.removeEventListener(eventName, eventHandler);
+      resolve(event);
+    }
+    element.addEventListener(eventName, eventHandler);
+  });
+}
+
+async function playAnimationsInSequence(animations) {
+  while (animations.length) {
+    const curr = animations.shift();
+    const currAnimation = curr[0];
+    const currElement = curr[1];
+    try {
+      currAnimation(currElement);
+      await waitForAnimationToFinish(captionComponentBg, "animationend");
+    } catch (error) {
+      console.error("couldn't find animation");
+    }
+  }
+}
+
 // ANCHOR[id=animateElements]
 function animateElement(newAnimation: Animations) {
   return (element: HTMLElement) => {
@@ -91,12 +117,13 @@ function animateElement(newAnimation: Animations) {
   };
 }
 
-const scaleUp = animateElement("animate-scale-up");
 const slideUpAndFade = animateElement("animate-slide-up");
-const slideDown = animateElement("animate-slide-down");
 const squelch = animateElement("animate-squelch");
 const squish = animateElement("animate-squish-down-lg");
 const floatUp = animateElement("animate-float-up");
+const bringDown = animateElement("animate-bring-down");
+const floatUpBgAndTxt = animateElement("animate-float-in-place");
+const slideDown = animateElement("animate-slide-down");
 
 // ******************************************************************************************************
 
@@ -119,18 +146,22 @@ const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]
 // ******************************************************************************************************
 
 function clearPropertiesAndReplace(classRootStrs: string[]) {
-  return (element: HTMLElement, freshClasses: string[]) => {
+  return (element: HTMLElement, freshClasses?: string[]) => {
     classRootStrs.forEach((classRootStr) => {
       element.classList.forEach(
         (cssClass) => cssClass.includes(classRootStr) && element.classList.remove(cssClass),
       );
     });
+    if (!freshClasses) return;
     freshClasses.forEach((freshClass) => element.classList.add(freshClass));
+    console.log(element.classList);
   };
 }
 
 const setTransitionDuration = clearPropertiesAndReplace(["duration"]);
 const clearTransitionProperties = clearPropertiesAndReplace(["duration", "transition", "translate"]);
+
+const clearAnimationClasses = clearPropertiesAndReplace(["animate"]);
 const setTranslateDistance = clearPropertiesAndReplace(["translate"]);
 
 const heights = ["h-0", "h-[10vh]"] as const;
@@ -227,45 +258,23 @@ function setupElementForMove(
 //LINK #moveELementToinfoCall
 //LINK #moveElementToLandingCall
 // ANCHOR[id=moveElement]
-function moveElement(
-  element: HTMLElement,
-  speed: number,
-  acceleration: number,
-  limit: number,
-  direction: "up" | "down",
-  overlapObserverEntries: OverlapObserverEntry[],
-) {
-  //setup
-  // if (!element.style.top || !element.classList.contains("fixed")) {
-  //   element.style.top = `${element.getBoundingClientRect().top}px`;
-  //   changeElementPositionToFixed(element);
-  // }
-  // accelerate
-  if (speed <= limit) speed = speed ** acceleration;
-  element.style.top = `calc(${element.style.top} + ${speed}px)`;
-  const allEntriesProcessed = observeTargetsOverlap(overlapObserverEntries, direction);
-  if (allEntriesProcessed) return;
-
-  requestAnimationFrame(() =>
-    moveElement(element, speed, acceleration, limit, direction, overlapObserverEntries),
-  );
-}
 
 function moveElementV2(
   element: HTMLElement,
+  freshCSSClasses: string[],
+  translate: (element: HTMLElement, freshClasses: string[]) => void,
   direction: "up" | "down",
+  finishTransition: () => void,
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
-  element.classList.replace("translate-y-[0vh]", "translate-y-[100vh]");
-
-  translateDown(element);
-  observeTargetsOverlap(overlapObserverEntries, direction);
+  translate(element, freshCSSClasses);
+  observeTargetsOverlap(overlapObserverEntries, finishTransition, direction);
 }
 
 // ******************************************************************************************************
 
 type ModifyElementEntry = {
-  callbackArgs: string[];
+  callbackArgs?: string[];
   callbackToModifyEls: (element: HTMLElement, args: string[]) => void;
   elsBeingModified: HTMLElement[];
 };
@@ -278,7 +287,7 @@ type TweakOverlapValueBy = {
 type OverlapObserverEntry = {
   observedElOne: HTMLElement;
   observedElTwo: HTMLElement;
-  tweakOverlapValueBy: TweakOverlapValueBy;
+  tweakOverlapValueBy?: TweakOverlapValueBy;
   forModificationOnObservedOverlap: ModifyElementEntry[];
   entryProcessed: boolean;
 };
@@ -288,6 +297,7 @@ type OverlapObserverEntry = {
 // LINK #checkPositionCallBackNav
 function observeTargetsOverlap(
   overlapObserverEntries: OverlapObserverEntry[],
+  finishTransition: () => void,
   direction: "up" | "down",
 ): boolean {
   overlapObserverEntries.forEach((observerEntry) => {
@@ -323,16 +333,11 @@ function observeTargetsOverlap(
   if (lastEntryProcessed) {
     changeElementPositionToRelative(captionComponent);
     clearTransitionProperties(captionComponent, []);
-    // captionComponent.classList.remove("transition-transform", "duration-[3000ms]");
-    setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
-    setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
-
-    // captionComponentBg.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
-    // captionComponent.classList.replace("translate-y-[100vh]", "translate-y-[0vh]");
+    finishTransition();
     return;
   } else {
     requestAnimationFrame(() => {
-      observeTargetsOverlap(overlapObserverEntries, direction);
+      observeTargetsOverlap(overlapObserverEntries, finishTransition, direction);
     });
   }
 }
@@ -416,74 +421,78 @@ disableScroll(true);
 // LINK #transitions
 
 function moveElementFromLandingToinfo() {
+  const finishTransitionToInfoSection = () => {
+    setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
+    setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
+  };
   // LINK #moveElement
   // ANCHOR[id=moveElementToinfoCall]
   programaticallyScrollToNextSection();
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
-  moveElementV2(captionComponent, "down", [
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSection,
-      tweakOverlapValueBy: { elOne: { bottom: 50 } },
-      forModificationOnObservedOverlap: [
-        {
-          elsBeingModified: [infoSection],
-          callbackArgs: [],
-          // LINK #translations
-          callbackToModifyEls: translateUp,
-        },
-      ],
-      entryProcessed: false,
-    },
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
-      forModificationOnObservedOverlap: [
-        {
-          elsBeingModified: [captionComponent],
-          callbackArgs: [],
-          // LINK #animations
-          callbackToModifyEls: changeElementPositionToRelative,
-        },
-        {
-          elsBeingModified: [captionComponent],
-          callbackArgs: [],
-          // LINK #animations
-          callbackToModifyEls: changeParentToinfoContainer,
-        },
-
-        // {
-        //   callbackArgs: ["-translate-y-[50px]", "translate-y-[50px]"],
-        //   elsBeingModified: [captionComponentFg],
-        //   // LINK #animations
-        //   callbackToModifyEls: setTranslateDistance,
-        // },
-      ],
-      entryProcessed: false,
-    },
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
-      forModificationOnObservedOverlap: [
-        {
-          callbackArgs: [],
-          elsBeingModified: [captionComponentBg],
-          // LINK #animations
-          callbackToModifyEls: squish,
-        },
-      ],
-      entryProcessed: false,
-    },
-  ]);
+  moveElementV2(
+    captionComponent,
+    ["translate-y-[100vh]"],
+    translateDown,
+    "down",
+    finishTransitionToInfoSection,
+    [
+      {
+        observedElOne: captionComponent,
+        observedElTwo: infoSection,
+        tweakOverlapValueBy: { elOne: { bottom: 100 } },
+        forModificationOnObservedOverlap: [
+          {
+            elsBeingModified: [infoSection],
+            callbackArgs: [],
+            // LINK #translations
+            callbackToModifyEls: translateUp,
+          },
+        ],
+        entryProcessed: false,
+      },
+      {
+        observedElOne: captionComponent,
+        observedElTwo: infoSectionContentGroup,
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
+        forModificationOnObservedOverlap: [
+          {
+            elsBeingModified: [captionComponent],
+            callbackArgs: [],
+            // LINK #animations
+            callbackToModifyEls: changeElementPositionToRelative,
+          },
+          {
+            elsBeingModified: [captionComponent],
+            callbackArgs: [],
+            // LINK #animations
+            callbackToModifyEls: changeParentToinfoContainer,
+          },
+        ],
+        entryProcessed: false,
+      },
+      {
+        observedElOne: captionComponent,
+        observedElTwo: infoSectionContentGroup,
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
+        forModificationOnObservedOverlap: [
+          {
+            callbackArgs: [],
+            elsBeingModified: [captionComponentBg],
+            // LINK #animations
+            callbackToModifyEls: squish,
+          },
+        ],
+        entryProcessed: false,
+      },
+    ],
+  );
 }
 
 captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   if (currSection === "landing") {
-    captionComponent.classList.replace("-translate-y-[80vh]", "translate-y-[100vh]");
+    setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
   }
 });
 
@@ -499,7 +508,7 @@ window.addEventListener(
     if (currSection === "landing" && e.deltaY >= 0) {
       setInTransition(true);
       setupElementForMove(captionComponent, changeElementPositionToFixed);
-      captionComponent.classList.replace("translate-y-[0vh]", "-translate-y-[80vh]");
+      setTranslateDistance(captionComponent, ["-translate-y-[80vh]"]);
       [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
     }
   },
@@ -517,66 +526,79 @@ captionComponent.addEventListener("transitionend", () => {
   }
 });
 
-// function scrollToLandingSection() {
-//   showSection([landingSection]);
-//   infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
-//   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
-//   // LINK #moveElement
-//   moveElementV2(captionComponent, "up", [
-//     {
-//       observedElOne: captionComponent,
-//       observedElTwo: captionLandingContainer,
-//       forModificationOnObservedOverlap: [
-//         { callbackToModifyEls: changeElementPositionToStatic, elsBeingModified: [captionComponent] },
-//         {
-//           callbackToModifyEls: changeParentToLandingContainer,
-//           elsBeingModified: [captionComponent],
-//         },
-//         {
-//           callbackToModifyEls: removeAllAnimationsFromElement,
-//           elsBeingModified: [captionComponent],
-//         },
-//         {
-//           callbackToModifyEls: slideDown,
-//           elsBeingModified: [...landingSectionContentGroup],
-//         },
-//       ],
-//       entryProcessed: false,
-//     },
-//   ]);
-//   setInTransition(false);
-// }
+function scrollToLandingSection() {
+  showSection([landingSection]);
+  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
+  landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+
+  setTransitionDuration(captionComponent, ["duration-[3000ms]"]);
+  setTranslateDistance(captionComponent, ["-translate-y-[100vh]"]);
+
+  function finishTransitionToLandingSection() {
+    setTranslateDistance(captionComponentFg, ["translate-y-[0vh]"]);
+  }
+  // LINK #moveElement
+  moveElementV2(
+    captionComponent,
+    ["-translate-y-[100vh]"],
+    setTranslateDistance,
+    "up",
+    finishTransitionToLandingSection,
+    [
+      {
+        observedElOne: captionComponent,
+        observedElTwo: captionLandingContainer,
+        forModificationOnObservedOverlap: [
+          {
+            callbackToModifyEls: changeElementPositionToRelative,
+            elsBeingModified: [captionComponent],
+          },
+          {
+            callbackToModifyEls: changeParentToLandingContainer,
+            elsBeingModified: [captionComponent],
+          },
+          {
+            callbackToModifyEls: removeAllAnimationsFromElement,
+            elsBeingModified: [captionComponent, captionComponentBg, captionComponentFg],
+          },
+          {
+            callbackToModifyEls: slideDown,
+            elsBeingModified: [...landingSectionContentGroup],
+          },
+        ],
+        entryProcessed: false,
+      },
+    ],
+  );
+  setInTransition(false);
+}
 
 infoSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
-  const preNavOpening = checkIfPreNavOpening();
-  const preNavClosing = checkIfPreNavClosing();
-  if (preNavOpening || preNavClosing) {
-    // e.preventDefault();
-    // return;
-  } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+  if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
     disableScroll(true);
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
-    squelch(captionComponent);
+    playAnimationsInSequence([
+      [squelch, captionComponentBg],
+      [floatUp, captionComponentBg],
+      [floatUpBgAndTxt, captionComponent],
+    ]);
   } else if (preNavOpen && e.deltaY > 0) {
     setPreNavClosing(true);
     decreaseHeight(infoSectionPreNavArea);
+    playAnimationsInSequence([
+      [bringDown, captionComponentBg],
+      [squish, captionComponentBg],
+    ]);
     squish(captionComponentBg);
   } else if (preNavOpen && e.deltaY <= 25) {
+    clearAnimationClasses(captionComponent);
     setInTransition(true);
     setPreNavOpen(false);
     decreaseHeight(infoSectionPreNavArea);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
-    // scrollToLandingSection();
-  }
-});
-
-captionComponent.addEventListener("animationend", () => {
-  const currSection = getCurrSection();
-  const preNavOpening = checkIfPreNavOpening();
-  if (preNavOpening && currSection === "info") {
-    floatUp(captionComponent);
+    scrollToLandingSection();
   }
 });
 
