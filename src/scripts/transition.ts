@@ -148,20 +148,20 @@ const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]
 function clearPropertiesAndReplace(classRootStrs: string[]) {
   return (element: HTMLElement, freshClasses?: string[]) => {
     classRootStrs.forEach((classRootStr) => {
-      element.classList.forEach(
-        (cssClass) => cssClass.includes(classRootStr) && element.classList.remove(cssClass),
-      );
+      element.classList.forEach((cssClass) => {
+        cssClass.includes(classRootStr) && element.classList.remove(cssClass);
+      });
     });
     if (!freshClasses) return;
     freshClasses.forEach((freshClass) => element.classList.add(freshClass));
-    console.log(element.classList);
   };
 }
 
 const setTransitionDuration = clearPropertiesAndReplace(["duration"]);
 const clearTransitionProperties = clearPropertiesAndReplace(["duration", "transition", "translate"]);
+const setEaseProperty = clearPropertiesAndReplace(["ease"]);
 
-const clearAnimationClasses = clearPropertiesAndReplace(["animate"]);
+const clearAnimationProperties = clearPropertiesAndReplace(["animate"]);
 const setTranslateDistance = clearPropertiesAndReplace(["translate"]);
 
 const heights = ["h-0", "h-[10vh]"] as const;
@@ -195,10 +195,6 @@ function changeElementDisplayType(staleDisplay: CSSDisplay, freshDisplay: CSSDis
 const hideSection = changeElementDisplayType("flex", "hidden");
 // ANCHOR[id=showSection]
 const showSection = changeElementDisplayType("hidden", "flex");
-
-const hideElement = changeElementDisplayType("flex", "hidden");
-const showElement = changeElementDisplayType("hidden", "flex");
-
 // ******************************************************************************************************
 
 const opacities = ["opacity-0", "opacity-1"] as const;
@@ -331,7 +327,6 @@ function observeTargetsOverlap(
   });
   const lastEntryProcessed = overlapObserverEntries[overlapObserverEntries.length - 1].entryProcessed;
   if (lastEntryProcessed) {
-    changeElementPositionToRelative(captionComponent);
     clearTransitionProperties(captionComponent, []);
     finishTransition();
     return;
@@ -420,7 +415,9 @@ disableScroll(true);
 // LINK #animations
 // LINK #transitions
 
-function moveElementFromLandingToinfo() {
+function goToInfoSection() {
+  setEaseProperty(captionComponent, ["ease-in"]);
+  setTransitionDuration(captionComponent, ["duration-[1500ms]"]);
   const finishTransitionToInfoSection = () => {
     setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
@@ -521,21 +518,36 @@ captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
   if (currSection === "landing" && inTransition) {
-    setTransitionDuration(captionComponent, ["duration-[3000ms]"]);
-    moveElementFromLandingToinfo();
+    goToInfoSection();
   }
 });
 
-function scrollToLandingSection() {
+function goToLandingSection() {
+  setInTransition(true);
+  // clean up info section
+  setPreNavOpen(false);
+  decreaseHeight(infoSectionPreNavArea);
+  // set up landing section
   showSection([landingSection]);
+  // set up caption component for move
+  // clear animations
+
+  // clear and set translate duration and distance
+  setTransitionDuration(captionComponent, ["duration-[1000ms]"]);
+
+  // scroll to landing section
   infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
 
-  setTransitionDuration(captionComponent, ["duration-[3000ms]"]);
-  setTranslateDistance(captionComponent, ["-translate-y-[100vh]"]);
-
   function finishTransitionToLandingSection() {
+    [captionComponent, captionComponentBg, captionComponentFg].forEach((element) =>
+      clearAnimationProperties(element),
+    );
+    changeElementPositionToRelative(captionComponent);
+    changeParentToLandingContainer(captionComponent);
     setTranslateDistance(captionComponentFg, ["translate-y-[0vh]"]);
+    setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
+    setTranslateDistance(captionComponent, ["translate-y-[0vh]"]);
   }
   // LINK #moveElement
   moveElementV2(
@@ -546,17 +558,9 @@ function scrollToLandingSection() {
     finishTransitionToLandingSection,
     [
       {
-        observedElOne: captionComponent,
+        observedElOne: captionComponentBg,
         observedElTwo: captionLandingContainer,
         forModificationOnObservedOverlap: [
-          {
-            callbackToModifyEls: changeElementPositionToRelative,
-            elsBeingModified: [captionComponent],
-          },
-          {
-            callbackToModifyEls: changeParentToLandingContainer,
-            elsBeingModified: [captionComponent],
-          },
           {
             callbackToModifyEls: removeAllAnimationsFromElement,
             elsBeingModified: [captionComponent, captionComponentBg, captionComponentFg],
@@ -575,6 +579,8 @@ function scrollToLandingSection() {
 
 infoSection.addEventListener("wheel", (e: WheelEvent) => {
   const preNavOpen = checkIfPreNavOpen();
+  const preNavOpening = checkIfPreNavOpening();
+  if (preNavOpening) return;
   if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
     disableScroll(true);
     setPreNavOpening(true);
@@ -593,12 +599,7 @@ infoSection.addEventListener("wheel", (e: WheelEvent) => {
     ]);
     squish(captionComponentBg);
   } else if (preNavOpen && e.deltaY <= 25) {
-    clearAnimationClasses(captionComponent);
-    setInTransition(true);
-    setPreNavOpen(false);
-    decreaseHeight(infoSectionPreNavArea);
-    setupElementForMove(captionComponent, changeElementPositionToFixed);
-    scrollToLandingSection();
+    goToLandingSection();
   }
 });
 
