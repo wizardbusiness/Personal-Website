@@ -51,7 +51,7 @@ module.exports = {
             transform: "translateY(0vh)",
           },
           "50%": {
-            transform: "translateY(0.1vh)",
+            transform: "translateY(0.5vh)",
           },
           "100%": {
             transform: "translateY(0vh)",
@@ -228,8 +228,8 @@ module.exports = {
         "slide-down": "slide-down 1.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
-        squelch: "squelch 0.8s forwards ease-in-out",
-        "float-up": "floatup 2.4s forwards ease-out",
+        squelch: "squelch 0.6s forwards ease-in-out",
+        "float-up": "floatup 1.8s forwards ease-out",
         "float-in-place": "floatInPlace 3s forwards ease-in-out infinite",
         "bring-down": "bringDown 0.2s forwards",
         grow: "grow 0.5s forwards ease-out",
