@@ -85,7 +85,7 @@ function removeAllAnimationsFromElement(element: HTMLElement) {
 }
 
 function waitForAnimationToFinish(element, eventName) {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     function eventHandler(event) {
       element.removeEventListener(eventName, eventHandler);
       resolve(event);
@@ -530,11 +530,10 @@ function goToLandingSection() {
   // set up landing section
   showSection([landingSection]);
   // set up caption component for move
-  // clear animations
-
+  // clear animation on caption component (if present, will interfere with translate transform)
+  clearAnimationProperties(captionComponent);
   // clear and set translate duration and distance
   setTransitionDuration(captionComponent, ["duration-[1000ms]"]);
-
   // scroll to landing section
   infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
   landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
