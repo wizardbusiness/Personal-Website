@@ -85,8 +85,10 @@ function removeAllAnimationsFromElement(element: HTMLElement) {
 }
 
 function waitForAnimationToFinish(element, eventName) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     function eventHandler(event) {
+      const inTransition = checkIfInTransition();
+      if (inTransition) reject(event);
       element.removeEventListener(eventName, eventHandler);
       resolve(event);
     }
@@ -103,7 +105,7 @@ async function playAnimationsInSequence(animations) {
       currAnimation(currElement);
       await waitForAnimationToFinish(captionComponentBg, "animationend");
     } catch (error) {
-      console.error("couldn't find animation");
+      break;
     }
   }
 }
@@ -662,8 +664,6 @@ const observeLandingSection = observeSection(() => {
 }); // LINK #landingSection
 const observeInfoSection = observeSection(() => {
   const inTransition = checkIfInTransition();
-  console.log(inTransition);
-
   if (!inTransition) {
     disableScroll(false);
   }
