@@ -1,10 +1,17 @@
 <div
   id="caption-container"
   data-transitioning="false"
-  class="relative flex h-[12vh] w-[31rem] translate-y-[0vh] justify-center transition-transform duration-[1000ms] will-change-transform"
+  class="relative flex h-[12vh] w-[31rem] justify-center transition-transform ease-out will-change-transform"
 >
-  <div id="caption-container-bg" class="absolute h-[12vh] w-[31rem] rounded-xl bg-foggy-glass"></div>
-  <div id="caption-container-fg" class="absolute flex h-[12vh] w-[31rem] flex-nowrap justify-center">
+  <div
+    id="caption-container-bg"
+    class="absolute h-[12vh] w-[31rem] rounded-xl bg-foggy-glass will-change-transform"
+  >
+  </div>
+  <div
+    id="caption-container-fg"
+    class="absolute flex h-[12vh] w-[31rem] flex-nowrap justify-center will-change-transform"
+  >
     <slot />
   </div>
 </div>
