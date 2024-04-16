@@ -5,7 +5,7 @@ const { location } = Astro.props;
 ---
 
 <nav
-  class=`${location === "landing-section" && "landing-transition-group"} ${location === "info-section" && "info-section-nav-bar opacity-0 transition-opacity duration-[500ms]"} flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]`
+  class=`${location === "landing-section" ? "landing-transition-group" : ""} ${location === "info-section" ? "info-section-nav-bar opacity-0 transition-opacity duration-[500ms]" : ""} flex items-center justify-between text-gray-100 lg:h-[5vh] lg:justify-end xl:h-[7vh] 2xl:h-[10vh]`
 >
   <section class="flex gap-[5%] p-[0.5em] text-xl lg:justify-end lg:text-2xl xl:text-4xl 2xl:text-6xl">
     <ContactInfo client:load />
