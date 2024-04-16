@@ -2,9 +2,10 @@ import disableScroll from "./disableScroll";
 
 // elements
 const body: HTMLElement = document.querySelector("body");
+const main: HTMLElement = document.querySelector("main");
 const landingSection: HTMLElement = document.querySelector("#landing");
 const infoSection: HTMLElement = document.querySelector("#info");
-
+const myTitle: HTMLElement = document.querySelector("#my-title");
 const landingSectionContentGroup: NodeListOf<HTMLElement> =
   document.querySelectorAll(".landing-transition-group");
 const infoSectionContentGroup: HTMLElement = document.querySelector("#text-content");
@@ -496,15 +497,18 @@ captionComponent.addEventListener("transitionend", () => {
   }
 });
 
+main.addEventListener("wheel", (e) => e.preventDefault());
+
 landingSection.addEventListener(
   "wheel",
   (e: WheelEvent) => {
+    const currSection = getCurrSection();
     const inTransition = checkIfInTransition();
     if (inTransition) {
+      console.log(inTransition, "asdfasd");
       e.preventDefault();
-      return;
-    }
-    if (e.deltaY >= 0) {
+      // return;
+    } else if (!inTransition && e.deltaY >= 0) {
       setInTransition(true);
       setupElementForMove(captionComponent, changeElementPositionToFixed);
       setTranslateDistance(captionComponent, ["-translate-y-[80vh]"]);
@@ -555,7 +559,6 @@ function goToLandingSection() {
     setTranslateDistance(captionComponent, ["translate-y-[0vh]"]);
     // reset info section translate distance
     setTranslateDistance(infoSection, ["translate-y-[100vh]"]);
-    setInTransition(false);
   }
   // LINK #moveElement
   moveElementV2(
@@ -583,6 +586,12 @@ function goToLandingSection() {
     ],
   );
 }
+
+myTitle.addEventListener("animationend", () => {
+  if (myTitle.classList.contains("animate-slide-down")) {
+    setInTransition(false);
+  }
+});
 
 infoSection.addEventListener(
   "wheel",
@@ -620,7 +629,9 @@ infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
 
 infoSection.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
-  if (inTransition) {
+  const currSection = getCurrSection();
+
+  if (inTransition && currSection === "info") {
     changeElementOpacityToOne(infoSectionNavBar);
     changeElementOpacityToOne(infoSectionCaret);
     setInTransition(false);
@@ -643,7 +654,13 @@ infoSectionPreNavArea.addEventListener("transitionend", () => {
   }
 });
 
-let options = {
+let optionsLanding = {
+  root: null,
+  rootMargin: "0px",
+  threshold: 0.1,
+};
+
+let optionsInfo = {
   root: null,
   rootMargin: "0px",
   threshold: 0.87,
@@ -670,8 +687,8 @@ const observeInfoSection = observeSection(() => {
   setCurrSection("info");
 }); // LINK #infoSection
 
-const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
-const infoSectionObserver = new IntersectionObserver(observeInfoSection, options);
+const landingSectionObserver = new IntersectionObserver(observeLandingSection, optionsLanding);
+const infoSectionObserver = new IntersectionObserver(observeInfoSection, optionsInfo);
 
 landingSectionObserver.observe(landingSection);
 infoSectionObserver.observe(infoSection);
