@@ -546,7 +546,13 @@ disableScroll(true);
 
 // EVENT LISTENERS
 
-main.addEventListener("wheel", (e) => e.preventDefault());
+main.addEventListener("wheel", (e) => {
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+  }
+});
+
 main.addEventListener("pointermove", (e) => e.preventDefault());
 
 function handleUserScrollOnLandingSection(e) {
