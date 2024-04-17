@@ -258,7 +258,7 @@ function setupElementForMove(
 //LINK #moveElementToLandingCall
 // ANCHOR[id=moveElement]
 
-function moveElementV2(
+function moveElement(
   element: HTMLElement,
   freshCSSClasses: string[],
   translate: (element: HTMLElement, freshClasses: string[]) => void,
@@ -341,13 +341,9 @@ function observeTargetsOverlap(
 }
 
 // ******************************************************************************************************
-// ANCHOR[id=getElementPosition]
-function accountForTransformInCalcdRectBound(element: HTMLElement, rectBound: "top" | "bottom") {
-  return element.getBoundingClientRect()[rectBound];
-}
-// ******************************************************************************************************
 
-// ANCHOR[id=scroll]
+// ANCHOR[id=programaticallyScroll]
+// LINK #programiticallyScrollCall
 function programaticallyScrollToNextSection() {
   window.scrollBy({
     // landing section height + nav check div height
@@ -358,8 +354,7 @@ function programaticallyScrollToNextSection() {
 // ******************************************************************************************************
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
-// data-attributes
-
+// DATA ATTRIBUTES STATE
 function getCurrSection(): "landing" | "info" {
   const currSection = body.getAttribute("data-section");
   if (currSection === "landing" || currSection === "info") {
@@ -408,30 +403,26 @@ function checkIfPreNavClosing(): boolean {
 function setPreNavClosing(Closing: boolean) {
   infoSectionPreNavArea.setAttribute("data-pre-nav-closing", String(Closing));
 }
-
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
-// start with scroll disabled
-disableScroll(true);
-// Listeners
-// ANCHOR[id=listeners]
-// LINK #animations
-// LINK #transitions
 
+// WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
 function goToInfoSection() {
   setEaseProperty(captionComponent, ["ease-in"]);
   setTransitionDuration(captionComponent, ["duration-[1500ms]"]);
+  setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
   const finishTransitionToInfoSection = () => {
     setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
   };
-  setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
-  // LINK #moveElement
-  // ANCHOR[id=moveElementToinfoCall]
+  // LINK #programaticallyScroll
+  // ANCHOR[id=programiticallyScrollCall]
   programaticallyScrollToNextSection();
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
-  moveElementV2(
+  // LINK #moveElement
+  // ANCHOR[id=moveElementToinfoCall]
+  moveElement(
     captionComponent,
     ["translate-y-[100vh]"],
     translateDown,
@@ -490,46 +481,6 @@ function goToInfoSection() {
   );
 }
 
-captionComponent.addEventListener("transitionend", () => {
-  const currSection = getCurrSection();
-  if (currSection === "landing") {
-    setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
-  }
-});
-
-main.addEventListener("wheel", (e) => e.preventDefault());
-
-landingSection.addEventListener(
-  "wheel",
-  (e: WheelEvent) => {
-    const currSection = getCurrSection();
-    const inTransition = checkIfInTransition();
-    if (inTransition) {
-      console.log(inTransition, "asdfasd");
-      e.preventDefault();
-      // return;
-    } else if (!inTransition && e.deltaY >= 0) {
-      setInTransition(true);
-      setupElementForMove(captionComponent, changeElementPositionToFixed);
-      setTranslateDistance(captionComponent, ["-translate-y-[80vh]"]);
-      setTransitionDuration(captionComponent, ["duration-[800ms]"]);
-      setEaseProperty(captionComponent, ["ease-out"]);
-      [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
-    }
-  },
-  { passive: false },
-);
-
-// ANCHOR[id=checkPositionListen]
-
-captionComponent.addEventListener("transitionend", () => {
-  const currSection = getCurrSection();
-  const inTransition = checkIfInTransition();
-  if (currSection === "landing" && inTransition) {
-    goToInfoSection();
-  }
-});
-
 function goToLandingSection() {
   setInTransition(true);
   // clean up info section
@@ -561,7 +512,7 @@ function goToLandingSection() {
     setTranslateDistance(infoSection, ["translate-y-[100vh]"]);
   }
   // LINK #moveElement
-  moveElementV2(
+  moveElement(
     captionComponent,
     ["-translate-y-[100vh]"],
     setTranslateDistance,
@@ -587,57 +538,81 @@ function goToLandingSection() {
   );
 }
 
+// ******************************************************************************************************
+// DO STUFF HERE
+
+// start with scroll disabled
+disableScroll(true);
+
+// EVENT LISTENERS
+
+main.addEventListener("wheel", (e) => e.preventDefault());
+main.addEventListener("pointermove", (e) => e.preventDefault());
+
+function handleUserScrollOnLandingSection(e) {
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+    // return;
+  } else if (!inTransition && e.deltaY >= 0) {
+    setInTransition(true);
+    setupElementForMove(captionComponent, changeElementPositionToFixed);
+    setTranslateDistance(captionComponent, ["-translate-y-[80vh]"]);
+    setTransitionDuration(captionComponent, ["duration-[800ms]"]);
+    setEaseProperty(captionComponent, ["ease-out"]);
+    [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
+  }
+}
+
+landingSection.addEventListener("wheel", handleUserScrollOnLandingSection, { passive: false });
+landingSection.addEventListener("pointermove", handleUserScrollOnLandingSection);
+
+function handleUserScrollOnInfoSection(e: WheelEvent) {
+  const currSection = getCurrSection();
+  const inTransition = checkIfInTransition();
+  const preNavOpen = checkIfPreNavOpen();
+  const preNavOpening = checkIfPreNavOpening();
+  const preNavClosing = checkIfPreNavClosing();
+  console.log(inTransition, currSection, preNavOpen, preNavOpening, preNavClosing);
+  if (preNavOpening) return;
+  if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+    disableScroll(true);
+    setPreNavOpening(true);
+    increaseHeight(infoSectionPreNavArea);
+    playAnimationsInSequence([
+      [squelch, captionComponentBg],
+      [floatUp, captionComponentBg],
+      [floatUpBgAndTxt, captionComponent],
+    ]);
+  } else if (preNavOpen && e.deltaY > 0) {
+    setPreNavClosing(true);
+    decreaseHeight(infoSectionPreNavArea);
+    playAnimationsInSequence([
+      [bringDown, captionComponentBg],
+      [squish, captionComponentBg],
+    ]);
+    squish(captionComponentBg);
+  } else if (preNavOpen && e.deltaY <= 25) {
+    goToLandingSection();
+  }
+}
+
+infoSection.addEventListener("wheel", handleUserScrollOnInfoSection, { passive: false });
+infoSection.addEventListener("touchmove", handleUserScrollOnInfoSection, { passive: false });
+
 myTitle.addEventListener("animationend", () => {
   if (myTitle.classList.contains("animate-slide-down")) {
     setInTransition(false);
   }
 });
 
-infoSection.addEventListener(
-  "wheel",
-  (e: WheelEvent) => {
-    const preNavOpen = checkIfPreNavOpen();
-    const preNavOpening = checkIfPreNavOpening();
-    if (preNavOpening) return;
-    if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
-      disableScroll(true);
-      setPreNavOpening(true);
-      increaseHeight(infoSectionPreNavArea);
-      playAnimationsInSequence([
-        [squelch, captionComponentBg],
-        [floatUp, captionComponentBg],
-        [floatUpBgAndTxt, captionComponent],
-      ]);
-    } else if (preNavOpen && e.deltaY > 0) {
-      setPreNavClosing(true);
-      decreaseHeight(infoSectionPreNavArea);
-      playAnimationsInSequence([
-        [bringDown, captionComponentBg],
-        [squish, captionComponentBg],
-      ]);
-      squish(captionComponentBg);
-    } else if (preNavOpen && e.deltaY <= 25) {
-      goToLandingSection();
-    }
-  },
-  { passive: false },
-);
-
-infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
-  e.stopPropagation();
-});
-
-infoSection.addEventListener("transitionend", () => {
-  const inTransition = checkIfInTransition();
+captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
-
-  if (inTransition && currSection === "info") {
-    changeElementOpacityToOne(infoSectionNavBar);
-    changeElementOpacityToOne(infoSectionCaret);
-    setInTransition(false);
-    disableScroll(false);
-    hideSection([landingSection]);
-    window.scrollTo(0, 0);
+  const inTransition = checkIfInTransition();
+  if (currSection === "landing" && inTransition) {
+    goToInfoSection();
+  } else if (currSection === "landing") {
+    setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
   }
 });
 
@@ -651,6 +626,23 @@ infoSectionPreNavArea.addEventListener("transitionend", () => {
     setPreNavClosing(false);
     setPreNavOpen(false);
     disableScroll(false);
+  }
+});
+
+infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
+  e.stopPropagation();
+});
+
+infoSection.addEventListener("transitionend", () => {
+  const inTransition = checkIfInTransition();
+  const currSection = getCurrSection();
+  if (inTransition && currSection === "info") {
+    changeElementOpacityToOne(infoSectionNavBar);
+    changeElementOpacityToOne(infoSectionCaret);
+    setInTransition(false);
+    disableScroll(false);
+    hideSection([landingSection]);
+    window.scrollTo(0, 0);
   }
 });
 
