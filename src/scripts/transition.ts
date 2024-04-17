@@ -66,6 +66,7 @@ const animationLib = [
   "animate-squelch",
   "before:animate-squelch",
   "animate-float-up",
+  "animate-float-up-more",
   "animate-float-in-place",
   "animate-bring-down",
   "animate-grow",
@@ -88,6 +89,7 @@ function removeAllAnimationsFromElement(element: HTMLElement) {
 function waitForAnimationToFinish(element, eventName) {
   return new Promise((resolve, reject) => {
     function eventHandler(event: Event) {
+      event.stopPropagation();
       const inTransition = checkIfInTransition();
       if (inTransition) reject(event);
       element.removeEventListener(eventName, eventHandler);
@@ -98,14 +100,15 @@ function waitForAnimationToFinish(element, eventName) {
 }
 
 async function playAnimationsInSequence(animations) {
-  while (animations.length) {
+  while (animations.length > 0) {
     const curr = animations.shift();
     const currAnimation = curr[0];
     const currElement = curr[1];
     try {
       currAnimation(currElement);
-      await waitForAnimationToFinish(captionComponentBg, "animationend");
+      await waitForAnimationToFinish(currElement, "animationend");
     } catch (error) {
+      console.log("break");
       break;
     }
   }
@@ -124,8 +127,9 @@ const slideUpAndFade = animateElement("animate-slide-up");
 const squelch = animateElement("animate-squelch");
 const squish = animateElement("animate-squish-down-lg");
 const floatUp = animateElement("animate-float-up");
-const bringDown = animateElement("animate-bring-down");
+const floatUpMore = animateElement("animate-float-up-more");
 const floatInPlace = animateElement("animate-float-in-place");
+const bringDown = animateElement("animate-bring-down");
 const slideDown = animateElement("animate-slide-down");
 
 // ******************************************************************************************************
@@ -591,7 +595,10 @@ function handleUserScrollOnInfoSection(e: WheelEvent) {
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
+      [floatUpMore, captionComponent],
       [floatInPlace, captionComponent],
+
+      // [floatInPlace, captionComponent],
     ]);
   } else if ((preNavOpen && e.deltaY > 0) || (preNavOpening && e.deltaY > 0)) {
     e.preventDefault();
