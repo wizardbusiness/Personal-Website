@@ -87,7 +87,7 @@ function removeAllAnimationsFromElement(element: HTMLElement) {
 
 function waitForAnimationToFinish(element, eventName) {
   return new Promise((resolve, reject) => {
-    function eventHandler(event) {
+    function eventHandler(event: Event) {
       const inTransition = checkIfInTransition();
       if (inTransition) reject(event);
       element.removeEventListener(eventName, eventHandler);
@@ -125,7 +125,7 @@ const squelch = animateElement("animate-squelch");
 const squish = animateElement("animate-squish-down-lg");
 const floatUp = animateElement("animate-float-up");
 const bringDown = animateElement("animate-bring-down");
-const floatUpBgAndTxt = animateElement("animate-float-in-place");
+const floatInPlace = animateElement("animate-float-in-place");
 const slideDown = animateElement("animate-slide-down");
 
 // ******************************************************************************************************
@@ -550,17 +550,18 @@ main.addEventListener("wheel", (e) => {
   const inTransition = checkIfInTransition();
   if (inTransition) {
     e.preventDefault();
+    disableScroll(true);
   }
 });
-
-main.addEventListener("pointermove", (e) => e.preventDefault());
 
 function handleUserScrollOnLandingSection(e) {
   const inTransition = checkIfInTransition();
   if (inTransition) {
     e.preventDefault();
+    disableScroll(true);
     // return;
   } else if (!inTransition && e.deltaY >= 0) {
+    console.log(e.deltaY);
     setInTransition(true);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
     setTranslateDistance(captionComponent, ["-translate-y-[80vh]"]);
@@ -571,26 +572,30 @@ function handleUserScrollOnLandingSection(e) {
 }
 
 landingSection.addEventListener("wheel", handleUserScrollOnLandingSection, { passive: false });
-landingSection.addEventListener("pointermove", handleUserScrollOnLandingSection);
 
 function handleUserScrollOnInfoSection(e: WheelEvent) {
-  const currSection = getCurrSection();
-  const inTransition = checkIfInTransition();
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
-  console.log(inTransition, currSection, preNavOpen, preNavOpening, preNavClosing);
-  if (preNavOpening) return;
-  if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
-    disableScroll(true);
+  const inTransition = checkIfInTransition();
+  // clear float animation from captionComponent, but not animations on child elements
+  if (preNavClosing) {
+    clearAnimationProperties(captionComponent);
+  }
+  if (preNavOpening || preNavClosing || inTransition) {
+    e.preventDefault();
+  } else if (!preNavOpen && e.deltaY < 0 && window.scrollY <= 25) {
+    e.preventDefault();
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
-      [floatUpBgAndTxt, captionComponent],
+      [floatInPlace, captionComponent],
     ]);
-  } else if (preNavOpen && e.deltaY > 0) {
+  } else if ((preNavOpen && e.deltaY > 0) || (preNavOpening && e.deltaY > 0)) {
+    e.preventDefault();
+    setPreNavOpening(false);
     setPreNavClosing(true);
     decreaseHeight(infoSectionPreNavArea);
     playAnimationsInSequence([
@@ -604,7 +609,6 @@ function handleUserScrollOnInfoSection(e: WheelEvent) {
 }
 
 infoSection.addEventListener("wheel", handleUserScrollOnInfoSection, { passive: false });
-infoSection.addEventListener("touchmove", handleUserScrollOnInfoSection, { passive: false });
 
 myTitle.addEventListener("animationend", () => {
   if (myTitle.classList.contains("animate-slide-down")) {
@@ -652,13 +656,7 @@ infoSection.addEventListener("transitionend", () => {
   }
 });
 
-let optionsLanding = {
-  root: null,
-  rootMargin: "0px",
-  threshold: 0.1,
-};
-
-let optionsInfo = {
+let options = {
   root: null,
   rootMargin: "0px",
   threshold: 0.87,
@@ -685,8 +683,8 @@ const observeInfoSection = observeSection(() => {
   setCurrSection("info");
 }); // LINK #infoSection
 
-const landingSectionObserver = new IntersectionObserver(observeLandingSection, optionsLanding);
-const infoSectionObserver = new IntersectionObserver(observeInfoSection, optionsInfo);
+const landingSectionObserver = new IntersectionObserver(observeLandingSection, options);
+const infoSectionObserver = new IntersectionObserver(observeInfoSection, options);
 
 landingSectionObserver.observe(landingSection);
 infoSectionObserver.observe(infoSection);
