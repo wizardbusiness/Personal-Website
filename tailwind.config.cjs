@@ -46,15 +46,25 @@ module.exports = {
           "25%": { transform: "translateY(-3vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
           "100%": { transform: "translateY(-5vh) scaleY(100%) scaleX(100%)" },
         },
-        floatInPlace: {
+        floatupMore: {
           "0%": {
             transform: "translateY(0vh)",
-          },
-          "50%": {
-            transform: "translateY(0.5vh)",
+            transformOrigin: "bottom",
           },
           "100%": {
-            transform: "translateY(0vh)",
+            transform: "translateY(-2vh)",
+            transformOrigin: "bottom",
+          },
+        },
+        floatInPlace: {
+          "0%": {
+            transform: "translateY(-2vh)",
+          },
+          "50%": {
+            transform: "translateY(-1.5vh)",
+          },
+          "100%": {
+            transform: "translateY(-2vh)",
           },
         },
         bringDown: {
@@ -230,6 +240,7 @@ module.exports = {
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
         squelch: "squelch 0.6s forwards ease-in-out",
         "float-up": "floatup 1.8s forwards ease-out",
+        "float-up-more": "floatupMore 2s ease-in forwards",
         "float-in-place": "floatInPlace 3s forwards ease-in-out infinite",
         "bring-down": "bringDown 0.2s forwards",
         grow: "grow 0.5s forwards ease-out",
