@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  forwardRef,
-  useEffect,
-  type MutableRefObject,
-} from "react";
+import React, { useState, forwardRef, useEffect, type MutableRefObject } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import AccordionBtnIcon from "./AccordionBtn";
 
@@ -37,26 +32,20 @@ const TechList = ({ categories }: TechList) => {
     setOpenAll(!openAll);
     // setOpenItems((prev) => (prev.length === 0 ? allValues : []));
   };
-  const list = Object.keys(categories).map(
-    (category: string, index: number) => (
-      <AccordionedList
-        value={category}
-        key={category + index}
-        categories={categories}
-        category={category}
-        openItems={openItems}
-        openAll={openAll}
-      />
-    ),
-  );
+  const list = Object.keys(categories).map((category: string, index: number) => (
+    <AccordionedList
+      value={category}
+      key={category + index}
+      categories={categories}
+      category={category}
+      openItems={openItems}
+      openAll={openAll}
+    />
+  ));
 
   return (
-    <div data-tech-list className="pl-2 pt-6">
-      <button
-        data-open-all={openAll}
-        onClick={handleSetOpenAll}
-        className="lg:text-4xl"
-      >
+    <div data-tech-list onTransitionEnd={(e) => e.stopPropagation()} className="pl-2 pt-6">
+      <button data-open-all={openAll} onClick={handleSetOpenAll} className="lg:text-4xl">
         <AccordionBtnIcon height={20} width={20} active={openAll} />
       </button>
       <Accordion.Root
@@ -79,17 +68,10 @@ interface AccordionedList {
   value: string;
 }
 
-const AccordionedList = ({
-  categories,
-  category,
-  openItems,
-  value,
-}: AccordionedList) => {
+const AccordionedList = ({ categories, category, openItems, value }: AccordionedList) => {
   return (
     <Accordion.Item className="h-fit overflow-hidden pl-1" value={value}>
-      <AccordionTrigger open={openItems.includes(value)}>
-        {category}
-      </AccordionTrigger>
+      <AccordionTrigger open={openItems.includes(value)}>{category}</AccordionTrigger>
       <AccordionedListItems items={categories[category]}></AccordionedListItems>
     </Accordion.Item>
   );
@@ -101,10 +83,7 @@ interface AccordionTrigger {
 }
 
 const AccordionTrigger = forwardRef(
-  (
-    { children, open, ...props }: AccordionTrigger,
-    forwardedRef: MutableRefObject<HTMLButtonElement>,
-  ) => (
+  ({ children, open, ...props }: AccordionTrigger, forwardedRef: MutableRefObject<HTMLButtonElement>) => (
     <Accordion.Header>
       <Accordion.Trigger {...props} ref={forwardedRef}>
         <span className="flex items-center gap-2">
@@ -121,10 +100,7 @@ interface AccordionedListItemsProps {
   category?: string;
 }
 
-const AccordionedListItems = ({
-  items,
-  category,
-}: AccordionedListItemsProps) => {
+const AccordionedListItems = ({ items, category }: AccordionedListItemsProps) => {
   const list = items.map((item, index) => {
     const lastItem = index === items.length - 1 ? true : false;
     return (
@@ -136,10 +112,7 @@ const AccordionedListItems = ({
             : ""
         } translate-x-4`}
       >
-        <div
-          id={`${category ? "last-sect" : null}`}
-          className="h-0.5 w-8 bg-gray-300"
-        />
+        <div id={`${category ? "last-sect" : null}`} className="h-0.5 w-8 bg-gray-300" />
         &nbsp;{item}
       </div>
     );
@@ -152,10 +125,7 @@ interface AccordionContentProps {
 }
 
 const AccordionContent = forwardRef(
-  (
-    { children, ...props }: AccordionContentProps,
-    forwardRef: MutableRefObject<HTMLDivElement>,
-  ) => {
+  ({ children, ...props }: AccordionContentProps, forwardRef: MutableRefObject<HTMLDivElement>) => {
     return (
       <Accordion.Content
         className="overflow:hidden radix-state-closed:animate-close-accordion radix-state-open:animate-open-accordion"
