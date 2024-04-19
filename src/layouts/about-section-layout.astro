@@ -4,7 +4,7 @@ import "../styles/tailwind.css";
 
 <section
   id="info"
-  class="absolute flex h-fit w-full translate-y-[100vh] flex-col items-center p-4 pb-0 pt-2 transition-transform duration-[1300ms] ease-in-out lg:p-8 lg:pb-0 lg:pt-4"
+  class="absolute flex h-fit w-full flex-col items-center p-4 pb-0 pt-2 lg:p-8 lg:pb-0 lg:pt-4"
 >
   <header class="h-[10vh] w-full">
     <slot name="nav" />
@@ -18,11 +18,14 @@ import "../styles/tailwind.css";
     class="h-0 w-full transition-[height] duration-[1500ms] ease-out"
   >
   </div>
-  <div class="flex w-[90vw] flex-col items-center text-gray-200 lg:w-[75vw]">
-    <div class="caption-info-container header flex h-[12vh] w-full flex-col items-center">
+  <div
+    id="info-section-content-group"
+    class="flex w-[90vw] translate-y-[100vh] flex-col items-center text-gray-200 transition-transform duration-[1300ms] ease-in-out lg:w-[75vw]"
+  >
+    <div class="caption-info-container flex h-[12vh] w-full flex-col items-center">
       <slot name="caption-container" />
     </div>
-    <section id="text-content" class="bg-blue-smoke p-8 shadow-xl">
+    <section class="bg-blue-smoke p-8 pt-0 shadow-xl">
       <slot name="about" />
       <div class="flex gap-2">
         <div class="w-full">
