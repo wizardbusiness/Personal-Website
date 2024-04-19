@@ -8,7 +8,7 @@ const infoSection: HTMLElement = document.querySelector("#info");
 const myTitle: HTMLElement = document.querySelector("#my-title");
 const landingSectionContentGroup: NodeListOf<HTMLElement> =
   document.querySelectorAll(".landing-transition-group");
-const infoSectionContentGroup: HTMLElement = document.querySelector("#text-content");
+const infoSectionContentGroup: HTMLElement = document.querySelector("#info-section-content-group");
 
 const captionComponent: HTMLElement = document.querySelector("#caption-container");
 const captionComponentBg: HTMLElement = document.querySelector("#caption-container-bg");
@@ -348,10 +348,10 @@ function observeTargetsOverlap(
 
 // ANCHOR[id=programaticallyScroll]
 // LINK #programiticallyScrollCall
-function programaticallyScrollToNextSection() {
-  window.scrollBy({
-    // landing section height + nav check div height
-    top: window.innerHeight,
+function programaticallyScrollToNextSection(section: HTMLElement) {
+  const sectionTop = section.getBoundingClientRect().top;
+  window.scrollTo({
+    top: sectionTop,
     behavior: "smooth",
   });
 }
@@ -421,7 +421,7 @@ function goToInfoSection() {
   };
   // LINK #programaticallyScroll
   // ANCHOR[id=programiticallyScrollCall]
-  programaticallyScrollToNextSection();
+  programaticallyScrollToNextSection(infoSection);
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
   // LINK #moveElement
@@ -436,10 +436,10 @@ function goToInfoSection() {
       {
         observedElOne: captionComponent,
         observedElTwo: infoSection,
-        tweakOverlapValueBy: { elOne: { bottom: 100 } },
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
         forModificationOnObservedOverlap: [
           {
-            elsBeingModified: [infoSection],
+            elsBeingModified: [infoSectionContentGroup],
             callbackArgs: [],
             // LINK #translations
             callbackToModifyEls: translateUp,
@@ -463,6 +463,12 @@ function goToInfoSection() {
             callbackArgs: [],
             // LINK #animations
             callbackToModifyEls: changeParentToinfoContainer,
+          },
+          {
+            elsBeingModified: [captionComponent],
+            callbackArgs: ["translate-y-[0vh]"],
+            // LINK #animations
+            callbackToModifyEls: setTranslateDistance,
           },
         ],
         entryProcessed: false,
@@ -513,7 +519,7 @@ function goToLandingSection() {
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
     setTranslateDistance(captionComponent, ["translate-y-[0vh]"]);
     // reset info section translate distance
-    setTranslateDistance(infoSection, ["translate-y-[100vh]"]);
+    setTranslateDistance(infoSectionContentGroup, ["translate-y-[100vh]"]);
   }
   // LINK #moveElement
   moveElement(
