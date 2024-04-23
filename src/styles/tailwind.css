@@ -4,6 +4,8 @@
 
 :root {
   --scroll-dist: 0;
+  --caption-width: 0;
+  --info-cont-width: 0;
 }
 
 @layer utilities {
@@ -93,12 +95,7 @@
   }
 
   .nav-scroll:hover {
-    background: radial-gradient(
-        farthest-side at 50% 0,
-        rgba(255, 255, 255, 0.1),
-        rgba(0, 0, 0, 0)
-      )
-      center top;
+    background: radial-gradient(farthest-side at 50% 0, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0)) center top;
   }
 
   [data-flavor-text] {
