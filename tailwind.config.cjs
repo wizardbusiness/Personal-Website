@@ -42,9 +42,9 @@ module.exports = {
             transformOrigin: "bottom",
           },
           "10%": { transform: "translateY(0vh) scaleY(110%) scaleX(100%)", transformOrigin: "bottom" },
-          "15%": { transform: "translateY(-3vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
-          "25%": { transform: "translateY(-3vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
-          "100%": { transform: "translateY(-5vh) scaleY(100%) scaleX(100%)" },
+          "15%": { transform: "translateY(-2vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
+          "25%": { transform: "translateY(-2vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
+          "100%": { transform: "translateY(-4vh) scaleY(100%) scaleX(100%)" },
         },
         floatupMore: {
           "0%": {
@@ -119,45 +119,45 @@ module.exports = {
         },
         "squish-lg": {
           "0%": {
-            transform: "perspective(600px) rotateX(0deg) scaleX(130%)",
+            transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
           },
           "40%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(60%) scaleX(130%)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(60%)",
             transformOrigin: "bottom",
           },
           "75%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(7%) scaleX(140%)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(7%)",
             transformOrigin: "bottom",
-            width: "30vw",
+            width: "var(--caption-width)",
           },
           "100%": {
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
-            width: "75vw",
+            width: "var(--info-cont-width)",
           },
         },
         squelch: {
           "0%": {
+            transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
-            transform: "scaleY(4%)",
-            backgroundColor: "rgb(71 85 105)",
-            width: "75vw",
+            width: "var(--info-cont-width)",
           },
           "25%": {
-            transform: "scaleY(4%)",
-            backgroundColor: "rgb(71 85 105)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
+            transformOrigin: "bottom",
+            width: "var(--caption-width)",
           },
           "50%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(40%)",
             transformOrigin: "bottom",
-            transform: "scaleY(20%) scaleX(110%)",
           },
           "75%": {
             backgroundColor: "foggy-glass",
           },
           "100%": {
+            transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
-            transform: "scale(100%)",
           },
         },
         grow: {
@@ -239,7 +239,7 @@ module.exports = {
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
         squelch: "squelch 0.6s forwards ease-in-out",
-        "float-up": "floatup 1.8s forwards ease-out",
+        "float-up": "floatup 1.3s forwards ease-out",
         "float-up-more": "floatupMore 5s ease-in forwards",
         "float-in-place": "floatInPlace 3s forwards ease-in infinite",
         "bring-down": "bringDown 0.2s forwards",
