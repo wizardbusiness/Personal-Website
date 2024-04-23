@@ -91,7 +91,8 @@ function waitForAnimationToFinish(element, eventName) {
     function eventHandler(event: Event) {
       event.stopPropagation();
       const inTransition = checkIfInTransition();
-      if (inTransition) reject(event);
+      const preNavClosing = checkIfPreNavClosing();
+      if (inTransition || preNavClosing) reject(event);
       element.removeEventListener(eventName, eventHandler);
       resolve(event);
     }
@@ -412,11 +413,15 @@ function setPreNavClosing(Closing: boolean) {
 
 // WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
 function goToInfoSection() {
+  const captionComponentWidth = captionComponent.getBoundingClientRect().width;
+  const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
+  document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
+  document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
   setEaseProperty(captionComponent, ["ease-in"]);
   setTransitionDuration(captionComponent, ["duration-[1500ms]"]);
   setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
   const finishTransitionToInfoSection = () => {
-    setTranslateDistance(captionComponentFg, ["-translate-y-[5vh]"]);
+    setTranslateDistance(captionComponentFg, ["-translate-y-[4vh]"]);
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
   };
   // LINK #programaticallyScroll
@@ -498,17 +503,19 @@ function goToLandingSection() {
   decreaseHeight(infoSectionPreNavArea);
   changeElementOpacityToZero(infoSectionNavBar);
   changeElementOpacityToZero(infoSectionCaret);
-  // set up landing section
-  showSection([landingSection]);
+
   // set up caption component for move
   // clear animation on caption component (if present, will interfere with translate transform)
   clearAnimationProperties(captionComponent);
   // clear and set translate duration and distance
   setTransitionDuration(captionComponent, ["duration-[1000ms]"]);
-  // scroll to landing section
-  infoSection.scrollIntoView(); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
-  landingSection.scrollIntoView({ block: "start", behavior: "smooth" });
+  // set up landing section
 
+  // scroll to landing section
+  showSection([landingSection]);
+  window.scrollTo(0, infoSection.getBoundingClientRect().top); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
+  infoSection.scrollIntoView();
+  setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 20); // need to wait because otherwise it still jumps on mobile.
   function finishTransitionToLandingSection() {
     [captionComponent, captionComponentBg, captionComponentFg].forEach((element) =>
       clearAnimationProperties(element),
@@ -553,7 +560,6 @@ function handleUserOnLandingSection(e: Event, deltaY: number) {
   if (inTransition) {
     e.preventDefault();
     disableScroll(true);
-    // return;
   } else if (!inTransition && deltaY >= 0) {
     setInTransition(true);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
@@ -569,6 +575,7 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
   const inTransition = checkIfInTransition();
+
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
     clearAnimationProperties(captionComponent);
@@ -584,8 +591,6 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
       [floatUp, captionComponentBg],
       [floatUpMore, captionComponent],
       [floatInPlace, captionComponent],
-
-      // [floatInPlace, captionComponent],
     ]);
   } else if ((preNavOpen && deltaY > 0) || (preNavOpening && deltaY > 0)) {
     e.preventDefault();
@@ -609,10 +614,7 @@ function handleSwipe(section: HTMLElement, callback) {
     function getCurrClientY(e: TouchEvent) {
       const currClientY = e.touches[0].clientY;
       deltaY = startClientY - currClientY;
-      if (Math.abs(deltaY) > 100) {
-        callback(e, deltaY);
-        removeTouchListeners();
-      }
+      callback(e, deltaY);
     }
     function removeTouchListeners() {
       section.removeEventListener("touchmove", getCurrClientY);
@@ -669,8 +671,8 @@ landingSection.addEventListener("touchstart", handleSwipeOnLandingSection, { pas
 
 const handleSwipeOnInfoSection = handleSwipe(infoSection, handleUserOnInfoSection);
 const handleScrollOnInfoSection = handleScroll(infoSection, handleUserOnInfoSection);
-infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: false });
 infoSection.addEventListener("touchstart", handleSwipeOnInfoSection, { passive: false });
+infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: false });
 
 myTitle.addEventListener("animationend", () => {
   if (myTitle.classList.contains("animate-slide-down")) {
@@ -706,7 +708,6 @@ infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
 });
 
 infoSection.addEventListener("transitionend", () => {
-  console.log("transition end");
   const inTransition = checkIfInTransition();
   const currSection = getCurrSection();
   if (inTransition && currSection === "info") {
