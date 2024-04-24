@@ -253,7 +253,7 @@ module.exports = {
         grow: "grow 0.5s forwards ease-out",
         "open-accordion": "open 0.2s forwards ease-in",
         "close-accordion": "close 0.2s forwards ease-out",
-        "fade-in": "fadein 0.5s forwards ease",
+        "fade-in": "fadein 1.5s forwards ease",
         "fade-in-resume": "fade-in-resume 0.6s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
         "fade-out-slow": "fadeout 0.4s forwards ease",
