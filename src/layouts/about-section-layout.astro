@@ -2,7 +2,7 @@
 import "../styles/tailwind.css";
 ---
 
-<section id="info" class="absolute flex h-fit w-full flex-col items-center pb-0 pt-2 lg:pb-0 lg:pt-4">
+<section id="info" class="min-height-[100vh] absolute flex h-fit w-full flex-col items-center pb-0 lg:pt-4">
   <header class="h-[10vh] w-full">
     <slot name="nav" />
     <slot name="caret" />
@@ -19,7 +19,7 @@ import "../styles/tailwind.css";
     id="info-section-content-group"
     class="flex translate-y-[100vh] flex-col items-center text-gray-200 transition-transform duration-[1300ms] ease-in-out lg:w-[75vw]"
   >
-    <div class="caption-info-container flex h-[12vh] w-full flex-col items-center">
+    <div class="caption-info-container flex h-[12vh] flex-col items-center">
       <slot name="caption-container" />
     </div>
     <section class="bg-blue-smoke p-8 shadow-xl">
