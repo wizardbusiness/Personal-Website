@@ -16,6 +16,9 @@ module.exports = {
       spacing: {
         84: "21rem",
       },
+      transitionTimingFunction: {
+        "eease-in": "cubic-bezier(1, 0, 1, 1)",
+      },
       keyframes: {
         blink: {
           "50%": { opacity: "0" },
