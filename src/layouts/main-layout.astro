@@ -8,10 +8,10 @@ import Stars from "../components/bgEffects/Stars.astro";
   <body
     data-in-transition="false"
     data-section="landing"
-    class="flex h-screen w-full flex-grow flex-col justify-center overscroll-none bg-dusk font-sans"
+    class="flex h-fit w-full flex-grow flex-col justify-center overscroll-none bg-dusk font-sans"
   >
     <Stars />
-    <main class="h-screen">
+    <main class="flex h-fit w-full flex-col">
       <slot name="landing-section" />
       <slot name="info-section" />
     </main>
@@ -36,7 +36,7 @@ import Stars from "../components/bgEffects/Stars.astro";
       };
       if (!location.href.includes("/Main")) {
         // window.addEventListener("load", handleOrientation);
-        window.addEventListener("orientationchange", handleOrientationChange);
+        // window.addEventListener("orientationchange", handleOrientationChange);
       }
     </script>
   </body>
