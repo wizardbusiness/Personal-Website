@@ -73,8 +73,9 @@ const animationLib = [
   "animate-fade-in",
   "animate-fade-out",
   "fade-out-slow",
-  "scooch-up",
-  "long-blink",
+  "animate-scooch-up",
+  "animate-long-blink",
+  "animate-pulse",
 ] as const;
 
 type Animations = (typeof animationLib)[number];
@@ -132,6 +133,8 @@ const floatUpMore = animateElement("animate-float-up-more");
 const floatInPlace = animateElement("animate-float-in-place");
 const bringDown = animateElement("animate-bring-down");
 const slideDown = animateElement("animate-slide-down");
+const schoochUp = animateElement("animate-scooch-up");
+const pulse = animateElement("animate-pulse");
 
 // ******************************************************************************************************
 
@@ -512,6 +515,7 @@ function goToLandingSection() {
   clearAnimationProperties(captionComponent);
   // clear and set translate duration and distance
   setTransitionDuration(captionComponent, ["duration-[1000ms]"]);
+  setEaseProperty(captionComponent, ["eease-in"]);
   // set up landing section
 
   // scroll to landing section
@@ -536,7 +540,7 @@ function goToLandingSection() {
   // LINK #moveElement
   moveElement(
     captionComponent,
-    ["-translate-y-[100vh]"],
+    ["-translate-y-[80vh]"],
     setTranslateDistance,
     "up",
     finishTransitionToLandingSection,
@@ -585,7 +589,8 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   if (preNavClosing) {
     clearAnimationProperties(captionComponent);
   }
-  if (!preNavOpen && deltaY < 0 && window.scrollY <= 300) {
+
+  if (!preNavOpen && deltaY < 0 && infoSection.scrollTop <= 150) {
     setOpacity(infoSectionCaret, ["opacity-1"]);
     setScale(infoSectionCaret, ["scale-100"]);
   } else if (!preNavOpen && deltaY > 0) {
@@ -600,6 +605,7 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
     setOpacity(infoSectionNavBar, ["opacity-0"]);
+    // schoochUp(infoSectionCaret);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
@@ -608,8 +614,8 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     ]);
   } else if ((preNavOpen && deltaY > 0) || (preNavOpening && deltaY > 0)) {
     e.preventDefault();
-    setPreNavOpening(false);
     setPreNavClosing(true);
+    setPreNavOpening(false);
     setOpacity(infoSectionCaret, ["opacity-0"]);
     setScale(infoSectionCaret, ["scale-75"]);
     setOpacity(infoSectionNavBar, ["opacity-1"]);
