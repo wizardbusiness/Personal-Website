@@ -432,7 +432,7 @@ function goToInfoSection() {
   };
   // LINK #programaticallyScroll
   // ANCHOR[id=programiticallyScrollCall]
-  infoSection.scrollIntoView();
+  infoSection.scrollIntoView({ behavior: "smooth" });
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
   // LINK #moveElement
@@ -524,8 +524,8 @@ function goToLandingSection() {
   infoSection.scrollIntoView();
   setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 20); // need to wait because otherwise it still jumps on mobile.
   function finishTransitionToLandingSection() {
-    [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret].forEach((element) =>
-      clearAnimationProperties(element),
+    [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret, landingSectionCaret].forEach(
+      (element) => clearAnimationProperties(element),
     );
     setOpacity(infoSectionCaret, ["opacity-0"]);
     changeElementPositionToRelative(captionComponent);
@@ -534,7 +534,6 @@ function goToLandingSection() {
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
     setTranslateDistance(captionComponent, ["translate-y-[0vh]"]);
     // reset info section translate distance
-    setOpacity(landingSectionCaret, ["opacity-1"]);
     setTranslateDistance(infoSectionContentGroup, ["translate-y-[100vh]"]);
   }
   // LINK #moveElement
@@ -589,10 +588,8 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   if (preNavClosing) {
     clearAnimationProperties(captionComponent);
   }
-
-  if (!preNavOpen && deltaY < 0 && infoSection.scrollTop <= 150) {
-    setOpacity(infoSectionCaret, ["opacity-1"]);
-    setScale(infoSectionCaret, ["scale-100"]);
+  if (!preNavOpen && deltaY < 0) {
+    setOpacity(infoSectionCaret, ["opacity-75"]);
   } else if (!preNavOpen && deltaY > 0) {
     setOpacity(infoSectionCaret, ["opacity-0"]);
     setScale(infoSectionCaret, ["scale-75"]);
@@ -605,6 +602,7 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
     setOpacity(infoSectionNavBar, ["opacity-0"]);
+    setScale(infoSectionCaret, ["scale-100"]);
     // schoochUp(infoSectionCaret);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
@@ -701,6 +699,7 @@ infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: fals
 myTitle.addEventListener("animationend", () => {
   if (myTitle.classList.contains("animate-slide-down")) {
     setInTransition(false);
+    setOpacity(landingSectionCaret, ["opacity-1"]);
   }
 });
 
@@ -731,7 +730,7 @@ infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
   e.stopPropagation();
 });
 
-infoSection.addEventListener("transitionend", () => {
+infoSectionContentGroup.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
   const currSection = getCurrSection();
   if (inTransition && currSection === "info") {
@@ -746,7 +745,7 @@ infoSection.addEventListener("transitionend", () => {
 let options = {
   root: null,
   rootMargin: "0px",
-  threshold: 0.5,
+  threshold: 0.3,
 };
 
 function observeSection(callback: Function) {
