@@ -119,11 +119,15 @@ module.exports = {
         },
         "squish-lg": {
           "0%": {
-            transform: "perspective(600px) rotateX(0deg)",
+            transform: "perspective(600px) rotateX(0deg) scaleY(100%)",
             transformOrigin: "bottom",
           },
           "40%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(60%)",
+            transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
+            transformOrigin: "bottom",
+          },
+          "50%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(10%)",
             transformOrigin: "bottom",
           },
           "75%": {
@@ -146,10 +150,10 @@ module.exports = {
           "25%": {
             transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
             transformOrigin: "bottom",
-            width: "var(--caption-width)",
           },
           "50%": {
             transform: "perspective(600px) rotateX(50deg) scaleY(40%)",
+            width: "var(--caption-width)",
             transformOrigin: "bottom",
           },
           "75%": {
