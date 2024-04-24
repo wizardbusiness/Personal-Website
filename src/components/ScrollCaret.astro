@@ -9,18 +9,39 @@ const { section } = Astro.props;
   slot="scroll-caret"
   id="scroll-caret"
   class=`
-    fade-out-on-transition flex 
-    ${ section === "info" && "-translate-y-[3vh] opacity-0 scale-75" } 
-    ${ section === "landing" && "-translate-y-[5vh] lg:translate-y-[5vh]" }
+    fade-out-on-transition flex items-center
+    ${ section === "landing" && "-translate-y-[25%] lg:translate-y-[5vh]" }
+    ${ section === "info" && "-translate-y-[4vh] opacity-0 scale-75" } 
     transition-all duration-1000 flex-col justify-end
+    text-gray-400
   `
 >
-  <Icon
-    pack="ph"
-    name="caret-up"
-    height="60"
-    width="60"
-    data-scroll-icon
-    class="w-fit animate-pulse cursor-pointer self-center text-center text-gray-400 opacity-30"
-  />
+  <div class="flex animate-pulse flex-col items-center">
+    <Icon
+      pack="ph"
+      name="caret-up"
+      height="60"
+      width="60"
+      data-scroll-icon
+      class="w-fit cursor-pointer text-center opacity-30"
+    />
+    <div id="caret-text" class="h-fit -translate-y-[65%] tracking-wider"></div>
+  </div>
 </div>
+<script>
+  const caretsText = document.querySelectorAll("#caret-text");
+  const checkIfTouchDevice = () => {
+    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  };
+
+  const displayCaretTextForDevice = (caretsText) => {
+    const isTouchDevice = checkIfTouchDevice();
+    if (isTouchDevice) {
+      caretsText.forEach((caret: HTMLElement) => (caret.textContent = "Swipe"));
+    } else {
+      caretsText.forEach((caret: HTMLElement) => (caret.textContent = "Scroll"));
+    }
+  };
+
+  displayCaretTextForDevice(caretsText);
+</script>
