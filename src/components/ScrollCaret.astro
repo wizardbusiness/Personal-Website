@@ -10,8 +10,8 @@ const { section } = Astro.props;
   id="scroll-caret"
   class=`
     fade-out-on-transition flex items-center
-    ${ section === "landing" && "-translate-y-[25%] lg:translate-y-[5vh]" }
-    ${ section === "info" && "-translate-y-[4vh] opacity-0 scale-75" } 
+    ${ section === "landing" && "-translate-y-[25%] lg:translate-y-[5vh] animate-fade-in opacity-0" }
+    ${ section === "info" && "-translate-y-[8vh] md:-translate-y-[3vh] opacity-0 scale-75" } 
     transition-all duration-1000 flex-col justify-end
     text-gray-400
   `
