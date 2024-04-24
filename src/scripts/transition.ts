@@ -153,7 +153,7 @@ const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]")
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 // ******************************************************************************************************
 
-function clearPropertiesAndReplace(classRootStrs: string[]) {
+function clearPropertiesAndSetNew(classRootStrs: string[]) {
   return (element: HTMLElement, freshClasses?: string[]) => {
     classRootStrs.forEach((classRootStr) => {
       element.classList.forEach((cssClass) => {
@@ -165,12 +165,14 @@ function clearPropertiesAndReplace(classRootStrs: string[]) {
   };
 }
 
-const setTransitionDuration = clearPropertiesAndReplace(["duration"]);
-const clearTransitionProperties = clearPropertiesAndReplace(["duration", "transition", "translate"]);
-const setEaseProperty = clearPropertiesAndReplace(["ease"]);
+const setTransitionDuration = clearPropertiesAndSetNew(["duration"]);
+const clearTransitionProperties = clearPropertiesAndSetNew(["duration", "transition", "translate"]);
+const setEaseProperty = clearPropertiesAndSetNew(["ease"]);
 
-const clearAnimationProperties = clearPropertiesAndReplace(["animate"]);
-const setTranslateDistance = clearPropertiesAndReplace(["translate"]);
+const clearAnimationProperties = clearPropertiesAndSetNew(["animate"]);
+const setTranslateDistance = clearPropertiesAndSetNew(["translate"]);
+const setOpacity = clearPropertiesAndSetNew(["opacity"]);
+const setScale = clearPropertiesAndSetNew(["scale"]);
 
 const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
@@ -421,12 +423,13 @@ function goToInfoSection() {
   setTransitionDuration(captionComponent, ["duration-[1500ms]"]);
   setTranslateDistance(captionComponent, ["translate-y-[100vh]"]);
   const finishTransitionToInfoSection = () => {
+    // removeAllAnimationsFromElement(landingSectionCaret);
     setTranslateDistance(captionComponentFg, ["-translate-y-[4vh]"]);
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
   };
   // LINK #programaticallyScroll
   // ANCHOR[id=programiticallyScrollCall]
-  programaticallyScrollToNextSection(infoSection);
+  infoSection.scrollIntoView();
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
   // LINK #moveElement
@@ -500,10 +503,10 @@ function goToLandingSection() {
   setInTransition(true);
   // clean up info section
   setPreNavOpen(false);
+  slideUpAndFade(infoSectionCaret);
   decreaseHeight(infoSectionPreNavArea);
-  changeElementOpacityToZero(infoSectionNavBar);
-  changeElementOpacityToZero(infoSectionCaret);
-
+  setOpacity(infoSectionNavBar, ["opacity-0"]);
+  setOpacity(landingSectionCaret, ["opacity-0"]);
   // set up caption component for move
   // clear animation on caption component (if present, will interfere with translate transform)
   clearAnimationProperties(captionComponent);
@@ -517,15 +520,17 @@ function goToLandingSection() {
   infoSection.scrollIntoView();
   setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 20); // need to wait because otherwise it still jumps on mobile.
   function finishTransitionToLandingSection() {
-    [captionComponent, captionComponentBg, captionComponentFg].forEach((element) =>
+    [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret].forEach((element) =>
       clearAnimationProperties(element),
     );
+    setOpacity(infoSectionCaret, ["opacity-0"]);
     changeElementPositionToRelative(captionComponent);
     changeParentToLandingContainer(captionComponent);
     setTranslateDistance(captionComponentFg, ["translate-y-[0vh]"]);
     setTranslateDistance(captionComponentBg, ["translate-y-[0vh]"]);
     setTranslateDistance(captionComponent, ["translate-y-[0vh]"]);
     // reset info section translate distance
+    setOpacity(landingSectionCaret, ["opacity-1"]);
     setTranslateDistance(infoSectionContentGroup, ["translate-y-[100vh]"]);
   }
   // LINK #moveElement
@@ -580,12 +585,21 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   if (preNavClosing) {
     clearAnimationProperties(captionComponent);
   }
+  if (!preNavOpen && deltaY < 0 && window.scrollY <= 300) {
+    setOpacity(infoSectionCaret, ["opacity-1"]);
+    setScale(infoSectionCaret, ["scale-100"]);
+  } else if (!preNavOpen && deltaY > 0) {
+    setOpacity(infoSectionCaret, ["opacity-0"]);
+    setScale(infoSectionCaret, ["scale-75"]);
+  }
+
   if (preNavOpening || preNavClosing || inTransition) {
     e.preventDefault();
   } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
     e.preventDefault();
     setPreNavOpening(true);
     increaseHeight(infoSectionPreNavArea);
+    setOpacity(infoSectionNavBar, ["opacity-0"]);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
@@ -596,7 +610,11 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     e.preventDefault();
     setPreNavOpening(false);
     setPreNavClosing(true);
+    setOpacity(infoSectionCaret, ["opacity-0"]);
+    setScale(infoSectionCaret, ["scale-75"]);
+    setOpacity(infoSectionNavBar, ["opacity-1"]);
     decreaseHeight(infoSectionPreNavArea);
+    clearAnimationProperties(captionComponent);
     playAnimationsInSequence([
       [bringDown, captionComponentBg],
       [squish, captionComponentBg],
@@ -712,11 +730,10 @@ infoSection.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   if (inTransition && currSection === "info") {
     changeElementOpacityToOne(infoSectionNavBar);
-    changeElementOpacityToOne(infoSectionCaret);
     setInTransition(false);
-    disableScroll(false);
     hideSection([landingSection]);
-    window.scrollTo(0, 0);
+    infoSection.scrollIntoView();
+    disableScroll(false);
   }
 });
 
