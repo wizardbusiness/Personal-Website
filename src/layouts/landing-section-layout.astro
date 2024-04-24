@@ -1,19 +1,19 @@
 <section
   id="landing"
-  class="flex h-screen w-full flex-grow flex-col p-4 pb-0 pt-2 transition-[height] lg:p-8 lg:pb-2 lg:pt-4"
+  class="min-height-screen flex h-screen w-full flex-grow flex-col p-4 pb-0 pt-2 transition-[height] lg:p-8 lg:pb-2 lg:pt-4"
 >
   <header class="h-[10%] w-full">
     <slot name="nav" />
   </header>
-  <div class="flex h-[30%] items-center justify-center">
+  <div class="max-height-fit flex h-[30%] items-center justify-center">
     <slot name="avatar" />
   </div>
   <div class="flex h-[20%] w-full items-center justify-center whitespace-nowrap">
     <slot name="title" />
   </div>
-  <div class="flex h-[20%] items-start justify-center lg:items-center">
+  <div class="flex h-[20%] items-center justify-center lg:items-center">
     <div
-      class="caption-landing-container width-[30vw] flex h-[12vh] items-start justify-center lg:items-center"
+      class="caption-landing-container width-[30vw] flex h-[12vh] items-center justify-center lg:items-center"
     >
       <slot name="caption-container" />
     </div>
