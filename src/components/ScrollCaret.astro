@@ -8,7 +8,12 @@ const { section } = Astro.props;
 <div
   slot="scroll-caret"
   id="scroll-caret"
-  class=`fade-out-on-transition flex ${ section === "info" && "-translate-y-[3vh] opacity-0 scale-75" } transition-all duration-1000 flex-col justify-end`
+  class=`
+    fade-out-on-transition flex 
+    ${ section === "info" && "-translate-y-[3vh] opacity-0 scale-75" } 
+    ${ section === "landing" && "-translate-y-[5vh] lg:translate-y-[5vh]" }
+    transition-all duration-1000 flex-col justify-end
+  `
 >
   <Icon
     pack="ph"
