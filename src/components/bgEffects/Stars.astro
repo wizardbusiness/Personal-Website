@@ -1,6 +1,6 @@
 <div class="fixed bottom-0 left-0 -z-10 block h-full w-full animate-fade-in object-contain">
   <canvas id="canvas1" class="fixed bottom-0 left-0 h-full w-full object-contain"> </canvas>
-  <canvas id="canvas2" class="animate-fade-in fixed bottom-0 left-0 h-full w-full object-contain"> </canvas>
+  <canvas id="canvas2" class="fixed bottom-0 left-0 h-full w-full animate-fade-in object-contain"> </canvas>
 </div>
 <script>
   import {
@@ -186,6 +186,7 @@
       context.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
         star.twinkle();
+        star.drawStarTrail();
       });
       requestAnimationFrame(animateStars);
     };
@@ -204,8 +205,8 @@
     let start = { x: 200, y: 200 };
     let end = { x: 200, y: 200 };
     let max = 400;
-    let speed = 50;
-    let brightness = 1;
+    let speed = 1;
+    let brightness = 10;
     const shootingStar = () => {
       context.clearRect(0, 0, canvas2.width, canvas2.height);
       context.beginPath();
@@ -214,12 +215,13 @@
       if (end.x < max) {
         end.x += speed;
         end.y += speed;
-      } else {
-        const fadeDelay = setTimeout(() => {
-          context.globalAlpha = brightness;
-          brightness -= 0.1;
-        }, 300);
-        if (brightness <= 0) clearTimeout(fadeDelay);
+      } else if (end.x >= max) {
+        start.x += speed / 2;
+        start.y += speed / 2;
+        context.globalAlpha = brightness;
+        brightness -= 0.1;
+      } else if (brightness <= 0) {
+        return;
       }
       context.strokeStyle = "lightgray";
       context.stroke();
@@ -242,6 +244,11 @@
     public shapeDegreeMods: number | string | FC;
     public animationStart: number;
     public prevFrameTStampMs: number;
+    public trail: {
+      x: number;
+      y: number;
+    }[];
+    public tail: number;
 
     constructor(
       public x: number,
@@ -269,13 +276,15 @@
       this.radiusModifiers = [3, 5, 3, 5, 3];
       this.degreeOffset = degreeOffset;
       this.shapeDegreeMods = randomElFromArray([36, 45]);
+      this.trail = [];
+      this.tail = this.y;
     }
 
     /**
      * draws a star shape with 4 inner and 4 outer points, offset by 45 degrees
      */
-    draw() {
-      const getPointsOnCircle = (radiuses, degrees, degreeOffset = 0) => {
+    draw(xCoord: number, yCoord: number, degreeOffset: number = 0) {
+      const getPointsOnCircle = (radiuses, degrees, degreeOffset) => {
         const points = [];
         // create points at regular intervals around circle from initial angle
         const pointCount = 360 / degrees;
@@ -297,15 +306,15 @@
       };
 
       const radiuses = this.radiusModifiers.map((radiusFract) => this.width / radiusFract);
-      const points = getPointsOnCircle(radiuses, this.shapeDegreeMods, this.degreeOffset);
+      const points = getPointsOnCircle(radiuses, this.shapeDegreeMods, degreeOffset);
       this.context.beginPath();
       const drawShapeFromPoints = (points: number[]) => {
         for (let i = 0; i < points.length - 1; i++) {
           const x = points[i][0] + this.x;
           const y = points[i][1] + this.y;
           if (i === 0) this.context.moveTo(x, y);
-          const nextX = i === points.length - 1 ? points[0][0] + this.x : points[i + 1][0] + this.x;
-          const nextY = i === points.length - 1 ? points[0][1] + this.x : points[i + 1][1] + this.y;
+          const nextX = i === points.length - 1 ? points[0][0] + xCoord : points[i + 1][0] + xCoord;
+          const nextY = i === points.length - 1 ? points[0][1] + xCoord : points[i + 1][1] + yCoord;
 
           this.context.lineTo(x, y);
           this.context.lineTo(nextX, nextY);
@@ -315,6 +324,12 @@
         this.context.fill();
       };
       drawShapeFromPoints(points);
+    }
+
+    drawStarTrail() {
+      let max = this.y - 500;
+      this.draw(this.x, this.tail);
+      if (this.tail >= max) this.tail -= 5;
     }
 
     twinkle() {
@@ -342,7 +357,7 @@
         this.prevFrameTStampMs = currTimeMs;
       }
       this.context.globalAlpha = this.brightness;
-      this.draw();
+      this.draw(this.x, this.y, this.degreeOffset);
     }
   }
 
