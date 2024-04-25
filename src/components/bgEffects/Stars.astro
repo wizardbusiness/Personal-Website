@@ -153,7 +153,6 @@
       const collisionMap = {};
       // preload collision map with any divs you want to avoid collisions with.
       divCollisionObjs.forEach((obj) => handleCollisions(grid, obj, collisionMap)());
-      console.log(collisionMap);
       for (let i = 0; i < starCount; i++) {
         const width = Math.floor(generateWeightedRandomInRange(20, 100, 20, 20) / 4);
         const height = width;
@@ -185,6 +184,7 @@
     const animateStars = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
       stars.forEach((star) => {
+        if (!star.trail.length) star.generateStarTrail();
         star.twinkle();
         star.drawStarTrail();
       });
@@ -277,7 +277,7 @@
       this.degreeOffset = degreeOffset;
       this.shapeDegreeMods = randomElFromArray([36, 45]);
       this.trail = [];
-      this.tail = this.y;
+      this.tail = 0;
     }
 
     /**
@@ -304,14 +304,13 @@
         }
         return points;
       };
-
       const radiuses = this.radiusModifiers.map((radiusFract) => this.width / radiusFract);
       const points = getPointsOnCircle(radiuses, this.shapeDegreeMods, degreeOffset);
       this.context.beginPath();
       const drawShapeFromPoints = (points: number[]) => {
         for (let i = 0; i < points.length - 1; i++) {
-          const x = points[i][0] + this.x;
-          const y = points[i][1] + this.y;
+          const x = points[i][0] + xCoord;
+          const y = points[i][1] + yCoord;
           if (i === 0) this.context.moveTo(x, y);
           const nextX = i === points.length - 1 ? points[0][0] + xCoord : points[i + 1][0] + xCoord;
           const nextY = i === points.length - 1 ? points[0][1] + xCoord : points[i + 1][1] + yCoord;
@@ -326,10 +325,33 @@
       drawShapeFromPoints(points);
     }
 
+    generateStarTrail() {
+      let maxY = this.y - 500;
+      let currY = this.y;
+      while (currY > maxY) {
+        // const starInTrail = new Star(
+        //   this.x,
+        //   currY,
+        //   this.width,
+        //   this.height,
+        //   this.degreeOffset,
+        //   this.animationDur,
+        //   this.context,
+        // );
+        // this.trail.push(starInTrail);
+        currY -= 5;
+      }
+    }
+
     drawStarTrail() {
-      let max = this.y - 500;
-      this.draw(this.x, this.tail);
-      if (this.tail >= max) this.tail -= 5;
+      // const currTail = this.trail.slice(0, this.tail);
+      this.context.beginPath();
+      this.context.moveTo(this.x, this.y);
+      this.context.lineTo(this.x, this.tail);
+      this.context.lineWidth = this.width;
+      this.context.stroke();
+      this.tail++;
+      // currTail.forEach((star) => this.draw(star.x, star.y));
     }
 
     twinkle() {
