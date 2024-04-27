@@ -1,6 +1,7 @@
 <div class="fixed bottom-0 left-0 -z-10 block h-full w-full animate-fade-in object-contain">
   <canvas id="canvas1" class="fixed bottom-0 left-0 h-full w-full object-contain"> </canvas>
-  <canvas id="canvas2" class="fixed bottom-0 left-0 h-full w-full animate-fade-in object-contain"> </canvas>
+  <canvas id="canvas2" class="fixed bottom-0 left-0 -z-20 h-full w-full animate-fade-in object-contain">
+  </canvas>
 </div>
 <script>
   import {
@@ -73,7 +74,7 @@
 
     const grid = createGrid(canvas.height, canvas.width, 8, 8); // use powers of two for cell w and h
 
-    const getCellsOccupiedByObj = (grid, object: Star) => {
+    const getCellsOccupiedByObj = (grid, object: Star | CollisionObj) => {
       // round object bounds to nearest cell bounds
       const calcCellBounds = (grid, obj) => {
         // check each object outer bound against the height / width of each cell.
@@ -116,7 +117,7 @@
       return cellIds;
     };
 
-    const handleCollisions = (grid, object: Star, collisionMap) => {
+    const handleCollisions = (grid, object: Star | CollisionObj, collisionMap) => {
       return () => {
         const occupiedCells = getCellsOccupiedByObj(grid, object);
         let collision = false;
@@ -133,6 +134,14 @@
         return collision;
       };
     };
+
+    type CollisionObj = {
+      top: number;
+      right: number;
+      bottom: number;
+      left: number;
+    };
+
     const convertDivToCollisionObj = (div: Element) => {
       const divArea = div.getBoundingClientRect();
       return {
@@ -181,12 +190,22 @@
     };
     const starCount = Math.floor((window.innerHeight * window.innerWidth) / 3500);
     const stars: Star[] = generateStars(starCount, context);
+    const starTrailCanvas: HTMLCanvasElement = document.querySelector("#canvas2");
+    const starTrailContext = starTrailCanvas.getContext("2d");
+    const starTrailCanvasHeight = window.innerHeight * pixelRatio;
+    const starTrailCanvasWidth = window.innerWidth * pixelRatio;
+    starTrailCanvas.height = starTrailCanvasHeight;
+    starTrailCanvas.width = starTrailCanvasWidth;
+    starTrailContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
     const animateStars = () => {
       context.clearRect(0, 0, canvas.width, canvas.height);
+      starTrailContext.clearRect(0, 0, starTrailCanvas.width, starTrailCanvas.height);
       stars.forEach((star) => {
-        if (!star.trail.length) star.generateStarTrail();
+        // ANCHOR[id=animateStars]
+        // LINK #starClass
         star.twinkle();
-        star.drawStarTrail();
+        star.drawStarTrail("up", starTrailContext);
       });
       requestAnimationFrame(animateStars);
     };
@@ -227,10 +246,10 @@
       context.stroke();
       requestAnimationFrame(shootingStar);
     };
-    shootingStar();
+    // shootingStar();
   };
 
-  renderCanvas2();
+  // renderCanvas2();
 
   class Star {
     public brightness: number;
@@ -241,7 +260,7 @@
     public bottom: number;
     public radiusModifiers: number[];
     public radiuses: number[];
-    public shapeDegreeMods: number | string | FC;
+    public shapeDegreeMods: number | string | (() => number);
     public animationStart: number;
     public prevFrameTStampMs: number;
     public trail: {
@@ -249,6 +268,7 @@
       y: number;
     }[];
     public tail: number;
+    public warp: boolean;
 
     constructor(
       public x: number,
@@ -276,14 +296,14 @@
       this.radiusModifiers = [3, 5, 3, 5, 3];
       this.degreeOffset = degreeOffset;
       this.shapeDegreeMods = randomElFromArray([36, 45]);
-      this.trail = [];
+      this.warp = true;
       this.tail = 0;
     }
 
     /**
      * draws a star shape with 4 inner and 4 outer points, offset by 45 degrees
      */
-    draw(xCoord: number, yCoord: number, degreeOffset: number = 0) {
+    draw(xCoord: number, yCoord: number) {
       const getPointsOnCircle = (radiuses, degrees, degreeOffset) => {
         const points = [];
         // create points at regular intervals around circle from initial angle
@@ -305,7 +325,7 @@
         return points;
       };
       const radiuses = this.radiusModifiers.map((radiusFract) => this.width / radiusFract);
-      const points = getPointsOnCircle(radiuses, this.shapeDegreeMods, degreeOffset);
+      const points = getPointsOnCircle(radiuses, this.shapeDegreeMods, this.degreeOffset);
       this.context.beginPath();
       const drawShapeFromPoints = (points: number[]) => {
         for (let i = 0; i < points.length - 1; i++) {
@@ -325,33 +345,49 @@
       drawShapeFromPoints(points);
     }
 
-    generateStarTrail() {
-      let maxY = this.y - 500;
-      let currY = this.y;
-      while (currY > maxY) {
-        // const starInTrail = new Star(
-        //   this.x,
-        //   currY,
-        //   this.width,
-        //   this.height,
-        //   this.degreeOffset,
-        //   this.animationDur,
-        //   this.context,
-        // );
-        // this.trail.push(starInTrail);
-        currY -= 5;
-      }
-    }
+    // LINK #animateStars
+    // ANCHOR[id=starClass]
+    drawStarTrail(direction: "up" | "down", context: CanvasRenderingContext2D) {
+      const tail = direction === "up" ? this.y + this.tail : this.y - this.tail;
+      // const gradient = context.createLinearGradient(this.left, tail, this.right, tail);
+      // gradient.addColorStop(0, "rgb(237, 237, 237, 0.1)");
+      // gradient.addColorStop(0.3, "rgb(137, 251, 255, 0.7)");
+      // gradient.addColorStop(0.5, "rgb(242, 242, 242, 1)");
+      // gradient.addColorStop(0.65, "rgb(255, 201, 249, 0.7)");
+      // gradient.addColorStop(1, "rgb(237, 237, 237, 0.1)");
 
-    drawStarTrail() {
-      // const currTail = this.trail.slice(0, this.tail);
-      this.context.beginPath();
-      this.context.moveTo(this.x, this.y);
-      this.context.lineTo(this.x, this.tail);
-      this.context.lineWidth = this.width;
-      this.context.stroke();
-      this.tail++;
-      // currTail.forEach((star) => this.draw(star.x, star.y));
+      const gradient = context.createRadialGradient(
+        this.x,
+        this.y,
+        Math.floor(this.width / 4),
+        this.x,
+        tail,
+        Math.floor(this.width / 4),
+      );
+      gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
+      // gradient.addColorStop(0.25, "rgb(255, 201, 249, 0.7)");
+      // gradient.addColorStop(0.45, "rgb(242, 242, 242, 1)");
+      gradient.addColorStop(0.8, "rgb(242, 242, 242, 0.2)");
+      // gradient.addColorStop(0.6, "rgb(137, 251, 255, 0.7)");
+      gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
+
+      context.beginPath();
+      context.moveTo(this.x, this.y);
+      context.lineTo(this.x, tail);
+      context.lineWidth = this.width - this.width / 5;
+      context.strokeStyle = gradient;
+      context.stroke();
+      if (this.tail <= -100 && this.warp) {
+        this.warp = false;
+      }
+
+      if (!this.warp && this.tail >= -100 && this.tail < 0) {
+        this.tail += 2;
+      } else if (!this.warp && this.tail >= 0) {
+        return;
+      } else if (this.warp && this.tail >= -100) {
+        this.tail -= 2;
+      }
     }
 
     twinkle() {
@@ -379,7 +415,7 @@
         this.prevFrameTStampMs = currTimeMs;
       }
       this.context.globalAlpha = this.brightness;
-      this.draw(this.x, this.y, this.degreeOffset);
+      this.draw(this.x, this.y);
     }
   }
 
