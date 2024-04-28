@@ -285,7 +285,7 @@ function moveElement(
 
 // ******************************************************************************************************
 
-type CallBackArgs = HTMLElement[] | [HTMLElement, string?] | [...HTMLElement[], string[]] | number[];
+type CallBackArgs = HTMLElement[] | [HTMLElement, string?] | [...HTMLElement[], string[]] | string[];
 type ModifyElementEntry = {
   callbackArgs?: CallBackArgs;
   callback: (...args: CallBackArgs) => void;
@@ -375,12 +375,12 @@ function getCurrSection(): "landing" | "info" {
   }
 }
 
-function setCurrTransitionStep(step: 0 | 1 | 2 | 3) {
+function setCurrTransitionStep(step: "" | "a" | "b" | "c") {
   captionComponent.setAttribute("data-transition-step", String(step));
 }
 
 function getCurrTransitionStep() {
-  captionComponent.getAttribute("data-transition-step");
+  return captionComponent.getAttribute("data-transition-step");
 }
 
 function setCurrSection(section: "landing" | "info") {
@@ -427,7 +427,7 @@ function setPreNavClosing(Closing: boolean) {
 
 // WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
 function goToInfoSection() {
-  setCurrTransitionStep(2);
+  setCurrTransitionStep("b");
   const captionComponentWidth = captionComponent.getBoundingClientRect().width;
   const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
   document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
@@ -495,7 +495,7 @@ function goToInfoSection() {
           callback: squish,
         },
         {
-          callbackArgs: [3],
+          callbackArgs: ["c"],
           // LINK #animations
           callback: setCurrTransitionStep,
         },
@@ -506,7 +506,6 @@ function goToInfoSection() {
 }
 
 function goToLandingSection() {
-  setCurrTransitionStep(3);
   setInTransition(true);
   // clean up info section
   setPreNavOpen(false);
@@ -577,8 +576,8 @@ function handleUserOnLandingSection(e: Event, deltaY: number) {
     e.preventDefault();
     disableScroll(true);
   } else if (!inTransition && deltaY >= 0) {
+    setCurrTransitionStep("a");
     setInTransition(true);
-    setCurrTransitionStep(1);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
     setTranslateDistance(captionComponent, "-translate-y-[80vh]");
     setTransitionDuration(captionComponent, "duration-[800ms]");
@@ -707,20 +706,25 @@ infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: fals
 
 myTitle.addEventListener("animationend", () => {
   if (myTitle.classList.contains("animate-slide-down")) {
-    setCurrTransitionStep(0);
+    setCurrTransitionStep("");
     setInTransition(false);
     setOpacity(landingSectionCaret, "opacity-1");
   }
 });
 
+// captionComponent.addEventListener("transitionstart", () => {
+//   const currSection = getCurrSection();
+//   const inTransition = checkIfInTransition();
+//   if (currSection === "landing" && !inTransition) {
+//     console.log("step1");
+//     setCurrTransitionStep(1);
+//   }
+// });
+
 captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
-  if (currSection === "landing" && !inTransition) {
-    setCurrTransitionStep(1);
-    setTranslateDistance(captionComponent, "translate-y-[100vh]");
-  } else if (currSection === "landing" && inTransition) {
-    setCurrTransitionStep(2);
+  if (currSection === "landing" && inTransition) {
     goToInfoSection();
   }
 });
@@ -746,7 +750,7 @@ infoSectionContentGroup.addEventListener("transitionend", () => {
   const inTransition = checkIfInTransition();
   const currSection = getCurrSection();
   if (inTransition && currSection === "info") {
-    setCurrTransitionStep(0);
+    setCurrTransitionStep("");
     setInTransition(false);
     changeElementOpacityToOne(infoSectionNavBar);
     hideSection([landingSection]);
