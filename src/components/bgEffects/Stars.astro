@@ -199,13 +199,15 @@
     starTrailContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
     const animateStars = () => {
+      const captionContainer = document.querySelector("#caption-container");
+      const currTransitionStep = captionContainer.getAttribute("data-transition-step");
       context.clearRect(0, 0, canvas.width, canvas.height);
       starTrailContext.clearRect(0, 0, starTrailCanvas.width, starTrailCanvas.height);
       stars.forEach((star) => {
         // ANCHOR[id=animateStars]
         // LINK #starClass
         star.twinkle();
-        star.drawStarTrail("up", starTrailContext);
+        star.drawStarTrail("up", starTrailContext, currTransitionStep);
       });
       requestAnimationFrame(animateStars);
     };
@@ -347,7 +349,7 @@
 
     // LINK #animateStars
     // ANCHOR[id=starClass]
-    drawStarTrail(direction: "up" | "down", context: CanvasRenderingContext2D) {
+    drawStarTrail(direction: "up" | "down", context: CanvasRenderingContext2D, currTransitionStep) {
       const tail = direction === "up" ? this.y + this.tail : this.y - this.tail;
       // const gradient = context.createLinearGradient(this.left, tail, this.right, tail);
       // gradient.addColorStop(0, "rgb(237, 237, 237, 0.1)");
@@ -380,13 +382,18 @@
       if (this.tail <= -100 && this.warp) {
         this.warp = false;
       }
-
-      if (!this.warp && this.tail >= -100 && this.tail < 0) {
-        this.tail += 2;
-      } else if (!this.warp && this.tail >= 0) {
-        return;
-      } else if (this.warp && this.tail >= -100) {
-        this.tail -= 2;
+      switch (currTransitionStep) {
+        case "a":
+          this.tail -= 0.2;
+          break;
+        case "b":
+          this.tail > -200 ? (this.tail -= 2 + this.tail * 0.02) : this.tail;
+          break;
+        case "c":
+          this.tail < 0 ? (this.tail += 1.2 - this.tail * 0.01) : (this.tail = 0);
+          break;
+        default:
+          break;
       }
     }
 
