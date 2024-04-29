@@ -460,6 +460,15 @@ function goToInfoSection() {
         tweakOverlapValueBy: { elOne: { bottom: 0 } },
         forModificationOnObservedOverlap: [
           {
+            callbackArgs: ["c"],
+            // LINK #translations
+            callback: function (...args: [TransitionStep]) {
+              setTimeout(() => {
+                setCurrTransitionStep(...args);
+              }, 1000);
+            },
+          },
+          {
             callbackArgs: [captionComponent, "translate-y-0"],
             // LINK #translations
             callback: function (...args: [HTMLElement, string]) {
@@ -469,20 +478,20 @@ function goToInfoSection() {
             },
           },
           {
+            callbackArgs: [captionComponent, "duration-[2000ms]"],
+            // LINK #translations
+            callback: function (...args: [HTMLElement, string]) {
+              setTimeout(() => {
+                setTransitionDuration(...args);
+              }, 1000);
+            },
+          },
+          {
             callbackArgs: [captionComponent, "ease-in-out"],
             // LINK #translations
             callback: function (...args: [HTMLElement, string]) {
               setTimeout(() => {
                 setTransitionTiming(...args);
-              }, 1000);
-            },
-          },
-          {
-            callbackArgs: ["c"],
-            // LINK #translations
-            callback: function (...args: [TransitionStep]) {
-              setTimeout(() => {
-                setCurrTransitionStep(...args);
               }, 1000);
             },
           },
