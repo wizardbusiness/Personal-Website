@@ -11,6 +11,9 @@
     randomIntFromInterval,
   } from "../../scripts/randomFromInterval";
 
+  const transitionStep = ["", "a", "b", "c", "d", "e", "f"] as const;
+  type TransitionStep = (typeof transitionStep)[number];
+
   const renderCanvas1 = () => {
     const canvas: HTMLCanvasElement = document.querySelector("#canvas1");
     const context = canvas.getContext("2d");
@@ -200,7 +203,7 @@
 
     const animateStars = () => {
       const captionContainer = document.querySelector("#caption-container");
-      const currTransitionStep = captionContainer.getAttribute("data-transition-step");
+      const currTransitionStep = captionContainer.getAttribute("data-transition-step") as TransitionStep;
       context.clearRect(0, 0, canvas.width, canvas.height);
       starTrailContext.clearRect(0, 0, starTrailCanvas.width, starTrailCanvas.height);
       stars.forEach((star) => {
@@ -270,7 +273,8 @@
       y: number;
     }[];
     public tail: number;
-    public warp: boolean;
+    public incrementTailBrightness: boolean;
+    public tailBrightness: number;
 
     constructor(
       public x: number,
@@ -298,8 +302,27 @@
       this.radiusModifiers = [3, 5, 3, 5, 3];
       this.degreeOffset = degreeOffset;
       this.shapeDegreeMods = randomElFromArray([36, 45]);
-      this.warp = true;
       this.tail = 0;
+      this.incrementTailBrightness = true;
+      this.tailBrightness = 0.5;
+    }
+
+    stepBetweenValues(a: number, b: number, step: number) {
+      let curr = this.tailBrightness;
+      let increment = this.incrementTailBrightness;
+      if (increment) {
+        curr += step;
+        if (curr >= b) {
+          this.incrementTailBrightness = false;
+        }
+      } else {
+        curr -= step;
+        if (curr <= a) {
+          this.incrementTailBrightness = true;
+        }
+      }
+      this.tailBrightness = curr;
+      return curr;
     }
 
     /**
@@ -349,15 +372,12 @@
 
     // LINK #animateStars
     // ANCHOR[id=starClass]
-    drawStarTrail(direction: "up" | "down", context: CanvasRenderingContext2D, currTransitionStep) {
+    drawStarTrail(
+      direction: "up" | "down",
+      context: CanvasRenderingContext2D,
+      currTransitionStep: TransitionStep,
+    ) {
       const tail = direction === "up" ? this.y + this.tail : this.y - this.tail;
-      // const gradient = context.createLinearGradient(this.left, tail, this.right, tail);
-      // gradient.addColorStop(0, "rgb(237, 237, 237, 0.1)");
-      // gradient.addColorStop(0.3, "rgb(137, 251, 255, 0.7)");
-      // gradient.addColorStop(0.5, "rgb(242, 242, 242, 1)");
-      // gradient.addColorStop(0.65, "rgb(255, 201, 249, 0.7)");
-      // gradient.addColorStop(1, "rgb(237, 237, 237, 0.1)");
-
       const gradient = context.createRadialGradient(
         this.x,
         this.y,
@@ -366,11 +386,13 @@
         tail,
         Math.floor(this.width / 4),
       );
-      gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
-      // gradient.addColorStop(0.25, "rgb(255, 201, 249, 0.7)");
-      // gradient.addColorStop(0.45, "rgb(242, 242, 242, 1)");
-      gradient.addColorStop(0.8, "rgb(242, 242, 242, 0.2)");
-      // gradient.addColorStop(0.6, "rgb(137, 251, 255, 0.7)");
+
+      const brightness = this.stepBetweenValues(0.5, 0.7, 0.003);
+      // console.log(brightness);
+
+      gradient.addColorStop(0, "rgb(242, 242, 242, 0)");
+      gradient.addColorStop(0.07, `rgb(242, 242, 242, ${brightness})`);
+      gradient.addColorStop(0.1 + brightness, "rgb(242, 242, 242, 0.2)");
       gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
 
       context.beginPath();
@@ -379,18 +401,18 @@
       context.lineWidth = this.width - this.width / 5;
       context.strokeStyle = gradient;
       context.stroke();
-      if (this.tail <= -100 && this.warp) {
-        this.warp = false;
-      }
       switch (currTransitionStep) {
         case "a":
           this.tail -= 0.2;
           break;
         case "b":
-          this.tail > -200 ? (this.tail -= 2 + this.tail * 0.02) : this.tail;
+          this.tail > -200 ? (this.tail -= 1 + this.tail * 0.002) : this.tail;
           break;
         case "c":
-          this.tail < 0 ? (this.tail += 1.2 - this.tail * 0.01) : (this.tail = 0);
+          this.tail > -200 ? (this.tail -= 1.5 - this.tail * 0.001) : this.tail;
+          break;
+        case "d":
+          this.tail < 0 ? (this.tail += 3 - this.tail * 0.01) : (this.tail = 0);
           break;
         default:
           break;

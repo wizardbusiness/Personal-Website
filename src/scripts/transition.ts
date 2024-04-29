@@ -173,7 +173,7 @@ function clearPropertiesAndSetNew(classRootStrs: string[]) {
 
 const setTransitionDuration = clearPropertiesAndSetNew(["duration"]);
 const clearTransitionProperties = clearPropertiesAndSetNew(["duration", "transition", "translate"]);
-const setEaseProperty = clearPropertiesAndSetNew(["ease"]);
+const setTransitionTiming = clearPropertiesAndSetNew(["ease"]);
 
 const clearAnimationProperties = clearPropertiesAndSetNew(["animate"]);
 const setTranslateDistance = clearPropertiesAndSetNew(["translate"]);
@@ -375,7 +375,10 @@ function getCurrSection(): "landing" | "info" {
   }
 }
 
-function setCurrTransitionStep(step: "" | "a" | "b" | "c") {
+const transitionStep = ["", "a", "b", "c", "d", "e", "f"] as const;
+export type TransitionStep = (typeof transitionStep)[number];
+
+function setCurrTransitionStep(step: TransitionStep) {
   captionComponent.setAttribute("data-transition-step", String(step));
 }
 
@@ -432,77 +435,117 @@ function goToInfoSection() {
   const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
   document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
   document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
-  setEaseProperty(captionComponent, "ease-in");
-  setTransitionDuration(captionComponent, "duration-[1500ms]");
-  setTranslateDistance(captionComponent, "translate-y-[100vh]");
+  setTransitionTiming(captionComponent, "ease-out");
+  setTransitionDuration(captionComponent, "duration-[1200ms]");
   const finishTransitionToInfoSection = () => {
     // removeAllAnimationsFromElement(landingSectionCaret);
     setTranslateDistance(captionComponentFg, "-translate-y-[4vh]");
     setTranslateDistance(captionComponentBg, "translate-y-[0vh]");
   };
-  // LINK #programaticallyScroll
-  // ANCHOR[id=programiticallyScrollCall]
-  infoSection.scrollIntoView({ behavior: "smooth" });
+
   // LINK #checkPosition
   // ANCHOR[id=checkPositionCallForwardNav]
   // LINK #moveElement
   // ANCHOR[id=moveElementToinfoCall]
-  moveElement(captionComponent, "translate-y-[100vh]", translateDown, "down", finishTransitionToInfoSection, [
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSection,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
-      forModificationOnObservedOverlap: [
-        {
-          callbackArgs: [infoSectionContentGroup],
-          // LINK #translations
-          callback: translateUp,
-        },
-      ],
-      entryProcessed: false,
-    },
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
-      forModificationOnObservedOverlap: [
-        {
-          callbackArgs: [captionComponent],
-          // LINK #animations
-          callback: changeElementPositionToRelative,
-        },
-        {
-          callbackArgs: [captionComponent],
-          // LINK #animations
-          callback: changeParentToinfoContainer,
-        },
-        {
-          callbackArgs: [captionComponent, "translate-y-[0vh]"],
-          // LINK #animations
-          callback: setTranslateDistance,
-        },
-      ],
-      entryProcessed: false,
-    },
-    {
-      observedElOne: captionComponent,
-      observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
-      forModificationOnObservedOverlap: [
-        {
-          callbackArgs: [captionComponentBg],
-          // LINK #animations
-          callback: squish,
-        },
-        {
-          callbackArgs: ["c"],
-          // LINK #animations
-          callback: setCurrTransitionStep,
-        },
-      ],
-      entryProcessed: false,
-    },
-  ]);
+  moveElement(
+    captionComponent,
+    "-translate-y-[25vh]",
+    setTranslateDistance,
+    "down",
+    finishTransitionToInfoSection,
+    [
+      {
+        observedElOne: captionComponent,
+        observedElTwo: myTitle,
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
+        forModificationOnObservedOverlap: [
+          {
+            callbackArgs: [captionComponent, "translate-y-0"],
+            // LINK #translations
+            callback: function (...args: [HTMLElement, string]) {
+              setTimeout(() => {
+                setTranslateDistance(...args);
+              }, 1000);
+            },
+          },
+          {
+            callbackArgs: [captionComponent, "ease-in-out"],
+            // LINK #translations
+            callback: function (...args: [HTMLElement, string]) {
+              setTimeout(() => {
+                setTransitionTiming(...args);
+              }, 1000);
+            },
+          },
+          {
+            callbackArgs: ["c"],
+            // LINK #translations
+            callback: function (...args: [TransitionStep]) {
+              setTimeout(() => {
+                setCurrTransitionStep(...args);
+              }, 1000);
+            },
+          },
+          {
+            callbackArgs: [],
+            // LINK #translations
+            callback: () => infoSection.scrollIntoView({ behavior: "smooth" }),
+          },
+        ],
+        entryProcessed: false,
+      },
+      {
+        observedElOne: captionComponent,
+        observedElTwo: captionLandingContainer,
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
+        forModificationOnObservedOverlap: [
+          {
+            callbackArgs: [infoSectionContentGroup],
+            // LINK #translations
+            callback: function (...contentGroup: [HTMLElement]) {
+              setTimeout(() => {
+                translateUp(...contentGroup);
+              }, 2000);
+            },
+          },
+        ],
+        entryProcessed: false,
+      },
+      {
+        observedElOne: captionComponent,
+        observedElTwo: infoSectionContentGroup,
+        tweakOverlapValueBy: { elOne: { bottom: 0 } },
+        forModificationOnObservedOverlap: [
+          {
+            callbackArgs: [captionComponent],
+            // LINK #animations
+            callback: changeElementPositionToRelative,
+          },
+          {
+            callbackArgs: [captionComponent],
+            // LINK #animations
+            callback: changeParentToinfoContainer,
+          },
+          {
+            callbackArgs: [captionComponent, "translate-y-[0vh]"],
+            // LINK #animations
+            callback: setTranslateDistance,
+          },
+          {
+            callbackArgs: [captionComponentBg],
+            // LINK #animations
+            callback: squish,
+          },
+          {
+            callbackArgs: ["d"],
+            // LINK #animations
+            callback: setCurrTransitionStep,
+          },
+        ],
+        entryProcessed: false,
+      },
+    ],
+  );
 }
 
 function goToLandingSection() {
@@ -518,7 +561,7 @@ function goToLandingSection() {
   clearAnimationProperties(captionComponent);
   // clear and set translate duration and distance
   setTransitionDuration(captionComponent, "duration-[1000ms]");
-  setEaseProperty(captionComponent, "eease-in");
+  setTransitionTiming(captionComponent, "eease-in");
   // set up landing section
 
   // scroll to landing section
@@ -581,7 +624,8 @@ function handleUserOnLandingSection(e: Event, deltaY: number) {
     setupElementForMove(captionComponent, changeElementPositionToFixed);
     setTranslateDistance(captionComponent, "-translate-y-[80vh]");
     setTransitionDuration(captionComponent, "duration-[800ms]");
-    setEaseProperty(captionComponent, "ease-out");
+    setTransitionTiming(captionComponent, "ease-out");
+    // captionComponentBg.classList.replace("bg-foggy-glass", "bg-[#656C7D]");
     [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
   }
 }
@@ -611,7 +655,6 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     increaseHeight(infoSectionPreNavArea);
     setOpacity(infoSectionNavBar, "opacity-0");
     setScale(infoSectionCaret, "scale-100");
-    // schoochUp(infoSectionCaret);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
@@ -711,15 +754,6 @@ myTitle.addEventListener("animationend", () => {
     setOpacity(landingSectionCaret, "opacity-1");
   }
 });
-
-// captionComponent.addEventListener("transitionstart", () => {
-//   const currSection = getCurrSection();
-//   const inTransition = checkIfInTransition();
-//   if (currSection === "landing" && !inTransition) {
-//     console.log("step1");
-//     setCurrTransitionStep(1);
-//   }
-// });
 
 captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
