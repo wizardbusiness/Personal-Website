@@ -6,6 +6,8 @@
   --scroll-dist: 0;
   --caption-width: 0;
   --info-cont-width: 0;
+  --caption-container-top: 0;
+  --caption-container-left: 0;
 }
 
 @layer utilities {
