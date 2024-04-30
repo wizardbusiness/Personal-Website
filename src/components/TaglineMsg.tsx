@@ -17,7 +17,7 @@ const TaglineMsg = ({ msg, blinkCursor, scaleText }) => {
 
   return (
     <div id="caption" className="flex items-center gap-2 [transform-origin:center]">
-      <h1 className="no-wrap h-fit text-center font-mono text-xl text-gray-200 lg:text-4xl xl:text-5xl 2xl:text-7xl">
+      <h1 className="no-wrap h-fit text-center font-mono text-xl text-gray-200 lg:text-3xl xl:text-5xl 2xl:text-7xl">
         {(msgIndex === msg.length &&
           text.split(" ").map((str, index) => {
             const key = str + index;
