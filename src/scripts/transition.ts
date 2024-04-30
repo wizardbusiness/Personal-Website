@@ -377,7 +377,7 @@ function getCurrSection(): "landing" | "info" {
   }
 }
 
-const transitionStep = ["", "a", "b", "c", "d", "e", "f"] as const;
+const transitionStep = ["", "a", "b", "c", "d", "e", "f", "g"] as const;
 export type TransitionStep = (typeof transitionStep)[number];
 
 function setCurrTransitionStep(step: TransitionStep) {
@@ -598,6 +598,7 @@ function goToLandingSection() {
   setTimeout(() => {
     showSection([landingSection]);
     landingSection.scrollIntoView();
+    setCurrTransitionStep("f");
   }, 500);
 
   // scroll to landing section
@@ -621,7 +622,7 @@ function goToLandingSection() {
       observedElTwo: captionLandingContainer,
       forModificationOnObservedOverlap: [
         {
-          callbackArgs: ["f"],
+          callbackArgs: ["g"],
           callback: setCurrTransitionStep,
         },
         {

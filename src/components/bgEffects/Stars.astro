@@ -11,7 +11,7 @@
     randomIntFromInterval,
   } from "../../scripts/randomFromInterval";
 
-  const transitionStep = ["", "a", "b", "c", "d", "e", "f"] as const;
+  const transitionStep = ["", "a", "b", "c", "d", "e", "f", "g"] as const;
   type TransitionStep = (typeof transitionStep)[number];
 
   const renderCanvas1 = () => {
@@ -418,6 +418,9 @@
           this.tail < 75 ? (this.tail += 3.2 - this.tail * 0.01) : this.tail;
           break;
         case "f":
+          this.tail < 150 ? (this.tail += 3.2 - this.tail * 0.01) : this.tail;
+          break;
+        case "g":
           this.tail > 0 ? (this.tail -= 3.2 + this.tail * 0.01) : (this.tail = 0);
           break;
         default:
