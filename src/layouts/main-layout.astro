@@ -1,6 +1,7 @@
 ---
 import CommonHead from "./common-head-layout.astro";
 import Stars from "../components/bgEffects/Stars.astro";
+import Main from "../pages/Main.astro";
 ---
 
 <html class="scrollbar-hide h-screen w-screen overscroll-none">
@@ -11,11 +12,7 @@ import Stars from "../components/bgEffects/Stars.astro";
     class="flex h-fit w-full flex-grow flex-col justify-center overscroll-none bg-dusk font-sans"
   >
     <Stars />
-    <main class="flex h-fit w-full flex-col">
-      <slot name="landing-section" />
-      <slot name="info-section" />
-    </main>
-    <script src="../scripts/transition.ts"></script>
+    <slot name="page" />
     <script>
       const handleOrientationChange = () => {
         const body = document.querySelector("body");
