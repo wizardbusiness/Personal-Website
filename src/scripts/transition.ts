@@ -437,9 +437,9 @@ function goToInfoSection() {
   const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
   document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
   document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
-  setTransitionTiming(captionComponent, "ease-out");
-  setTransitionDuration(captionComponent, "duration-[1200ms]");
-  setTranslateDistance(captionComponent, "-translate-y-[25vh]");
+  setTransitionTiming(captionComponent, "ease-in-out-polar");
+  setTransitionDuration(captionComponent, "duration-[3500ms]");
+  setTranslateDistance(captionComponent, "translate-y-[0vh]");
 
   const finishTransitionToInfoSection = () => {
     setTranslateDistance(captionComponent, "translate-y-[0vh]");
@@ -467,34 +467,6 @@ function goToInfoSection() {
           },
         },
         {
-          callbackArgs: [captionComponent, "ease-in-expo"],
-          // LINK #translations
-          callback: function (...args: [HTMLElement, string]) {
-            setTimeout(() => {
-              setTransitionTiming(...args);
-            }, 1000);
-          },
-        },
-        {
-          callbackArgs: [captionComponent, "-translate-y-[10vh]"],
-          // LINK #translations
-          callback: function (...args: [HTMLElement, string]) {
-            setTimeout(() => {
-              setTranslateDistance(...args);
-            }, 1000);
-          },
-        },
-
-        {
-          callbackArgs: [captionComponent, "duration-[3000ms]"],
-          // LINK #translations
-          callback: function (...args: [HTMLElement, string]) {
-            setTimeout(() => {
-              setTransitionDuration(...args);
-            }, 1000);
-          },
-        },
-        {
           callbackArgs: [],
           // LINK #translations
           callback: () => infoSection.scrollIntoView({ behavior: "smooth" }),
@@ -513,7 +485,7 @@ function goToInfoSection() {
           callback: function (...contentGroup: [HTMLElement]) {
             setTimeout(() => {
               translateUp(...contentGroup);
-            }, 2500);
+            }, 1800);
           },
         },
       ],
@@ -539,11 +511,11 @@ function goToInfoSection() {
           // LINK #animations
           callback: changeParentToinfoContainer,
         },
-        {
-          callbackArgs: [captionComponent, "translate-y-[0vh]"],
-          // LINK #animations
-          callback: setTranslateDistance,
-        },
+        // {
+        //   callbackArgs: [captionComponent, "translate-y-[0vh]"],
+        //   // LINK #animations
+        //   callback: setTranslateDistance,
+        // },
         {
           callbackArgs: [captionComponentBg],
           // LINK #animations
@@ -596,9 +568,9 @@ function goToLandingSection() {
   // set up landing section
   // use delay to keep info section in view during info section content transform
   setTimeout(() => {
+    setCurrTransitionStep("f");
     showSection([landingSection]);
     landingSection.scrollIntoView();
-    setCurrTransitionStep("f");
   }, 500);
 
   // scroll to landing section
