@@ -174,11 +174,14 @@ function clearPropertiesAndSetNew(classRootStrs: string[]) {
 const setTransitionDuration = clearPropertiesAndSetNew(["duration"]);
 const clearTransitionProperties = clearPropertiesAndSetNew(["duration", "transition", "translate"]);
 const setTransitionTiming = clearPropertiesAndSetNew(["ease"]);
+const setTransitionProperty = clearPropertiesAndSetNew(["transition"]);
 
 const clearAnimationProperties = clearPropertiesAndSetNew(["animate"]);
 const setTranslateDistance = clearPropertiesAndSetNew(["translate"]);
 const setOpacity = clearPropertiesAndSetNew(["opacity"]);
 const setScale = clearPropertiesAndSetNew(["scale"]);
+
+const clearPlacementProperties = clearPropertiesAndSetNew(["left", "right", "top", "bottom"]);
 
 const heights = ["h-0", "h-[10vh]"] as const;
 type Heights = (typeof heights)[number];
@@ -237,8 +240,9 @@ function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
   };
 }
 
-const changeParentToLandingContainer = changeElementParent(captionInfoContainer, captionLandingContainer);
+const changeParentToLandingContainerFromBody = changeElementParent(body, captionLandingContainer);
 const changeParentToinfoContainer = changeElementParent(captionLandingContainer, captionInfoContainer);
+const changeParentToBodyFromInfoContainer = changeElementParent(captionInfoContainer, body);
 // ******************************************************************************************************
 
 function changeElementPositionType(
@@ -253,6 +257,18 @@ function changeElementPositionType(
 
 const changeElementPositionToRelative = changeElementPositionType("fixed", "relative");
 const changeElementPositionToFixed = changeElementPositionType("relative", "fixed");
+
+// ******************************************************************************************************
+// getBounding client rect with whole values
+function getBoundingClientRect(element: HTMLElement) {
+  const { top, bottom, left, right } = element.getBoundingClientRect();
+  return {
+    top: Math.floor(top),
+    bottom: Math.floor(bottom),
+    left: Math.floor(left),
+    right: Math.floor(right),
+  };
+}
 
 // ******************************************************************************************************
 
@@ -273,13 +289,10 @@ function setupElementForMove(
 
 function moveElement(
   element: HTMLElement,
-  freshCSSClass: string,
-  translate: (element: HTMLElement, freshClass: string) => void,
   direction: "up" | "down",
   finishTransition: () => void,
   overlapObserverEntries: OverlapObserverEntry[],
 ) {
-  translate(element, freshCSSClass);
   observeTargetsOverlap(overlapObserverEntries, finishTransition, direction);
 }
 
@@ -331,7 +344,7 @@ function observeTargetsOverlap(
         direction === "down" &&
         firstElBottom >= secondElTop &&
         firstElTop <= secondElBottom) ||
-      (!entryProcessed && direction === "up" && firstElTop <= secondElTop)
+      (!entryProcessed && direction === "up" && firstElTop >= secondElTop && firstElTop <= secondElBottom)
     ) {
       observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
         entry.callback(...entry.callbackArgs);
@@ -341,7 +354,7 @@ function observeTargetsOverlap(
   });
   const lastEntryProcessed = overlapObserverEntries[overlapObserverEntries.length - 1].entryProcessed;
   if (lastEntryProcessed) {
-    clearTransitionProperties(captionComponent);
+    // clearTransitionProperties(captionComponent);
     finishTransition();
     return;
   } else {
@@ -351,17 +364,6 @@ function observeTargetsOverlap(
   }
 }
 
-// ******************************************************************************************************
-
-// ANCHOR[id=programaticallyScroll]
-// LINK #programiticallyScrollCall
-function programaticallyScrollToNextSection(section: HTMLElement) {
-  const sectionTop = section.getBoundingClientRect().top;
-  window.scrollTo({
-    top: sectionTop,
-    behavior: "smooth",
-  });
-}
 // ******************************************************************************************************
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
@@ -437,8 +439,9 @@ function goToInfoSection() {
   document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
   setTransitionTiming(captionComponent, "ease-out");
   setTransitionDuration(captionComponent, "duration-[1200ms]");
+  setTranslateDistance(captionComponent, "-translate-y-[25vh]");
   const finishTransitionToInfoSection = () => {
-    // removeAllAnimationsFromElement(landingSectionCaret);
+    setTranslateDistance(captionComponent, "translate-y-[0vh]");
     setTranslateDistance(captionComponentFg, "-translate-y-[4vh]");
     setTranslateDistance(captionComponentBg, "translate-y-[0vh]");
   };
@@ -447,114 +450,128 @@ function goToInfoSection() {
   // ANCHOR[id=checkPositionCallForwardNav]
   // LINK #moveElement
   // ANCHOR[id=moveElementToinfoCall]
-  moveElement(
-    captionComponent,
-    "-translate-y-[25vh]",
-    setTranslateDistance,
-    "down",
-    finishTransitionToInfoSection,
-    [
-      {
-        observedElOne: captionComponent,
-        observedElTwo: myTitle,
-        tweakOverlapValueBy: { elOne: { bottom: 0 } },
-        forModificationOnObservedOverlap: [
-          {
-            callbackArgs: ["c"],
-            // LINK #translations
-            callback: function (...args: [TransitionStep]) {
-              setTimeout(() => {
-                setCurrTransitionStep(...args);
-              }, 1000);
-            },
+  moveElement(captionComponent, "down", finishTransitionToInfoSection, [
+    {
+      observedElOne: captionComponent,
+      observedElTwo: myTitle,
+      tweakOverlapValueBy: { elOne: { bottom: 0 } },
+      forModificationOnObservedOverlap: [
+        {
+          callbackArgs: ["c"],
+          // LINK #translations
+          callback: function (...args: [TransitionStep]) {
+            setTimeout(() => {
+              setCurrTransitionStep(...args);
+            }, 1000);
           },
-          {
-            callbackArgs: [captionComponent, "translate-y-0"],
-            // LINK #translations
-            callback: function (...args: [HTMLElement, string]) {
-              setTimeout(() => {
-                setTranslateDistance(...args);
-              }, 1000);
-            },
+        },
+        {
+          callbackArgs: [captionComponent, "translate-y-0"],
+          // LINK #translations
+          callback: function (...args: [HTMLElement, string]) {
+            setTimeout(() => {
+              setTranslateDistance(...args);
+            }, 1000);
           },
-          {
-            callbackArgs: [captionComponent, "duration-[2000ms]"],
-            // LINK #translations
-            callback: function (...args: [HTMLElement, string]) {
-              setTimeout(() => {
-                setTransitionDuration(...args);
-              }, 1000);
-            },
+        },
+        {
+          callbackArgs: [captionComponent, "duration-[2000ms]"],
+          // LINK #translations
+          callback: function (...args: [HTMLElement, string]) {
+            setTimeout(() => {
+              setTransitionDuration(...args);
+            }, 1000);
           },
-          {
-            callbackArgs: [captionComponent, "ease-in-out"],
-            // LINK #translations
-            callback: function (...args: [HTMLElement, string]) {
-              setTimeout(() => {
-                setTransitionTiming(...args);
-              }, 1000);
-            },
+        },
+        {
+          callbackArgs: [captionComponent, "ease-in-out"],
+          // LINK #translations
+          callback: function (...args: [HTMLElement, string]) {
+            setTimeout(() => {
+              setTransitionTiming(...args);
+            }, 1000);
           },
-          {
-            callbackArgs: [],
-            // LINK #translations
-            callback: () => infoSection.scrollIntoView({ behavior: "smooth" }),
+        },
+        {
+          callbackArgs: [],
+          // LINK #translations
+          callback: () => infoSection.scrollIntoView({ behavior: "smooth" }),
+        },
+      ],
+      entryProcessed: false,
+    },
+    {
+      observedElOne: captionComponent,
+      observedElTwo: captionLandingContainer,
+      tweakOverlapValueBy: { elOne: { bottom: 0 } },
+      forModificationOnObservedOverlap: [
+        {
+          callbackArgs: [infoSectionContentGroup],
+          // LINK #translations
+          callback: function (...contentGroup: [HTMLElement]) {
+            setTimeout(() => {
+              translateUp(...contentGroup);
+            }, 2000);
           },
-        ],
-        entryProcessed: false,
-      },
-      {
-        observedElOne: captionComponent,
-        observedElTwo: captionLandingContainer,
-        tweakOverlapValueBy: { elOne: { bottom: 0 } },
-        forModificationOnObservedOverlap: [
-          {
-            callbackArgs: [infoSectionContentGroup],
-            // LINK #translations
-            callback: function (...contentGroup: [HTMLElement]) {
-              setTimeout(() => {
-                translateUp(...contentGroup);
-              }, 2000);
-            },
-          },
-        ],
-        entryProcessed: false,
-      },
-      {
-        observedElOne: captionComponent,
-        observedElTwo: infoSectionContentGroup,
-        tweakOverlapValueBy: { elOne: { bottom: 0 } },
-        forModificationOnObservedOverlap: [
-          {
-            callbackArgs: [captionComponent],
-            // LINK #animations
-            callback: changeElementPositionToRelative,
-          },
-          {
-            callbackArgs: [captionComponent],
-            // LINK #animations
-            callback: changeParentToinfoContainer,
-          },
-          {
-            callbackArgs: [captionComponent, "translate-y-[0vh]"],
-            // LINK #animations
-            callback: setTranslateDistance,
-          },
-          {
-            callbackArgs: [captionComponentBg],
-            // LINK #animations
-            callback: squish,
-          },
-          {
-            callbackArgs: ["d"],
-            // LINK #animations
-            callback: setCurrTransitionStep,
-          },
-        ],
-        entryProcessed: false,
-      },
-    ],
-  );
+        },
+      ],
+      entryProcessed: false,
+    },
+    {
+      observedElOne: captionComponent,
+      observedElTwo: infoSectionContentGroup,
+      tweakOverlapValueBy: { elOne: { bottom: 0 } },
+      forModificationOnObservedOverlap: [
+        {
+          callbackArgs: ["d"],
+          // LINK #animations
+          callback: setCurrTransitionStep,
+        },
+        {
+          callbackArgs: [captionComponent],
+          // LINK #animations
+          callback: changeElementPositionToRelative,
+        },
+        {
+          callbackArgs: [captionComponent],
+          // LINK #animations
+          callback: changeParentToinfoContainer,
+        },
+        {
+          callbackArgs: [captionComponent, "translate-y-[0vh]"],
+          // LINK #animations
+          callback: setTranslateDistance,
+        },
+        {
+          callbackArgs: [captionComponentBg],
+          // LINK #animations
+          callback: squish,
+        },
+      ],
+      entryProcessed: false,
+    },
+  ]);
+}
+
+function setupCaptionComponentForMoveToLanding() {
+  const ccBoundingRect = getBoundingClientRect(captionComponentFg);
+  changeElementPositionToFixed(captionComponent);
+  changeParentToBodyFromInfoContainer(captionComponent);
+  document.documentElement.style.setProperty("--caption-container-top", `${ccBoundingRect.top}px`);
+  document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
+  captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
+  // add in new transition properties
+  setTransitionDuration(captionComponent, "duration-[4000ms]");
+  // clear animation on caption component (if present, will interfere with translate transform)
+  clearAnimationProperties(captionComponent);
+  clearTransitionProperties(captionComponentFg);
+  clearTransitionProperties(captionComponentBg);
+
+  clearAnimationProperties(captionComponent);
+  clearAnimationProperties(captionComponentBg);
+  clearAnimationProperties(captionComponentFg);
+  setTranslateDistance(captionComponent, "translate-y-0");
+  setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[50vh]"), 20);
 }
 
 function goToLandingSection() {
@@ -565,61 +582,79 @@ function goToLandingSection() {
   decreaseHeight(infoSectionPreNavArea);
   setOpacity(infoSectionNavBar, "opacity-0");
   setOpacity(landingSectionCaret, "opacity-0");
+
   // set up caption component for move
-  // clear animation on caption component (if present, will interfere with translate transform)
-  clearAnimationProperties(captionComponent);
+  setupCaptionComponentForMoveToLanding();
+  setTranslateDistance(infoSectionContentGroup, "translate-y-[100vh]");
+
   // clear and set translate duration and distance
-  setTransitionDuration(captionComponent, "duration-[1000ms]");
-  setTransitionTiming(captionComponent, "eease-in");
   // set up landing section
 
   // scroll to landing section
-  showSection([landingSection]);
-  window.scrollTo(0, infoSection.getBoundingClientRect().top); // VERY IMPORTANT - otherwise page jumps to landing section as soon as it is painted
-  infoSection.scrollIntoView();
-  setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 20); // need to wait because otherwise it still jumps on mobile.
+  // reset info section translate distance
+
+  // clearAnimationProperties(captionComponent);
+  // changeElementOpacityToZero(landingSection);
+  setOpacity(landingSection, "opacity-0");
+  setOpacity(infoSectionNavBar, "opacity-0");
+
+  setTimeout(() => {
+    showSection([landingSection]);
+    landingSection.scrollIntoView();
+  }, 500);
+
+  // window.scrollTo(0, infoSection.getBoundingClientRect().top);
+  // infoSection.scrollIntoView();
+  // setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 100); // need to wait because otherwise it still jumps on mobile.
   function finishTransitionToLandingSection() {
     [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret, landingSectionCaret].forEach(
       (element) => clearAnimationProperties(element),
     );
     setOpacity(infoSectionCaret, "opacity-0");
-    changeElementPositionToRelative(captionComponent);
-    changeParentToLandingContainer(captionComponent);
-    setTranslateDistance(captionComponentFg, "translate-y-[0vh]");
-    setTranslateDistance(captionComponentBg, "translate-y-[0vh]");
-    setTranslateDistance(captionComponent, "translate-y-[0vh]");
-    // reset info section translate distance
-    setTranslateDistance(infoSectionContentGroup, "translate-y-[100vh]");
+    clearPlacementProperties(captionComponent);
   }
   // LINK #moveElement
-  moveElement(
-    captionComponent,
-    "-translate-y-[80vh]",
-    setTranslateDistance,
-    "up",
-    finishTransitionToLandingSection,
-    [
-      {
-        observedElOne: captionComponentBg,
-        observedElTwo: captionLandingContainer,
-        forModificationOnObservedOverlap: [
-          {
-            callbackArgs: [captionComponent, captionComponentBg, captionComponentFg],
-            callback: removeAllAnimationsFromElement,
+  // ANCHOR[id=moveElementToLandingCall]
+  moveElement(captionComponent, "up", finishTransitionToLandingSection, [
+    {
+      observedElOne: captionComponent,
+      observedElTwo: captionLandingContainer,
+      forModificationOnObservedOverlap: [
+        {
+          callbackArgs: [captionComponent, captionComponentBg, captionComponentFg],
+          callback: removeAllAnimationsFromElement,
+        },
+        {
+          callbackArgs: [captionComponent],
+          callback: changeParentToLandingContainerFromBody,
+        },
+        {
+          callbackArgs: [captionComponent],
+          callback: changeElementPositionToRelative,
+        },
+        {
+          callbackArgs: [captionComponent],
+          callback: clearPlacementProperties,
+        },
+        {
+          callbackArgs: [captionComponent, "translate-y-0"],
+          callback: setTranslateDistance,
+        },
+        {
+          callbackArgs: [landingSection, "opacity-1"],
+          callback: setOpacity,
+        },
+        {
+          callbackArgs: [...landingSectionContentGroup],
+          callback: function () {
+            const elements = [...arguments];
+            elements.forEach((element) => slideDown(element));
           },
-          {
-            callbackArgs: [...landingSectionContentGroup],
-            callback: function () {
-              const elements = [...arguments];
-              console.log(elements);
-              elements.forEach((element) => slideDown(element));
-            },
-          },
-        ],
-        entryProcessed: false,
-      },
-    ],
-  );
+        },
+      ],
+      entryProcessed: false,
+    },
+  ]);
 }
 
 function handleUserOnLandingSection(e: Event, deltaY: number) {
@@ -767,7 +802,8 @@ myTitle.addEventListener("animationend", () => {
 captionComponent.addEventListener("transitionend", () => {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
-  if (currSection === "landing" && inTransition) {
+  const currTransitionStep = getCurrTransitionStep();
+  if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
   }
 });
