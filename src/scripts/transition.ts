@@ -440,6 +440,7 @@ function goToInfoSection() {
   setTransitionTiming(captionComponent, "ease-out");
   setTransitionDuration(captionComponent, "duration-[1200ms]");
   setTranslateDistance(captionComponent, "-translate-y-[25vh]");
+
   const finishTransitionToInfoSection = () => {
     setTranslateDistance(captionComponent, "translate-y-[0vh]");
     setTranslateDistance(captionComponentFg, "-translate-y-[4vh]");
@@ -466,7 +467,16 @@ function goToInfoSection() {
           },
         },
         {
-          callbackArgs: [captionComponent, "translate-y-0"],
+          callbackArgs: [captionComponent, "ease-in-expo"],
+          // LINK #translations
+          callback: function (...args: [HTMLElement, string]) {
+            setTimeout(() => {
+              setTransitionTiming(...args);
+            }, 1000);
+          },
+        },
+        {
+          callbackArgs: [captionComponent, "-translate-y-[10vh]"],
           // LINK #translations
           callback: function (...args: [HTMLElement, string]) {
             setTimeout(() => {
@@ -474,21 +484,13 @@ function goToInfoSection() {
             }, 1000);
           },
         },
+
         {
-          callbackArgs: [captionComponent, "duration-[2000ms]"],
+          callbackArgs: [captionComponent, "duration-[3000ms]"],
           // LINK #translations
           callback: function (...args: [HTMLElement, string]) {
             setTimeout(() => {
               setTransitionDuration(...args);
-            }, 1000);
-          },
-        },
-        {
-          callbackArgs: [captionComponent, "ease-in-out"],
-          // LINK #translations
-          callback: function (...args: [HTMLElement, string]) {
-            setTimeout(() => {
-              setTransitionTiming(...args);
             }, 1000);
           },
         },
@@ -511,7 +513,7 @@ function goToInfoSection() {
           callback: function (...contentGroup: [HTMLElement]) {
             setTimeout(() => {
               translateUp(...contentGroup);
-            }, 2000);
+            }, 2500);
           },
         },
       ],
@@ -562,6 +564,7 @@ function setupCaptionComponentForMoveToLanding() {
   captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
   // add in new transition properties
   setTransitionDuration(captionComponent, "duration-[4000ms]");
+  setTransitionTiming(captionComponent, "ease-in-out");
   // clear animation on caption component (if present, will interfere with translate transform)
   clearAnimationProperties(captionComponent);
   clearTransitionProperties(captionComponentFg);

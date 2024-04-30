@@ -17,7 +17,8 @@ module.exports = {
         84: "21rem",
       },
       transitionTimingFunction: {
-        "eease-in": "cubic-bezier(1, 0, 1, 1)",
+        "in-expo": "cubic-bezier(0.7, 0, 1, 0",
+        "out-expo": "cubic-bezier(0, 1, 1, 0",
       },
       keyframes: {
         blink: {

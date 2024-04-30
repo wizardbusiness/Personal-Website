@@ -406,13 +406,13 @@
           this.tail -= 0.2;
           break;
         case "b":
-          this.tail > -200 ? (this.tail -= 1 + this.tail * 0.002) : this.tail;
+          this.tail > -75 ? (this.tail -= 1) : this.tail;
           break;
         case "c":
-          this.tail > -200 ? (this.tail -= 1.5 - this.tail * 0.001) : this.tail;
+          this.tail > -200 ? (this.tail -= 0.4 - this.tail * 0.003) : this.tail;
           break;
         case "d":
-          this.tail < 0 ? (this.tail += 3 - this.tail * 0.01) : (this.tail = 0);
+          this.tail < 0 ? (this.tail += 3.2 - this.tail * 0.01) : (this.tail = 0);
           break;
         default:
           break;
