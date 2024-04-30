@@ -11,8 +11,8 @@ const { section } = Astro.props;
   class=`
     fade-out-on-transition flex items-center
     ${ section === "landing" && "-translate-y-[25%] lg:translate-y-[5vh] animate-fade-in opacity-0" }
-    ${ section === "info" && "-translate-y-[8vh] md:-translate-y-[3vh] opacity-0 scale-75" } 
-    transition-all duration-1000 flex-col justify-end
+    ${ section === "info" && "-translate-y-[7vh] lg:-translate-y-[8vh] xl:-translate-y-[1vh] self-center opacity-0 scale-75 mx-auto mr-auto" } 
+    transition-all duration-1000 justify-self-center flex-col w-fit
     text-gray-400
   `
 >
