@@ -431,6 +431,24 @@ function setPreNavClosing(Closing: boolean) {
 // ------------------------------------------------------------------------------------------------------
 
 // WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
+
+function handleUserOnLandingSection(e: Event, deltaY: number) {
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+    disableScroll(true);
+  } else if (!inTransition && deltaY >= 0) {
+    setCurrTransitionStep("a");
+    setInTransition(true);
+    setupElementForMove(captionComponent, changeElementPositionToFixed);
+    setTranslateDistance(captionComponent, "-translate-y-[80vh]");
+    setTransitionDuration(captionComponent, "duration-[800ms]");
+    setTransitionTiming(captionComponent, "ease-out");
+    // captionComponentBg.classList.replace("bg-foggy-glass", "bg-[#656C7D]");
+    [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
+  }
+}
+
 function goToInfoSection() {
   setCurrTransitionStep("b");
   const captionComponentWidth = captionComponent.getBoundingClientRect().width;
@@ -634,23 +652,6 @@ function goToLandingSection() {
   ]);
 }
 
-function handleUserOnLandingSection(e: Event, deltaY: number) {
-  const inTransition = checkIfInTransition();
-  if (inTransition) {
-    e.preventDefault();
-    disableScroll(true);
-  } else if (!inTransition && deltaY >= 0) {
-    setCurrTransitionStep("a");
-    setInTransition(true);
-    setupElementForMove(captionComponent, changeElementPositionToFixed);
-    setTranslateDistance(captionComponent, "-translate-y-[80vh]");
-    setTransitionDuration(captionComponent, "duration-[800ms]");
-    setTransitionTiming(captionComponent, "ease-out");
-    // captionComponentBg.classList.replace("bg-foggy-glass", "bg-[#656C7D]");
-    [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
-  }
-}
-
 function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
@@ -818,7 +819,7 @@ infoSectionContentGroup.addEventListener("transitionend", () => {
 let options = {
   root: null,
   rootMargin: "0px",
-  threshold: 0.3,
+  threshold: 0.5,
 };
 
 function observeSection(callback: Function) {
