@@ -202,8 +202,9 @@
     starTrailContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
     const animateStars = () => {
-      const captionContainer = document.querySelector("#caption-container");
-      const currTransitionStep = captionContainer.getAttribute("data-transition-step") as TransitionStep;
+      const captionContainer = document.querySelector("#caption-container") || null;
+      const currTransitionStep =
+        captionContainer && (captionContainer.getAttribute("data-transition-step") as TransitionStep);
       context.clearRect(0, 0, canvas.width, canvas.height);
       starTrailContext.clearRect(0, 0, starTrailCanvas.width, starTrailCanvas.height);
       stars.forEach((star) => {
