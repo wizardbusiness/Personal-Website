@@ -578,6 +578,7 @@ function setupCaptionComponentForMoveToLanding() {
 }
 
 function goToLandingSection() {
+  setCurrTransitionStep("e");
   setInTransition(true);
   // clean up info section
   setPreNavOpen(false);
@@ -588,27 +589,23 @@ function goToLandingSection() {
 
   // set up caption component for move
   setupCaptionComponentForMoveToLanding();
+
+  // slide info section content down to simulate caption component moving away from section
   setTranslateDistance(infoSectionContentGroup, "translate-y-[100vh]");
 
-  // clear and set translate duration and distance
   // set up landing section
-
-  // scroll to landing section
-  // reset info section translate distance
-
-  // clearAnimationProperties(captionComponent);
-  // changeElementOpacityToZero(landingSection);
-  setOpacity(landingSection, "opacity-0");
-  setOpacity(infoSectionNavBar, "opacity-0");
-
+  // use delay to keep info section in view during info section content transform
   setTimeout(() => {
     showSection([landingSection]);
     landingSection.scrollIntoView();
   }, 500);
 
-  // window.scrollTo(0, infoSection.getBoundingClientRect().top);
-  // infoSection.scrollIntoView();
-  // setTimeout(() => landingSection.scrollIntoView({ block: "start", behavior: "smooth" }), 100); // need to wait because otherwise it still jumps on mobile.
+  // scroll to landing section
+  // reset info section translate distance
+
+  setOpacity(landingSection, "opacity-0");
+  setOpacity(infoSectionNavBar, "opacity-0");
+
   function finishTransitionToLandingSection() {
     [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret, landingSectionCaret].forEach(
       (element) => clearAnimationProperties(element),
@@ -623,6 +620,10 @@ function goToLandingSection() {
       observedElOne: captionComponent,
       observedElTwo: captionLandingContainer,
       forModificationOnObservedOverlap: [
+        {
+          callbackArgs: ["f"],
+          callback: setCurrTransitionStep,
+        },
         {
           callbackArgs: [captionComponent, captionComponentBg, captionComponentFg],
           callback: removeAllAnimationsFromElement,
