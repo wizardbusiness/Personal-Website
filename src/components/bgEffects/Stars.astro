@@ -265,7 +265,7 @@
     public bottom: number;
     public radiusModifiers: number[];
     public radiuses: number[];
-    public shapeDegreeMods: number | string | (() => number);
+    public shapeDegreeMods: number | string;
     public animationStart: number;
     public prevFrameTStampMs: number;
     public trail: {
@@ -301,7 +301,7 @@
       this.dim = false;
       this.radiusModifiers = [3, 5, 3, 5, 3];
       this.degreeOffset = degreeOffset;
-      this.shapeDegreeMods = randomElFromArray([36, 45]);
+      this.shapeDegreeMods = randomElFromArray([36, 45]) as number;
       this.tail = 0;
       this.incrementTailBrightness = true;
       this.tailBrightness = 0.5;
