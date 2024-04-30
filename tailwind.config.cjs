@@ -4,8 +4,8 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-        xl: "2000px",
-        "2xl": "3500px",
+        xl: "2160px",
+        "2xl": "3000px",
       },
       colors: {
         "foggy-glass": "#E5E7EB50",
