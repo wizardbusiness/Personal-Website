@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useRef,
-  type RefObject,
-  useEffect,
-  type FC,
-  type ReactElement,
-} from "react";
+import React, { useState, useRef, type RefObject, useEffect, type FC, type ReactElement } from "react";
 import OakTree from "./treeSvgComponents/OakTree";
 import OakTree2 from "./treeSvgComponents/OakTree2";
 import Spruce from "./treeSvgComponents/Spruce";
@@ -45,12 +38,8 @@ const CityPark = (props) => {
       const treeProps: treeProps = {
         position: position,
         height: 25,
-        scaleX:
-          unfilledWidth - position < 20 ? 0.9 : randomElFromArray([-1, 1]),
-        scaleY:
-          unfilledWidth - position < 30
-            ? 1
-            : randomDecNumFromInterval(0.8, 1.3),
+        scaleX: unfilledWidth - position < 20 ? 0.9 : randomElFromArray([-1, 1]),
+        scaleY: unfilledWidth - position < 30 ? 1 : randomDecNumFromInterval(0.8, 1.3),
         foliageTranslate: randomIntFromInterval(10, 20),
         offset: randomIntFromInterval(10, 15),
         color: randomElFromArray(colors),
@@ -72,11 +61,7 @@ const CityPark = (props) => {
 
   return (
     <div className="flex w-1/3 justify-center">
-      <div
-        data-park
-        ref={widthRef}
-        className="relative h-full w-4/5 lg:w-11/12"
-      >
+      <div data-park ref={widthRef} className="relative h-full w-4/5 lg:w-11/12">
         {trees}
       </div>
     </div>
