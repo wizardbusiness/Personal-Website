@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-  useRef,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import React, { useState, useMemo, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
@@ -23,6 +16,7 @@ const Building = ({ delay, height, width }) => {
 
   useEffect(() => {
     setRender(true);
+
     const delayBuild = setTimeout(() => {
       setBuild(true);
     }, 375);
@@ -47,11 +41,7 @@ const Building = ({ delay, height, width }) => {
     return targetIndex;
   };
   // customizable node values
-  const setNodeVals = (
-    targetIndex: number,
-    nodeValuePairs: number[][],
-    probability: number = 0.3,
-  ) => {
+  const setNodeVals = (targetIndex: number, nodeValuePairs: number[][], probability: number = 0.3) => {
     // set the probability that a modification will take place. currently 30%
     const modCheckPass = Math.random() <= probability ? true : false;
     // if check doesn't pass dont modify any node values
@@ -72,10 +62,7 @@ const Building = ({ delay, height, width }) => {
   };
   // memoize all to avoid values changing in non deterministic way during rerendering due to random values.
   const targetIndex = useMemo(() => chooseNodeValues(initialNodeValPairs), []);
-  const nodeVals = useMemo(
-    () => setNodeVals(targetIndex, initialNodeValPairs, 0.4),
-    [],
-  );
+  const nodeVals = useMemo(() => setNodeVals(targetIndex, initialNodeValPairs, 0.4), []);
   const shapeStyles = {
     height: `${height}px`,
     width: `${width}px`,
@@ -133,9 +120,7 @@ const Windows = ({ shapeH, shapeW, delay }) => {
 
 const Window = ({ showWindow }) => {
   const [lightOn, setLightOn] = useState(showWindow);
-  const [frequency, setFrequency] = useState(
-    randomIntFromInterval(3000, 150000),
-  );
+  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
 
   useEffect(() => {
     const cycleLight = setInterval(() => {
@@ -146,11 +131,7 @@ const Window = ({ showWindow }) => {
     return () => clearInterval(cycleLight);
   }, [lightOn, frequency]);
 
-  return (
-    <div
-      className={`window ${lightOn && "show"} h-[3px] w-[3px] bg-gray-100`}
-    />
-  );
+  return <div className={`window ${lightOn && "show"} h-[3px] w-[3px] bg-gray-100`} />;
 };
 
 type CityChunkProps = {
@@ -163,8 +144,7 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
     const calcHeightMod = (index: number, min: number, max: number) => {
       const noise = randomIntFromInterval(-10, 10);
       const height = 10 * index + 30 * Math.cos((20 * i) ** 1 / 2) + noise;
-      const heightClamp =
-        height > max ? randomIntFromInterval(10, height / 2) : 0;
+      const heightClamp = height > max ? randomIntFromInterval(10, height / 2) : 0;
       return height < min ? min : height - heightClamp;
     };
 
@@ -174,14 +154,7 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
     while (remainingChunkSpace > 0) {
       const structureWidth: number = randomIntFromInterval(15, 25);
       const structureHeight: number = calcHeightMod(i, 20, 60);
-      structs.push(
-        <Building
-          key={`struct${i}`}
-          width={structureWidth}
-          height={structureHeight}
-          delay={i}
-        />,
-      );
+      structs.push(<Building key={`struct${i}`} width={structureWidth} height={structureHeight} delay={i} />);
       remainingChunkSpace -= structureWidth;
       i++;
     }
@@ -192,68 +165,50 @@ const CityChunk = ({ direction, cityChunkWidth }: CityChunkProps) => {
 
   const chunk = renderStructures(direction);
 
-  return (
-    <div className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>
-      {chunk}
-    </div>
-  );
+  return <div className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>{chunk}</div>;
 };
 
 const Skyline = () => {
   const [forestWidth, setForestWidth] = useState<number>(0);
+  const [skylineWidth, setSkylineWidth] = useState("");
   const [cityWidth, setCityWidth] = useState<number>(0);
   const [delayEffectMs, setDelayEffectMs] = useState<number>(0);
   const forestWidthRef = useRef<HTMLDivElement>(null);
   const cityWidthRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const forestWidth = Math.floor(
-      forestWidthRef.current?.getBoundingClientRect().width,
-    );
+    const forestWidth = Math.floor(forestWidthRef.current?.getBoundingClientRect().width);
     setForestWidth(forestWidth);
-
-    const cityWidth = Math.floor(
-      cityWidthRef.current?.getBoundingClientRect().width,
-    );
+    const cityWidth = Math.floor(cityWidthRef.current?.getBoundingClientRect().width);
     setCityWidth(cityWidth);
   }, [forestWidthRef, cityWidth]);
+
+  useEffect(() => {
+    const handleSkylineWidthChange = () => {
+      setSkylineWidth(
+        window.getComputedStyle(document.documentElement).getPropertyValue("--info-cont-width"),
+      );
+    };
+    const infoContWidthChangeEvent = new Event("widthchange");
+    console.log(skylineWidth);
+  }, [skylineWidth]);
+
   return (
     <div
       data-effects-container
       onTransitionEnd={(e) => e.stopPropagation()}
-      className="absolute bottom-1 flex h-32 w-[90vw] items-end justify-center lg:w-[70vw]"
+      className="absolute bottom-0 flex h-32 w-[var(--info-cont-width)] items-end justify-center"
     >
-      <div
-        data-forest
-        ref={forestWidthRef}
-        className="absolute left-0 flex h-full w-1/4 items-end"
-      >
-        <Forest
-          chunkWidth={forestWidth}
-          direction={"left"}
-          setDelayEffectMs={setDelayEffectMs}
-        />
+      <div data-forest ref={forestWidthRef} className="absolute bottom-0 left-0 flex h-full w-1/4 items-end">
+        <Forest chunkWidth={forestWidth} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
       </div>
       <div ref={cityWidthRef} className="absolute flex w-1/2">
-        <CityChunk
-          direction="left"
-          cityChunkWidth={Math.floor(cityWidth / 4)}
-        />
+        <CityChunk direction="left" cityChunkWidth={Math.floor(cityWidth / 4)} />
         <CityPark delayEffectMs={delayEffectMs} />
-        <CityChunk
-          direction="right"
-          cityChunkWidth={Math.floor(cityWidth / 4)}
-        />
+        <CityChunk direction="right" cityChunkWidth={Math.floor(cityWidth / 4)} />
       </div>
-      <div
-        data-forest
-        className="absolute -right-2 flex h-full w-1/4 items-end"
-      >
-        <Forest
-          setDelayEffectMs={setDelayEffectMs}
-          chunkWidth={forestWidth}
-          direction={"right"}
-        />
+      <div data-forest className="absolute -right-2 flex h-full w-1/4 items-end">
+        <Forest setDelayEffectMs={setDelayEffectMs} chunkWidth={forestWidth} direction={"right"} />
       </div>
     </div>
   );

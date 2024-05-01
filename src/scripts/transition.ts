@@ -180,6 +180,8 @@ const clearAnimationProperties = clearPropertiesAndSetNew(["animate"]);
 const setTranslateDistance = clearPropertiesAndSetNew(["translate"]);
 const setOpacity = clearPropertiesAndSetNew(["opacity"]);
 const setScale = clearPropertiesAndSetNew(["scale"]);
+const setPosition = clearPropertiesAndSetNew(["relative", "fixed", "absolute"]);
+const setBottom = clearPropertiesAndSetNew(["bottom"]);
 
 const clearPlacementProperties = clearPropertiesAndSetNew(["left", "right", "top", "bottom"]);
 
@@ -451,10 +453,6 @@ function handleUserOnLandingSection(e: Event, deltaY: number) {
 
 function goToInfoSection() {
   setCurrTransitionStep("b");
-  const captionComponentWidth = captionComponent.getBoundingClientRect().width;
-  const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
-  document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
-  document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
   setTransitionTiming(captionComponent, "ease-in-out-polar");
   setTransitionDuration(captionComponent, "duration-[3500ms]");
   setTranslateDistance(captionComponent, "translate-y-[0vh]");
@@ -520,9 +518,14 @@ function goToInfoSection() {
           callback: setCurrTransitionStep,
         },
         {
-          callbackArgs: [captionComponent],
+          callbackArgs: [captionComponent, "absolute"],
           // LINK #animations
-          callback: changeElementPositionToRelative,
+          callback: setPosition,
+        },
+        {
+          callbackArgs: [captionComponent, "-bottom-1"],
+          // LINK #animations
+          callback: setBottom,
         },
         {
           callbackArgs: [captionComponent],
@@ -734,6 +737,12 @@ const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLand
 
 // start with scroll disabled
 disableScroll(true);
+
+// set css variables in advance - this lets them also be accessible to the skyline effect, which is a react component.
+const captionComponentWidth = captionComponent.getBoundingClientRect().width;
+const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
+document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
+document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
 
 // EVENT LISTENERS
 
