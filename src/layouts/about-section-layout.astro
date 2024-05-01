@@ -2,7 +2,10 @@
 import "../styles/tailwind.css";
 ---
 
-<section id="info" class="flex h-fit w-full flex-col items-center pb-0 lg:pt-4 2xl:h-screen">
+<section
+  id="info"
+  class="flex h-fit w-full flex-col items-center pb-0 lg:pt-4 2xl:min-h-screen 2xl:p-8 2xl:pb-0 2xl:pt-4"
+>
   <header class="h-[10vh] w-full">
     <slot name="nav" />
     <slot name="caret" />
@@ -22,7 +25,7 @@ import "../styles/tailwind.css";
     <div class="caption-info-container flex h-[12vh] flex-col items-center">
       <slot name="caption-container" />
     </div>
-    <section class="h-full bg-blue-smoke p-8 shadow-xl">
+    <section class="h-full bg-blue-smoke p-8 shadow-xl 2xl:p-24">
       <slot name="about" />
       <div class="flex gap-2">
         <div class="w-full">

@@ -45,13 +45,13 @@ const TechList = ({ categories }: TechList) => {
 
   return (
     <div data-tech-list onTransitionEnd={(e) => e.stopPropagation()} className="pl-2 pt-6">
-      <button data-open-all={openAll} onClick={handleSetOpenAll} className="lg:text-4xl">
+      <button data-open-all={openAll} onClick={handleSetOpenAll} className="">
         <AccordionBtnIcon height={20} width={20} active={openAll} />
       </button>
       <Accordion.Root
         value={openItems}
         onValueChange={setOpenItems}
-        className="text-xl leading-relaxed lg:text-2xl"
+        className="text-xl leading-relaxed lg:text-2xl 2xl:text-5xl"
         type="multiple"
       >
         {list}
@@ -106,13 +106,13 @@ const AccordionedListItems = ({ items, category }: AccordionedListItemsProps) =>
     return (
       <div
         key={`item${index}`}
-        className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-200 ${
+        className={`flex items-center border-l-2 border-gray-300 text-lg text-gray-200 2xl:text-5xl ${
           lastItem
             ? "before:absolute before:h-4 before:w-2 before:-translate-x-1 before:translate-y-[57%] before:bg-blue-smoke"
             : ""
         } translate-x-4`}
       >
-        <div id={`${category ? "last-sect" : null}`} className="h-0.5 w-8 bg-gray-300" />
+        <div id={`${category ? "last-sect" : null}`} className="h-0.5 w-8 bg-gray-300 2xl:text-5xl" />
         &nbsp;{item}
       </div>
     );
