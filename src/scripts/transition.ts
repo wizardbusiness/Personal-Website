@@ -158,7 +158,20 @@ const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]")
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 // ******************************************************************************************************
 
-// type clearPropertiesAndSetNewReturnArgs = [HTMLElement, freshClasses?: [...string[]]];
+function clearPropertyFromEachElement(
+  elements: NodeListOf<HTMLElement>,
+  cssClass: string,
+  action: "remove" | "add",
+) {
+  elements.forEach((element) => {
+    if (action === "add") {
+      element.classList.add(cssClass);
+    } else if (action === "remove") {
+      element.classList.remove(cssClass);
+    }
+  });
+}
+
 function clearPropertiesAndSetNew(classRootStrs: string[]) {
   return (element: HTMLElement, freshClass?: string) => {
     classRootStrs.forEach((classRootStr) => {
@@ -570,6 +583,56 @@ function setupCaptionComponentForMoveToLanding() {
   setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[50vh]"), 20);
 }
 
+function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
+  const preNavOpen = checkIfPreNavOpen();
+  const preNavOpening = checkIfPreNavOpening();
+  const preNavClosing = checkIfPreNavClosing();
+  const inTransition = checkIfInTransition();
+
+  // clear float animation from captionComponent, but not animations on child elements
+  if (preNavClosing) {
+    clearAnimationProperties(captionComponent);
+  }
+  if (!preNavOpen && deltaY < 0) {
+    setOpacity(infoSectionCaret, "opacity-75");
+  } else if (!preNavOpen && deltaY > 0) {
+    setOpacity(infoSectionCaret, "opacity-0");
+    setScale(infoSectionCaret, "scale-75");
+  }
+
+  if (preNavOpening || preNavClosing || inTransition) {
+    e.preventDefault();
+  } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
+    e.preventDefault();
+    setPreNavOpening(true);
+    increaseHeight(infoSectionPreNavArea);
+    setOpacity(infoSectionNavBar, "opacity-0");
+    setScale(infoSectionCaret, "scale-100");
+    playAnimationsInSequence([
+      [squelch, captionComponentBg],
+      [floatUp, captionComponentBg],
+      [floatUpMore, captionComponent],
+      [floatInPlace, captionComponent],
+    ]);
+  } else if ((preNavOpen && deltaY > 0) || (preNavOpening && deltaY > 0)) {
+    e.preventDefault();
+    setPreNavClosing(true);
+    setPreNavOpening(false);
+    setOpacity(infoSectionCaret, "opacity-0");
+    setScale(infoSectionCaret, "scale-75");
+    setOpacity(infoSectionNavBar, "opacity-1");
+    decreaseHeight(infoSectionPreNavArea);
+    clearAnimationProperties(captionComponent);
+    playAnimationsInSequence([
+      [bringDown, captionComponentBg],
+      [squish, captionComponentBg],
+    ]);
+    squish(captionComponentBg);
+  } else if (preNavOpen && deltaY <= 25) {
+    goToLandingSection();
+  }
+}
+
 function goToLandingSection() {
   setCurrTransitionStep("e");
   setInTransition(true);
@@ -653,56 +716,6 @@ function goToLandingSection() {
       entryProcessed: false,
     },
   ]);
-}
-
-function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
-  const preNavOpen = checkIfPreNavOpen();
-  const preNavOpening = checkIfPreNavOpening();
-  const preNavClosing = checkIfPreNavClosing();
-  const inTransition = checkIfInTransition();
-
-  // clear float animation from captionComponent, but not animations on child elements
-  if (preNavClosing) {
-    clearAnimationProperties(captionComponent);
-  }
-  if (!preNavOpen && deltaY < 0) {
-    setOpacity(infoSectionCaret, "opacity-75");
-  } else if (!preNavOpen && deltaY > 0) {
-    setOpacity(infoSectionCaret, "opacity-0");
-    setScale(infoSectionCaret, "scale-75");
-  }
-
-  if (preNavOpening || preNavClosing || inTransition) {
-    e.preventDefault();
-  } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
-    e.preventDefault();
-    setPreNavOpening(true);
-    increaseHeight(infoSectionPreNavArea);
-    setOpacity(infoSectionNavBar, "opacity-0");
-    setScale(infoSectionCaret, "scale-100");
-    playAnimationsInSequence([
-      [squelch, captionComponentBg],
-      [floatUp, captionComponentBg],
-      [floatUpMore, captionComponent],
-      [floatInPlace, captionComponent],
-    ]);
-  } else if ((preNavOpen && deltaY > 0) || (preNavOpening && deltaY > 0)) {
-    e.preventDefault();
-    setPreNavClosing(true);
-    setPreNavOpening(false);
-    setOpacity(infoSectionCaret, "opacity-0");
-    setScale(infoSectionCaret, "scale-75");
-    setOpacity(infoSectionNavBar, "opacity-1");
-    decreaseHeight(infoSectionPreNavArea);
-    clearAnimationProperties(captionComponent);
-    playAnimationsInSequence([
-      [bringDown, captionComponentBg],
-      [squish, captionComponentBg],
-    ]);
-    squish(captionComponentBg);
-  } else if (preNavOpen && deltaY <= 25) {
-    goToLandingSection();
-  }
 }
 
 function handleSwipe(section: HTMLElement, callback) {
@@ -792,6 +805,16 @@ captionComponent.addEventListener("transitionend", () => {
   const currTransitionStep = getCurrTransitionStep();
   if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
+  }
+});
+
+captionComponentBg.addEventListener("animationstart", () => {
+  const currSection = getCurrSection();
+  const buildings: NodeListOf<HTMLElement> = document.querySelectorAll(".structure");
+  if (captionComponentBg.classList.contains("animate-squish-down-lg")) {
+    clearPropertyFromEachElement(buildings, "build", "add");
+  } else if (captionComponentBg.classList.contains("animate-squelch")) {
+    clearPropertyFromEachElement(buildings, "build", "remove");
   }
 });
 
