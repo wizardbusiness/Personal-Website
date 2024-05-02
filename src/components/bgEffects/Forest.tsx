@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  randomIntFromInterval,
-  randomDecNumFromInterval,
-} from "../../scripts/randomFromInterval";
+import { randomIntFromInterval, randomDecNumFromInterval } from "../../scripts/randomFromInterval";
 import FirTree from "./treeSvgComponents/FirTree";
 
 const Forest = ({ chunkWidth, direction, setDelayEffectMs }) => {
@@ -32,9 +29,7 @@ const Forest = ({ chunkWidth, direction, setDelayEffectMs }) => {
         );
       }
       setDelayEffectMs(treeOffset);
-      direction === "left"
-        ? setForestChunk(chunk.sort((a, b) => (b < a ? 1 : -1)))
-        : setForestChunk(chunk);
+      direction === "left" ? setForestChunk(chunk.sort((a, b) => (b < a ? 1 : -1))) : setForestChunk(chunk);
     };
     createForestChunk();
   }, [chunkWidth]);
