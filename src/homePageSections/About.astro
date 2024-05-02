@@ -12,6 +12,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 
 <AboutSectionLayout data-info-page slot="info-section">
   <Nav slot="nav" location="info-section" />
+  <Skyline slot="skyline" client:load />
   <ScrollCaret slot="caret" section="info" />
   <Bio slot="about" />
   <Portfolio slot="portfolio" />
