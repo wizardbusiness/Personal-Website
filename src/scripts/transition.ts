@@ -1,8 +1,10 @@
 import { slide } from "astro/transitions";
 import CaptionContainer from "../components/CaptionContainer.astro";
 import disableScroll from "./disableScroll";
+import { renderSkyline } from "../store";
 
 // elements
+const root: HTMLElement = document.querySelector(":root");
 const body: HTMLElement = document.querySelector("body");
 const main: HTMLElement = document.querySelector("main");
 const landingSection: HTMLElement = document.querySelector("#landing");
@@ -555,6 +557,11 @@ function goToInfoSection() {
           // LINK #animations
           callback: squish,
         },
+        {
+          callbackArgs: [],
+          // LINK #animations
+          callback: () => renderSkyline.set(true),
+        },
       ],
       entryProcessed: false,
     },
@@ -605,6 +612,7 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
     e.preventDefault();
     setPreNavOpening(true);
+    renderSkyline.set(false);
     increaseHeight(infoSectionPreNavArea);
     setOpacity(infoSectionNavBar, "opacity-0");
     setScale(infoSectionCaret, "scale-100");
@@ -618,6 +626,7 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     e.preventDefault();
     setPreNavClosing(true);
     setPreNavOpening(false);
+    renderSkyline.set(true);
     setOpacity(infoSectionCaret, "opacity-0");
     setScale(infoSectionCaret, "scale-75");
     setOpacity(infoSectionNavBar, "opacity-1");
@@ -754,8 +763,14 @@ disableScroll(true);
 // set css variables in advance - this lets them also be accessible to the skyline effect, which is a react component.
 const captionComponentWidth = captionComponent.getBoundingClientRect().width;
 const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
+
 document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
 document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
+// have to do this again to get mutation observer to fire for some unknown reason
+setTimeout(
+  () => document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`),
+  20,
+);
 
 // EVENT LISTENERS
 
@@ -805,16 +820,6 @@ captionComponent.addEventListener("transitionend", () => {
   const currTransitionStep = getCurrTransitionStep();
   if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
-  }
-});
-
-captionComponentBg.addEventListener("animationstart", () => {
-  const currSection = getCurrSection();
-  const buildings: NodeListOf<HTMLElement> = document.querySelectorAll(".structure");
-  if (captionComponentBg.classList.contains("animate-squish-down-lg")) {
-    clearPropertyFromEachElement(buildings, "build", "add");
-  } else if (captionComponentBg.classList.contains("animate-squelch")) {
-    clearPropertyFromEachElement(buildings, "build", "remove");
   }
 });
 
