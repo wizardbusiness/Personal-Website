@@ -5,6 +5,28 @@ import Forest from "./Forest";
 import CityPark from "./CityPark";
 import "../../styles/tailwind.css";
 
+const Window = ({ showWindow }) => {
+  const [lightOn, setLightOn] = useState(showWindow);
+  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
+
+  useEffect(() => {
+    const cycleLight = setInterval(() => {
+      setFrequency(randomIntFromInterval(10000, 150000));
+      setLightOn(!lightOn);
+    }, frequency);
+
+    return () => clearInterval(cycleLight);
+  }, [lightOn, frequency]);
+
+  return (
+    <div
+      className={`window ${
+        lightOn && "show"
+      } h-[3px] w-[3px] bg-gray-100 shadow-[0px_0px_2px_2px_rgba(232,232,232,0.3)]`}
+    />
+  );
+};
+
 const Windows = ({ shapeH, shapeW, delay }) => {
   const rows = Math.floor(shapeH / 7.5);
   const columns = Math.floor(shapeW / 7.5);
@@ -33,22 +55,6 @@ const Windows = ({ shapeH, shapeW, delay }) => {
     i++;
   }
   return windows.sort((a, b) => (a < b ? 1 : -1));
-};
-
-const Window = ({ showWindow }) => {
-  const [lightOn, setLightOn] = useState(showWindow);
-  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
-
-  useEffect(() => {
-    const cycleLight = setInterval(() => {
-      setFrequency(randomIntFromInterval(10000, 150000));
-      setLightOn(!lightOn);
-    }, frequency);
-
-    return () => clearInterval(cycleLight);
-  }, [lightOn, frequency]);
-
-  return <div className={`window ${lightOn && "show"} h-[3px] w-[3px] bg-gray-100`} />;
 };
 
 // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
@@ -102,6 +108,7 @@ const Building = ({ delay, height, width }) => {
   // }, []);
 
   // memoize all to avoid values changing in non deterministic way during rerendering due to random values.
+  
   const targetIndex = chooseNodeValues(initialNodeValPairs);
   const nodeVals = setNodeVals(targetIndex, initialNodeValPairs, 0.4);
   const shapeStyles = {
