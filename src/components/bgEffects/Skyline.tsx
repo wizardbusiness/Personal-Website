@@ -1,10 +1,20 @@
-import React, { useState, useMemo, useEffect, useRef, type Dispatch, type SetStateAction } from "react";
-import useRootMutationObserver from "../../scripts/hooks/useMutationObserver";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+  useCallback,
+} from "react";
 import useGetDataFromDataAttribute from "../../scripts/hooks/useGetDataFromDataAttribute";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
+import { useStore } from "@nanostores/react";
+import { renderSkyline } from "../../store";
 import "../../styles/tailwind.css";
+import { render } from "react-dom";
 
 const Window = ({ showWindow }) => {
   const [lightOn, setLightOn] = useState(showWindow);
@@ -58,20 +68,23 @@ const Windows = ({ shapeH, shapeW, delay }) => {
   return windows.sort((a, b) => (a < b ? 1 : -1));
 };
 
-const Building = ({ height, width, nodeVals, transitionDelay }) => {
-  // const [build, setBuild] = useState(false);
+const Building = ({ height, width, nodeVals, transitionDelay, renderSkyline }) => {
+  const [build, setBuild] = useState(false);
   const [, setTransitionEnd] = useState(false);
   const shapeRef = useRef(null);
 
-  const handleTransitionEnd = () => {
-    setTransitionEnd(true);
-  };
+  useEffect(() => {
+    const setTimeoutID = setTimeout(
+      () => (renderSkyline ? setBuild(true) : setBuild(false)),
+      transitionDelay,
+    );
+    return () => clearTimeout(setTimeoutID);
+  }, [renderSkyline, build]);
 
   const shapeStyles = {
     height: `${height}px`,
     width: `${width}px`,
     clipPath: `polygon(${nodeVals[0][0]}% 0, ${nodeVals[2][0]}% 0, 100% ${nodeVals[2][1]}%, 100% 100%, 0 100%, 0 ${nodeVals[0][1]}%)`,
-    transitionDelay: `${transitionDelay}ms`,
   };
   return (
     <>
@@ -79,10 +92,11 @@ const Building = ({ height, width, nodeVals, transitionDelay }) => {
         ref={shapeRef}
         data-effect
         style={shapeStyles}
-        className={`structure flex origin-bottom flex-wrap place-content-evenly
+        className={`${
+          build ? "scale-100" : "scale-0"
+        } structure flex origin-bottom flex-wrap place-content-evenly
           gap-[2px] border border-slate-600 bg-slate-600 
           transition-transform duration-[200ms]`}
-        onTransitionEnd={handleTransitionEnd}
       >
         <Windows shapeH={height} shapeW={width} delay={transitionDelay} />
       </div>
@@ -93,14 +107,17 @@ const Building = ({ height, width, nodeVals, transitionDelay }) => {
 type CityChunkProps = {
   direction: "left" | "right";
   chunkData: any;
+  renderSkyline: boolean;
 };
 
-const CityChunk = ({ direction, chunkData }: CityChunkProps) => {
+const CityChunk = ({ direction, chunkData, renderSkyline }: CityChunkProps) => {
   const sortedChunkData =
     direction === "left"
       ? chunkData.sort((a, b) => (a.transitionDelay < b.transitionDelay ? 1 : -1))
       : chunkData.sort((a, b) => (a.transitionDelay < b.transitionDelay ? -1 : 1));
 
+  const transitionDelays = sortedChunkData.map((obj) => obj.transitionDelay);
+  const sortedTransitionDelays = renderSkyline ? transitionDelays : transitionDelays.reverse();
   const cityChunk = sortedChunkData.map((obj, i) => {
     const { nodeVals, width, height, transitionDelay } = obj;
     return (
@@ -109,7 +126,8 @@ const CityChunk = ({ direction, chunkData }: CityChunkProps) => {
         nodeVals={nodeVals}
         width={width}
         height={height}
-        transitionDelay={transitionDelay}
+        transitionDelay={sortedTransitionDelays[i]}
+        renderSkyline={renderSkyline}
       />
     );
   });
@@ -129,7 +147,6 @@ type cityData = {
 };
 
 const Skyline = () => {
-  const [renderSkyline, setRenderSkyline] = useState(true);
   const [forestWidth, setForestWidth] = useState<number>(0);
   const [skylineWidth, setSkylineWidth] = useState("");
   const [cityWidth, setCityWidth] = useState<number>(0);
@@ -139,11 +156,12 @@ const Skyline = () => {
   const cityWidthRef = useRef<HTMLDivElement>(null);
 
   const cityChunks = useGetDataFromDataAttribute("data-skyline-data");
-  console.log(cityChunks);
+
   useEffect(() => {
     setCityData(cityChunks);
   }, [cityChunks]);
 
+  const $renderSkyline = useStore(renderSkyline);
   return (
     <div
       data-effects-container
@@ -154,9 +172,9 @@ const Skyline = () => {
         <Forest chunkWidth={forestWidth} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
       </div>
       <div ref={cityWidthRef} className="absolute flex h-full w-1/2">
-        <CityChunk direction="left" chunkData={cityData.skylineLeft} />
+        <CityChunk direction="left" chunkData={cityData.skylineLeft} renderSkyline={$renderSkyline} />
         <CityPark delayEffectMs={delayEffectMs} />
-        <CityChunk direction="right" chunkData={cityData.skylineRight} />
+        <CityChunk direction="right" chunkData={cityData.skylineRight} renderSkyline={$renderSkyline} />
       </div>
       <div data-forest className="absolute -right-2 flex h-full w-1/4 items-end">
         <Forest chunkWidth={forestWidth} direction={"right"} setDelayEffectMs={setDelayEffectMs} />
