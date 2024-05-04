@@ -2,16 +2,20 @@
   id="caption-container"
   data-transitioning="false"
   data-transition-step=""
-  class="relative flex h-[12vh] w-[80vw] translate-y-[0vh] items-center justify-center transition-transform ease-in will-change-transform sm:w-[18rem] md:w-[20rem] lg:h-[14vh] lg:w-[27rem] xl:w-[31rem] 2xl:w-[60rem]"
+  class=`relative flex h-[12vh] w-[80vw] translate-y-[0vh]
+    items-center justify-center transition-transform ease-in
+    will-change-transform sm:w-[18rem] md:w-[20rem]
+    xl:h-[14vh] lg:w-[27rem] xl:w-[31rem]
+    2xl:w-[60rem]`
 >
   <div
     id="caption-container-bg"
-    class="max-width-[5rem] absolute bottom-0 z-50 h-[12vh] w-full rounded-xl bg-foggy-glass will-change-transform"
+    class="max-width-[5rem] absolute bottom-0 z-50 h-[12vh] w-full rounded-xl bg-foggy-glass will-change-transform xl:h-[14vh]"
   >
   </div>
   <div
     id="caption-container-fg"
-    class="absolute bottom-0 flex h-[12vh] w-full flex-nowrap justify-center will-change-transform"
+    class="absolute bottom-0 flex h-[12vh] w-full flex-nowrap justify-center will-change-transform xl:h-[14vh]"
   >
     <slot />
   </div>
