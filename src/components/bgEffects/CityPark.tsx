@@ -9,10 +9,13 @@ import {
   randomDecNumFromInterval,
   randomElFromArray,
 } from "../../scripts/randomFromInterval";
+import { useStore } from "@nanostores/react";
+import { cityParkState } from "../../store";
 
 type treeProps = {
-  position: number;
+  width: number;
   height: number;
+  position: number;
   scaleX: number;
   scaleY: number;
   foliageTranslate: number;
@@ -22,48 +25,19 @@ type treeProps = {
   flipTrunk: number;
 };
 
-const CityPark = (props) => {
-  const widthRef: RefObject<HTMLDivElement> = useRef(null);
-  const handleTreeFill = () => {
-    const trees = [];
-    const width = widthRef.current?.getBoundingClientRect().width;
-    if (width === undefined) return;
-    const treeComponents = [PineTree];
-
-    const colors = ["#39455e", "#2B3C56"];
-    let unfilledWidth = width;
-    let i = 0;
-    let position = 0;
-    while (unfilledWidth > position + 15) {
-      const treeProps: treeProps = {
-        position: position,
-        height: 25,
-        scaleX: unfilledWidth - position < 20 ? 0.9 : randomElFromArray([-1, 1]),
-        scaleY: unfilledWidth - position < 30 ? 1 : randomDecNumFromInterval(0.8, 1.3),
-        foliageTranslate: randomIntFromInterval(10, 20),
-        offset: randomIntFromInterval(10, 15),
-        color: randomElFromArray(colors),
-        zIndex: randomElFromArray([1, 2, 3, 4, 5]),
-        flipTrunk: randomElFromArray([-1, 1]),
-        randomDelay: randomIntFromInterval(1000, 1220) + props.delayEffectMs,
-        ...props,
-      };
-
-      const Tree = randomElFromArray(treeComponents) as FC;
-      trees.push(<Tree key={`tree${i}`} {...treeProps} />);
-      position += 30 - treeProps.offset;
-      i++;
-    }
-    return trees;
-  };
-
-  const trees = handleTreeFill();
-
+const CityPark = ({ delayEffectMs, cityParkState, renderSkyline }) => {
   return (
-    <div className="flex w-1/3 justify-center">
-      <div data-park ref={widthRef} className="relative h-full w-4/5 lg:w-11/12">
-        {trees}
-      </div>
+    <div id="city-park" className="ml-2 mr-2 flex h-[40px] w-1/3">
+      {cityParkState.map((treeData, index) => {
+        return (
+          <PineTree
+            {...treeData}
+            delayEffectMs={delayEffectMs}
+            renderSkyline={renderSkyline}
+            key={`tree-${index}`}
+          />
+        );
+      })}
     </div>
   );
 };
