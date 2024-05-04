@@ -263,7 +263,7 @@ const changeParentToBodyFromInfoContainer = changeElementParent(captionInfoConta
 // ******************************************************************************************************
 
 function changeElementPositionType(
-  oldPositionType: "fixed" | "relative",
+  oldPositionType: "absolute" | "relative",
   newPositionType: "fixed" | "relative",
 ) {
   return (element: HTMLElement) => {
@@ -272,7 +272,7 @@ function changeElementPositionType(
   };
 }
 
-const changeElementPositionToRelative = changeElementPositionType("fixed", "relative");
+const changeElementPositionToRelative = changeElementPositionType("absolute", "relative");
 const changeElementPositionToFixed = changeElementPositionType("relative", "fixed");
 
 // ******************************************************************************************************
