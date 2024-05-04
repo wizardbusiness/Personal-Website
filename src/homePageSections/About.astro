@@ -21,7 +21,12 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
   <IllHandleTheRest slot="flav-text-b" />
 </AboutSectionLayout>
 <script>
-  import { randomIntFromInterval } from "../scripts/randomFromInterval";
+  import {
+    randomIntFromInterval,
+    randomElFromArray,
+    randomDecNumFromInterval,
+  } from "../scripts/randomFromInterval";
+  import { cityParkState } from "../store";
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
   // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
@@ -81,10 +86,10 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 
     const transitionDelay = index * delay;
     return {
-      nodeVals: nodeVals,
-      height: height,
-      width: width,
-      transitionDelay: transitionDelay,
+      nodeVals,
+      height,
+      width,
+      transitionDelay,
     };
   }
 
@@ -123,10 +128,96 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     return chunkState;
   }
 
+  function generateParkTreeState(
+    treeHeight: number,
+    treeWidth: number,
+    minScaleX: number,
+    maxScaleX: number,
+    minScaleY: number,
+    maxScaleY: number,
+    minFoliageTranslate: number,
+    maxFoliageTranslate: number,
+    minOffset: number,
+    maxOffset: number,
+    colorOpts: string[],
+    zIndexOpts: number[],
+    flipTrunk: [-1, 1],
+    minDelay: number,
+    maxDelay: number,
+  ) {
+    const scaleX = randomElFromArray([minScaleX, maxScaleX]);
+    const scaleY = randomDecNumFromInterval(minScaleY, maxScaleY);
+    const foliageTranslate = randomIntFromInterval(minFoliageTranslate, maxFoliageTranslate);
+    const offset = randomIntFromInterval(minOffset, maxOffset);
+    const color = randomElFromArray(colorOpts);
+    const zIndex = randomElFromArray(zIndexOpts);
+    const trunkFlip = randomElFromArray(flipTrunk);
+    const delay = randomIntFromInterval(minDelay, maxDelay);
+
+    return {
+      treeHeight,
+      treeWidth,
+      scaleX,
+      scaleY,
+      foliageTranslate,
+      offset,
+      color,
+      zIndex,
+      trunkFlip,
+      delay,
+    };
+  }
+
+  function generateParkState(
+    parkContainer: HTMLElement,
+    treeHeight: number,
+    treeWidth: number,
+    minScaleX: number,
+    maxScaleX: number,
+    minScaleY: number,
+    maxScaleY: number,
+    minFoliageTranslate: number,
+    maxFoliageTranslate: number,
+    minOffset: number,
+    maxOffset: number,
+    colorOpts: string[],
+    zIndexOpts: number[],
+    flipTrunk: [-1, 1],
+    minDelay: number,
+    maxDelay: number,
+  ) {
+    const parkWidth = Math.round(parkContainer.getBoundingClientRect().width);
+    let currParkWidth = 0;
+    const park = [];
+    while (currParkWidth < parkWidth) {
+      const scaleX = randomDecNumFromInterval(minScaleX, maxScaleX);
+      const parkTree = generateParkTreeState(
+        treeHeight,
+        treeWidth,
+        minScaleX,
+        maxScaleX,
+        minScaleY,
+        maxScaleY,
+        minFoliageTranslate,
+        maxFoliageTranslate,
+        minOffset,
+        maxOffset,
+        colorOpts,
+        zIndexOpts,
+        flipTrunk,
+        minDelay,
+        maxDelay,
+      );
+      park.push(parkTree);
+      currParkWidth += 20;
+    }
+    return park;
+  }
+
   const infoSectionContent: HTMLElement = document.querySelector("#info-section-content-group");
 
-  type SeedData = [number, number[][], number, number, number, number, number];
-  const seedData: SeedData = [
+  type BuildingSeedData = [number, number[][], number, number, number, number, number];
+  const buildingSeedData: BuildingSeedData = [
     1 / 8,
     initialNodeValPairs, // clip path node parameters
     20, // min height
@@ -136,12 +227,53 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     85, // delay
   ];
 
-  const skylineLeft = generateCityChunkState(infoSectionContent, ...seedData);
-  const skylineRight = generateCityChunkState(infoSectionContent, ...seedData);
+  type ParkSeedData = [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    string[],
+    number[],
+    [-1, 1],
+    number,
+    number,
+  ];
+
+  const parkSeedData: ParkSeedData = [
+    40, // tree height
+    20, // tree width
+    -1, // min scale x
+    1, // max scale x
+    0.8, // min scale y
+    1.3, // max scale y
+    10, // min foliage translate
+    20, // max foliage translate
+    10, // min offset
+    15, // max offset
+    ["#39455e", "#2B3C56"], // color opts
+    [1, 2, 3, 4, 5], // z index opts
+    [-1, 1], // flip trunk
+    1000, // min delay
+    1220, // max delay
+  ];
+
+  const skylineLeft = generateCityChunkState(infoSectionContent, ...buildingSeedData);
+  const skylineRight = generateCityChunkState(infoSectionContent, ...buildingSeedData);
   function attachDataToElementDataAttribute(dataAttributeStr, data) {
     const elementWithData = document.querySelector(`[${dataAttributeStr}]`);
     elementWithData.setAttribute(dataAttributeStr, data);
   }
+  const parkContainer: HTMLElement = document.querySelector("#city-park");
+
+  const cityPark = generateParkState(parkContainer, ...parkSeedData);
+  console.log(cityPark);
+  cityParkState.set(cityPark);
 
   const infoSectionCaptionContainer: HTMLElement = document.querySelector("#caption-info-container");
   attachDataToElementDataAttribute(
