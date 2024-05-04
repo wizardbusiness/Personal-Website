@@ -20,7 +20,6 @@ import Main from "../pages/Main.astro";
         bClassList.contains("overflow-scroll")
           ? bClassList.replace("overflow-scroll", "overflow-hidden")
           : bClassList.replace("overflow-hidden", "overflow-scroll");
-        console.log(bClassList);
       };
       const handleOrientation = () => {
         const body = document.querySelector("body");
