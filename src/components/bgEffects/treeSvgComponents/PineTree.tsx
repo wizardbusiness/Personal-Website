@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 
 const PineTree = ({
-  height,
+  treeHeight,
+  treeWidth,
   scaleX,
   scaleY,
-  position,
   color,
   zIndex,
   foliageTranslate,
   randomDelay,
 }) => {
-  const [grow, setGrow] = useState(false);
+  const [grow, setGrow] = useState(true);
   useEffect(() => {
     const pause = setTimeout(() => setGrow(true), 10);
     () => clearTimeout(pause);
@@ -21,22 +21,22 @@ const PineTree = ({
       data-name="Layer 1"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      viewBox="0 0 340.6 468.07"
-      className="park-tree absolute bottom-0"
+      viewBox="0 0 320.6 100.07"
+      className="park-tree align-bottom"
       style={{
-        height: height,
+        height: treeHeight,
+        width: treeWidth,
         fill: color,
         stroke: "#2b3c56",
         strokeMiterlimit: 10,
         transform: grow && `scale(${scaleX}, ${scaleY})`,
         transformBox: "fill-box",
         transformOrigin: "bottom",
-        left: `${position}px`,
         zIndex: zIndex,
         transitionDelay: `${randomDelay}ms`,
       }}
     >
-      <g id="Foliage-4" data-name="Foliage">
+      <g id="Foliage-4" data-name="Foliage" className="">
         <polygon
           className="cls-1"
           points="267.18 126.74 262.02 149.96 76.67 149.96 72.48 127.84 173.48 0 267.18 126.74"
