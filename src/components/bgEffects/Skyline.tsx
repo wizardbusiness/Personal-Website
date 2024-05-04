@@ -7,7 +7,6 @@ import React, {
   type SetStateAction,
   useCallback,
 } from "react";
-import useGetDataFromDataAttribute from "../../scripts/hooks/useGetDataFromDataAttribute";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
@@ -150,16 +149,9 @@ const Skyline = () => {
   const [forestWidth, setForestWidth] = useState<number>(0);
   const [skylineWidth, setSkylineWidth] = useState("");
   const [cityWidth, setCityWidth] = useState<number>(0);
-  const [cityData, setCityData] = useState<cityData>({ skylineLeft: [], skylineRight: [] });
   const [delayEffectMs, setDelayEffectMs] = useState<number>(0);
   const forestWidthRef = useRef<HTMLDivElement>(null);
   const cityWidthRef = useRef<HTMLDivElement>(null);
-
-  const cityChunks = useGetDataFromDataAttribute("data-skyline-data");
-
-  useEffect(() => {
-    setCityData(cityChunks);
-  }, [cityChunks]);
 
   const $renderSkyline = useStore(renderSkyline);
   const $cityParkState = useStore(cityParkState);
