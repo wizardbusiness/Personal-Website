@@ -42,12 +42,20 @@ module.exports = {
         },
         floatup: {
           "0%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "translateY(0vh)",
             transformOrigin: "bottom",
           },
-          "10%": { transform: "translateY(0vh) scaleY(110%) scaleX(100%)", transformOrigin: "bottom" },
+          "10%": {
+            transform: "translateY(0vh) scaleY(110%) scaleX(100%)",
+            transformOrigin: "bottom",
+          },
           "15%": { transform: "translateY(-2vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
-          "25%": { transform: "translateY(-2vh)  scaleY(105%) scaleX(95%)", transformOrigin: "bottom" },
+          "25%": {
+            backgroundColor: "foggy-glass",
+            transform: "translateY(-2vh)  scaleY(105%) scaleX(95%)",
+            transformOrigin: "bottom",
+          },
           "100%": { transform: "translateY(-4vh) scaleY(100%) scaleX(100%)" },
         },
         floatupMore: {
@@ -140,6 +148,7 @@ module.exports = {
             width: "var(--caption-width)",
           },
           "100%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
@@ -147,23 +156,24 @@ module.exports = {
         },
         squelch: {
           "0%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
           },
           "25%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
             transformOrigin: "bottom",
           },
           "50%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(50deg) scaleY(40%)",
             width: "var(--caption-width)",
             transformOrigin: "bottom",
           },
-          "75%": {
-            backgroundColor: "foggy-glass",
-          },
           "100%": {
+            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
           },
