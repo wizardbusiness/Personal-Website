@@ -12,7 +12,7 @@ import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
 import { useStore } from "@nanostores/react";
-import { renderSkyline, cityParkState } from "../../store";
+import { renderSkyline, cityParkState, cityBuildingsState } from "../../store";
 import "../../styles/tailwind.css";
 import { render } from "react-dom";
 
@@ -163,6 +163,8 @@ const Skyline = () => {
 
   const $renderSkyline = useStore(renderSkyline);
   const $cityParkState = useStore(cityParkState);
+  const $cityBuildingsState = useStore(cityBuildingsState);
+
   return (
     <div
       data-effects-container
@@ -173,13 +175,21 @@ const Skyline = () => {
         <Forest chunkWidth={forestWidth} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
       </div>
       <div ref={cityWidthRef} className="absolute flex h-full w-1/2 items-end">
-        <CityChunk direction="left" chunkData={cityData.skylineLeft} renderSkyline={$renderSkyline} />
+        <CityChunk
+          direction="left"
+          chunkData={$cityBuildingsState.cityBuildingsLeft}
+          renderSkyline={$renderSkyline}
+        />
         <CityPark
           delayEffectMs={delayEffectMs}
           cityParkState={$cityParkState}
           renderSkyline={$renderSkyline}
         />
-        <CityChunk direction="right" chunkData={cityData.skylineRight} renderSkyline={$renderSkyline} />
+        <CityChunk
+          direction="right"
+          chunkData={$cityBuildingsState.cityBuildingsRight}
+          renderSkyline={$renderSkyline}
+        />
       </div>
       <div data-forest className="absolute -right-2 flex h-full w-1/4 items-end">
         <Forest chunkWidth={forestWidth} direction={"right"} setDelayEffectMs={setDelayEffectMs} />

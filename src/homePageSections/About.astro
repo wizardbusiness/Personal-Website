@@ -26,7 +26,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     randomElFromArray,
     randomDecNumFromInterval,
   } from "../scripts/randomFromInterval";
-  import { cityParkState } from "../store";
+  import { cityParkState, cityBuildingsState } from "../store";
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
   // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
@@ -214,8 +214,6 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     return park;
   }
 
-  const infoSectionContent: HTMLElement = document.querySelector("#info-section-content-group");
-
   type BuildingSeedData = [number, number[][], number, number, number, number, number];
   const buildingSeedData: BuildingSeedData = [
     1 / 8,
@@ -263,21 +261,12 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     1220, // max delay
   ];
 
-  const skylineLeft = generateCityChunkState(infoSectionContent, ...buildingSeedData);
-  const skylineRight = generateCityChunkState(infoSectionContent, ...buildingSeedData);
-  function attachDataToElementDataAttribute(dataAttributeStr, data) {
-    const elementWithData = document.querySelector(`[${dataAttributeStr}]`);
-    elementWithData.setAttribute(dataAttributeStr, data);
-  }
+  const infoSectionContent: HTMLElement = document.querySelector("#info-section-content-group");
+  const buildingsLeft = generateCityChunkState(infoSectionContent, ...buildingSeedData);
+  const buildingsRight = generateCityChunkState(infoSectionContent, ...buildingSeedData);
+  cityBuildingsState.set({ cityBuildingsLeft: buildingsLeft, cityBuildingsRight: buildingsRight });
+
   const parkContainer: HTMLElement = document.querySelector("#city-park");
-
   const cityPark = generateParkState(parkContainer, ...parkSeedData);
-  console.log(cityPark);
   cityParkState.set(cityPark);
-
-  const infoSectionCaptionContainer: HTMLElement = document.querySelector("#caption-info-container");
-  attachDataToElementDataAttribute(
-    "data-skyline-data",
-    JSON.stringify({ skylineRight: skylineRight, skylineLeft: skylineLeft }),
-  );
 </script>
