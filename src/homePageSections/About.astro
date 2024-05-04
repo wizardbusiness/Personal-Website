@@ -20,3 +20,132 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
   <Tech slot="tech" />
   <IllHandleTheRest slot="flav-text-b" />
 </AboutSectionLayout>
+<script>
+  import { randomIntFromInterval } from "../scripts/randomFromInterval";
+  // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
+  // css polygons have a percentage based scale where
+  // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
+  const initialNodeValPairs = [
+    // upper left, lower left
+    [0, 50],
+    [50, 100],
+    // upper right, lower right
+    [100, 50],
+    [50, 100],
+  ];
+
+  const chooseNodeValues = (nodeValPairs: number[][]) => {
+    const targetIndex = randomIntFromInterval(0, nodeValPairs.length - 1); // will randomly select index to modify values at.
+    return targetIndex;
+  };
+
+  // customizable node values
+  const setNodeVals = (targetIndex: number, nodeValuePairs: number[][], probability: number = 0.3) => {
+    // set the probability that a modification will take place. currently 30%
+    const modCheckPass = Math.random() <= probability ? true : false;
+    // if check doesn't pass dont modify any node values
+    if (modCheckPass === false) return nodeValuePairs;
+    // choose values to modify by target index
+    const moddedValues = nodeValuePairs.map((valPair: number[], index) => {
+      if (index === targetIndex) {
+        // modify the values;
+        return valPair.map((value: number) => {
+          return randomIntFromInterval(0, 80);
+        });
+      } else {
+        // leave untargeted indexes alone.
+        return valPair;
+      }
+    });
+    return moddedValues;
+  };
+
+  function calcHeightMod(index: number, min: number, max: number) {
+    const noise = randomIntFromInterval(-10, 10);
+    const height = 10 * index + 30 * Math.cos((20 * index) ** 1 / 2) + noise;
+    const heightClamp = height > max ? randomIntFromInterval(10, height / 2) : 0;
+    return height < min ? min : height - heightClamp;
+  }
+
+  function generateBuildingState(
+    chooseNodeValues,
+    setNodeVals,
+    initialNodeValPairs,
+    index: number,
+    delay: number,
+    height,
+    width,
+  ) {
+    const nodesToMod = chooseNodeValues(initialNodeValPairs);
+    const nodeVals = setNodeVals(nodesToMod, initialNodeValPairs, 0.4);
+
+    const transitionDelay = index * delay;
+    return {
+      nodeVals: nodeVals,
+      height: height,
+      width: width,
+      transitionDelay: transitionDelay,
+    };
+  }
+
+  function generateCityChunkState(
+    containerElement: HTMLElement,
+    chunkSpanMultiplier: number,
+    initialNodeValPairs,
+    minHeight: number,
+    maxHeight: number,
+    minWidth: number,
+    maxWidth: number,
+    delay: number,
+  ) {
+    const containerElementWidth = containerElement.getBoundingClientRect().width;
+    const totalAvailableWidth = containerElementWidth * chunkSpanMultiplier;
+    let chunkState = [];
+    let currChunkWidth = 0;
+    let index = 0;
+    while (currChunkWidth < totalAvailableWidth) {
+      const height = calcHeightMod(index, minHeight, maxHeight);
+      const width = randomIntFromInterval(minWidth, maxWidth);
+      const componentState = generateBuildingState(
+        chooseNodeValues,
+        setNodeVals,
+        initialNodeValPairs,
+        index,
+        delay,
+        height,
+        width,
+      );
+      chunkState.push(componentState);
+      currChunkWidth += width;
+      index++;
+    }
+
+    return chunkState;
+  }
+
+  const infoSectionContent: HTMLElement = document.querySelector("#info-section-content-group");
+
+  type SeedData = [number, number[][], number, number, number, number, number];
+  const seedData: SeedData = [
+    1 / 8,
+    initialNodeValPairs, // clip path node parameters
+    20, // min height
+    60, // max height
+    15, // min width
+    25, // max width);
+    85, // delay
+  ];
+
+  const skylineLeft = generateCityChunkState(infoSectionContent, ...seedData);
+  const skylineRight = generateCityChunkState(infoSectionContent, ...seedData);
+  function attachDataToElementDataAttribute(dataAttributeStr, data) {
+    const elementWithData = document.querySelector(`[${dataAttributeStr}]`);
+    elementWithData.setAttribute(dataAttributeStr, data);
+  }
+
+  const infoSectionCaptionContainer: HTMLElement = document.querySelector("#caption-info-container");
+  attachDataToElementDataAttribute(
+    "data-skyline-data",
+    JSON.stringify({ skylineRight: skylineRight, skylineLeft: skylineLeft }),
+  );
+</script>
