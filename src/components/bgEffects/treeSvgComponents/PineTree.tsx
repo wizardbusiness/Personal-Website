@@ -1,6 +1,8 @@
+import { transform } from "lodash";
 import React, { useState, useEffect } from "react";
 
 const PineTree = ({
+  renderSkyline,
   treeHeight,
   treeWidth,
   scaleX,
@@ -9,31 +11,33 @@ const PineTree = ({
   zIndex,
   foliageTranslate,
   randomDelay,
+  delayEffectMs,
 }) => {
-  const [grow, setGrow] = useState(true);
+  const [grow, setGrow] = useState(false);
   useEffect(() => {
-    const pause = setTimeout(() => setGrow(true), 10);
-    () => clearTimeout(pause);
-  }, []);
+    console.log(delayEffectMs + randomDelay);
+    const setTimeoutID = setTimeout(() => (renderSkyline ? setGrow(true) : setGrow(false)), randomDelay);
+    return () => clearTimeout(setTimeoutID);
+  }, [renderSkyline, randomDelay]);
+
   return (
     <svg
       id="Layer_1"
       data-name="Layer 1"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      viewBox="0 0 320.6 100.07"
-      className="park-tree align-bottom"
+      viewBox="0 0 340.6 200.07"
+      className={`${grow ? "scale-100" : "scale-0"} transition-transform duration-[500ms]`}
       style={{
         height: treeHeight,
         width: treeWidth,
         fill: color,
         stroke: "#2b3c56",
         strokeMiterlimit: 10,
-        transform: grow && `scale(${scaleX}, ${scaleY})`,
+        transform: grow ? `scale(${scaleX}, ${scaleY})` : `scale(${scaleX / 4}, 0)`,
         transformBox: "fill-box",
         transformOrigin: "bottom",
         zIndex: zIndex,
-        transitionDelay: `${randomDelay}ms`,
       }}
     >
       <g id="Foliage-4" data-name="Foliage" className="">
