@@ -568,28 +568,6 @@ function goToInfoSection() {
   ]);
 }
 
-function setupCaptionComponentForMoveToLanding() {
-  const ccBoundingRect = getBoundingClientRect(captionComponentFg);
-  changeElementPositionToFixed(captionComponent);
-  changeParentToBodyFromInfoContainer(captionComponent);
-  document.documentElement.style.setProperty("--caption-container-top", `${ccBoundingRect.top}px`);
-  document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
-  captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
-  // add in new transition properties
-  setTransitionDuration(captionComponent, "duration-[4000ms]");
-  setTransitionTiming(captionComponent, "ease-in-out");
-  // clear animation on caption component (if present, will interfere with translate transform)
-  clearAnimationProperties(captionComponent);
-  clearTransitionProperties(captionComponentFg);
-  clearTransitionProperties(captionComponentBg);
-
-  clearAnimationProperties(captionComponent);
-  clearAnimationProperties(captionComponentBg);
-  clearAnimationProperties(captionComponentFg);
-  setTranslateDistance(captionComponent, "translate-y-0");
-  setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[50vh]"), 20);
-}
-
 function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
@@ -638,6 +616,10 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     ]);
     squish(captionComponentBg);
   } else if (preNavOpen && deltaY <= 25) {
+    // hide nav bar from user
+    setOpacity(infoSectionNavBar, "opacity-0");
+    // slide info section content down to simulate caption component moving away from section
+    setTranslateDistance(infoSectionContentGroup, "translate-y-[100vh]");
     goToLandingSection();
   }
 }
@@ -654,23 +636,36 @@ function goToLandingSection() {
 
   // set up caption component for move
   setupCaptionComponentForMoveToLanding();
-
-  // slide info section content down to simulate caption component moving away from section
-  setTranslateDistance(infoSectionContentGroup, "translate-y-[100vh]");
-
   // set up landing section
-  // use delay to keep info section in view during info section content transform
+  setOpacity(landingSection, "opacity-0");
+  // use delay to keep info section in view during info section transform
   setTimeout(() => {
     setCurrTransitionStep("f");
     showSection([landingSection]);
     landingSection.scrollIntoView();
   }, 500);
 
-  // scroll to landing section
-  // reset info section translate distance
+  function setupCaptionComponentForMoveToLanding() {
+    const ccBoundingRect = getBoundingClientRect(captionComponentFg);
+    changeElementPositionToFixed(captionComponent);
+    changeParentToBodyFromInfoContainer(captionComponent);
+    document.documentElement.style.setProperty("--caption-container-top", `${ccBoundingRect.top}px`);
+    document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
+    captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
+    // add in new transition properties
+    setTransitionDuration(captionComponent, "duration-[4000ms]");
+    setTransitionTiming(captionComponent, "ease-in-out");
+    // clear animation on caption component (if present, will interfere with translate transform)
+    clearAnimationProperties(captionComponent);
+    clearTransitionProperties(captionComponentFg);
+    clearTransitionProperties(captionComponentBg);
 
-  setOpacity(landingSection, "opacity-0");
-  setOpacity(infoSectionNavBar, "opacity-0");
+    clearAnimationProperties(captionComponent);
+    clearAnimationProperties(captionComponentBg);
+    clearAnimationProperties(captionComponentFg);
+    setTranslateDistance(captionComponent, "translate-y-0");
+    setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[50vh]"), 20);
+  }
 
   function finishTransitionToLandingSection() {
     [captionComponent, captionComponentBg, captionComponentFg, infoSectionCaret, landingSectionCaret].forEach(
