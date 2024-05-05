@@ -92,10 +92,10 @@ const Building = ({ height, width, nodeVals, transitionDelay, renderSkyline }) =
         data-effect
         style={shapeStyles}
         className={`${
-          build ? "scale-100" : "scale-0"
+          build ? "scale-y-100" : "scale-y-0"
         } structure flex origin-bottom flex-wrap place-content-evenly
-          gap-[2px] border border-slate-600 bg-slate-600 
-          transition-transform duration-[200ms]`}
+          gap-[2px] border ${build ? "border-slate-600 bg-slate-600" : "border-foggy-glass bg-foggy-glass"}  
+          transition-all duration-[200ms]`}
       >
         <Windows shapeH={height} shapeW={width} delay={transitionDelay} />
       </div>
@@ -161,7 +161,7 @@ const Skyline = () => {
     <div
       data-effects-container
       onTransitionEnd={(e) => e.stopPropagation()}
-      className="absolute bottom-0 flex h-32 w-[var(--info-cont-width)] items-end justify-center"
+      className="absolute bottom-0 -z-10 flex h-32 w-[var(--info-cont-width)] items-end justify-center"
     >
       <div data-forest ref={forestWidthRef} className="absolute bottom-0 left-0 flex h-full w-1/4 items-end">
         <Forest chunkWidth={forestWidth} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
