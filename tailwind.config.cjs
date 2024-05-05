@@ -11,6 +11,9 @@ module.exports = {
         "foggy-glass": "#E5E7EB50",
         "moon-shine": "#F3F3F330",
         "blue-smoke": "#223249",
+        "opaque-fog": "#656C7D",
+        "moon-silver": "#f7f7f7",
+        "building-slate": "#475569",
         dusk: "#1d2a44",
       },
       spacing: {
@@ -19,6 +22,13 @@ module.exports = {
       transitionTimingFunction: {
         "in-out-polar": "cubic-bezier(.53,1.21,.86,.13)",
         "out-expo": "cubic-bezier(0, 1, 1, 0)",
+      },
+      backgroundImage: {
+        "moonrise-gradient":
+          "linear-gradient(0deg, rgb(176, 182, 196, 1) 0%, rgba(229, 231, 235, 0.314) 32%, rgba(229, 231, 235, 0.314) 100%)",
+      },
+      backgroundSize: {
+        "200%": "200% 200%",
       },
       keyframes: {
         blink: {
@@ -42,7 +52,6 @@ module.exports = {
         },
         floatup: {
           "0%": {
-            backgroundColor: "rgb(71 85 105)",
             transform: "translateY(0vh)",
             transformOrigin: "bottom",
           },
@@ -50,9 +59,11 @@ module.exports = {
             transform: "translateY(0vh) scaleY(110%) scaleX(100%)",
             transformOrigin: "bottom",
           },
-          "15%": { transform: "translateY(-2vh) scaleY(90%) scaleX(110%)", transformOrigin: "bottom" },
+          "15%": {
+            transform: "translateY(-2vh) scaleY(90%) scaleX(110%)",
+            transformOrigin: "bottom",
+          },
           "25%": {
-            backgroundColor: "foggy-glass",
             transform: "translateY(-2vh)  scaleY(105%) scaleX(95%)",
             transformOrigin: "bottom",
           },
@@ -148,32 +159,37 @@ module.exports = {
             width: "var(--caption-width)",
           },
           "100%": {
-            backgroundColor: "rgb(71 85 105)",
+            backgroundColor: "rgb(71, 85, 105)",
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
           },
         },
+        colorChange: {
+          "0%": { backgroundPosition: "0% 75%" },
+          // "50%": { backgroundPosition: "0% 25%" },
+          "100%": { backgroundPosition: "0% 30%" },
+        },
         squelch: {
           "0%": {
-            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
           },
           "25%": {
-            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
             transformOrigin: "bottom",
           },
           "50%": {
-            backgroundColor: "rgb(71 85 105)",
             transform: "perspective(600px) rotateX(50deg) scaleY(40%)",
             width: "var(--caption-width)",
             transformOrigin: "bottom",
           },
+          "75%": {
+            backgroundColor: "#656c7d",
+          },
           "100%": {
-            backgroundColor: "rgb(71 85 105)",
+            backgroundColor: "#656c7d",
             transform: "perspective(600px) rotateX(0deg)",
             transformOrigin: "bottom",
           },
@@ -250,6 +266,7 @@ module.exports = {
         },
       },
       animation: {
+        "color-change": "colorChange 1.5s ease infinite alternate",
         "blinking-cursor": "blink 1.5s steps(1) 6 forwards",
         "scale-up": "scaleup 0.8s forwards ease-out",
         "slide-up": "slide-up 0.2s forwards",
