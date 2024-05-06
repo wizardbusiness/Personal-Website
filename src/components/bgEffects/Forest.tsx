@@ -6,7 +6,7 @@ import {
 } from "../../scripts/randomFromInterval";
 import FirTree from "./treeSvgComponents/FirTree";
 
-const Forest = ({ forestData, direction, setDelayEffectMs, renderSkyline }) => {
+const Forest = ({ forestData, direction, renderSkyline }) => {
   // const [forestChunk, setForestChunk] = useState([]);
 
   const forestChunk = forestData.map((treeProps, index) => {

@@ -159,9 +159,13 @@ const Skyline = () => {
 
   const $renderSkyline = useStore(renderSkyline);
   const $forestState = useStore(forestState);
-  console.log($forestState);
   const $cityParkState = useStore(cityParkState);
   const $cityBuildingsState = useStore(cityBuildingsState);
+
+  useEffect(() => {
+    const delayParkEffectMs = $forestState.forestLeft[$forestState.forestRight.length - 1]?.transitionDelay;
+    setDelayEffectMs(delayParkEffectMs);
+  }, [$forestState]);
 
   return (
     <div
@@ -174,12 +178,7 @@ const Skyline = () => {
         ref={forestWidthRef}
         className="absolute bottom-0 left-0 flex h-full w-1/4 items-end"
       >
-        <Forest
-          forestData={$forestState.forestLeft}
-          direction={"left"}
-          setDelayEffectMs={setDelayEffectMs}
-          renderSkyline={$renderSkyline}
-        />
+        <Forest forestData={$forestState.forestLeft} direction={"left"} renderSkyline={$renderSkyline} />
       </div>
       <div ref={cityWidthRef} className="absolute flex h-full w-1/2 items-end">
         <CityChunk
@@ -199,13 +198,7 @@ const Skyline = () => {
         />
       </div>
       <div id="forest-right" className="absolute -right-2 flex h-full w-1/4 items-end">
-        <Forest
-          forestData={$forestState.forestRight}
-          direction={"right"}
-          setDelayEffectMs={setDelayEffectMs}
-          
-          renderSkyline={$renderSkyline}
-        />
+        <Forest forestData={$forestState.forestRight} direction={"right"} renderSkyline={$renderSkyline} />
       </div>
     </div>
   );
