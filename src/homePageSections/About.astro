@@ -26,7 +26,85 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     randomElFromArray,
     randomDecNumFromInterval,
   } from "../scripts/randomFromInterval";
-  import { cityParkState, cityBuildingsState } from "../store";
+  import { cityParkState, cityBuildingsState, forestState } from "../store";
+
+  const generateTreeData = (
+    height: number,
+    width: number,
+    offset: number,
+    minScaleX: number,
+    maxScaleX: number,
+    minScaleY: number,
+    maxScaleY: number,
+    direction: "left" | "right",
+    transitionDelay: number,
+  ) => {
+    const scaleX = randomDecNumFromInterval(minScaleX, maxScaleX, 2);
+    const scaleY = randomDecNumFromInterval(minScaleY, maxScaleY, 2);
+
+    return { height, width, offset, scaleX, scaleY, direction, transitionDelay };
+  };
+
+  const generateForestChunk = (
+    element: HTMLElement,
+    height: number,
+    width: number,
+    offSetMods: number[],
+    minScaleX: number,
+    maxScaleX: number,
+    minScaleY: number,
+    maxScaleY: number,
+    chunkDelay: number,
+    treeDelay: number,
+    direction: "left" | "right",
+  ) => {
+    const chunkWidth = element.getBoundingClientRect().width;
+    const chunk = [];
+    let offset = 0;
+    let currTree = 0;
+    while (offset + Math.round(width / 2) < chunkWidth) {
+      const delay = treeDelay * currTree;
+      const treeData = generateTreeData(
+        height,
+        width,
+        offset,
+        minScaleX,
+        maxScaleX,
+        minScaleY,
+        maxScaleY,
+        direction,
+        delay,
+      );
+      chunk.push(treeData);
+      const offsetMod = randomElFromArray([2, 3]) as number;
+      offset += Math.round(width / offsetMod);
+      currTree++;
+    }
+
+    return chunk;
+  };
+
+  type ForestSeedData = [number, number, number[], number, number, number, number, number, number];
+  const forestSeedData: ForestSeedData = [
+    40, // height
+    40, // width,
+    [2, 3], // offset mods
+    0.7, // min scale x
+    1.4, // max scale x
+    0.98, // min scale y
+    2.2, // max scale y
+    1000, // chunk delay
+    30, // tree delay
+  ];
+
+  const forestLeftContainer: HTMLElement = document.querySelector("#forest-left");
+  const forestRightContainer: HTMLElement = document.querySelector("#forest-right");
+
+  const forestLeft = generateForestChunk(forestLeftContainer, ...forestSeedData, "left");
+  const forestRight = generateForestChunk(forestRightContainer, ...forestSeedData, "right");
+
+  forestState.set({ forestLeft, forestRight });
+
   // only represent values for targetable nodes not all nodes. each pair represents the targetable values for a quadrant
   // css polygons have a percentage based scale where
   // the upper left is 0% 0% and the lower right is 100% 100%, these values represent these.
@@ -95,8 +173,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 
   function generateCityChunkState(
     containerElement: HTMLElement,
-    chunkSpanMultiplier: number,
-    initialNodeValPairs,
+    initialNodeValPairs: number[][],
     minHeight: number,
     maxHeight: number,
     minWidth: number,
@@ -104,7 +181,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     delay: number,
   ) {
     const containerElementWidth = containerElement.getBoundingClientRect().width;
-    const totalAvailableWidth = containerElementWidth * chunkSpanMultiplier;
+    const totalAvailableWidth = containerElementWidth;
     let chunkState = [];
     let currChunkWidth = 0;
     let index = 0;
@@ -127,6 +204,23 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 
     return chunkState;
   }
+
+  type BuildingSeedData = [number[][], number, number, number, number, number];
+  const buildingSeedData: BuildingSeedData = [
+    initialNodeValPairs, // clip path node parameters
+    20, // min height
+    45, // max height
+    25, // min width
+    35, // max width);
+    85, // delay
+  ];
+
+  const cityLeftContainer: HTMLElement = document.querySelector("#city-left");
+  const cityRightContainer: HTMLElement = document.querySelector("#city-right");
+
+  const buildingsLeft = generateCityChunkState(cityLeftContainer, ...buildingSeedData);
+  const buildingsRight = generateCityChunkState(cityRightContainer, ...buildingSeedData);
+  cityBuildingsState.set({ cityBuildingsLeft: buildingsLeft, cityBuildingsRight: buildingsRight });
 
   function generateParkTreeState(
     treeHeight: number,
@@ -189,7 +283,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     const parkWidth = Math.round(parkContainer.getBoundingClientRect().width);
     let currParkWidth = 0;
     const park = [];
-    while (currParkWidth < parkWidth) {
+    while (currParkWidth + treeWidth < parkWidth) {
       const scaleX = randomDecNumFromInterval(minScaleX, maxScaleX);
       const parkTree = generateParkTreeState(
         treeHeight,
@@ -209,21 +303,10 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
         maxDelay,
       );
       park.push(parkTree);
-      currParkWidth += 20;
+      currParkWidth += treeWidth;
     }
     return park;
   }
-
-  type BuildingSeedData = [number, number[][], number, number, number, number, number];
-  const buildingSeedData: BuildingSeedData = [
-    1 / 8,
-    initialNodeValPairs, // clip path node parameters
-    20, // min height
-    60, // max height
-    15, // min width
-    25, // max width);
-    85, // delay
-  ];
 
   type ParkSeedData = [
     number,
@@ -260,11 +343,6 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     1000, // min delay
     1220, // max delay
   ];
-
-  const infoSectionContent: HTMLElement = document.querySelector("#info-section-content-group");
-  const buildingsLeft = generateCityChunkState(infoSectionContent, ...buildingSeedData);
-  const buildingsRight = generateCityChunkState(infoSectionContent, ...buildingSeedData);
-  cityBuildingsState.set({ cityBuildingsLeft: buildingsLeft, cityBuildingsRight: buildingsRight });
 
   const parkContainer: HTMLElement = document.querySelector("#city-park");
   const cityPark = generateParkState(parkContainer, ...parkSeedData);

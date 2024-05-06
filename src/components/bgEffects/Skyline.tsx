@@ -174,7 +174,12 @@ const Skyline = () => {
         ref={forestWidthRef}
         className="absolute bottom-0 left-0 flex h-full w-1/4 items-end"
       >
-        <Forest forestData={$forestState.forestLeft} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
+        <Forest
+          forestData={$forestState.forestLeft}
+          direction={"left"}
+          setDelayEffectMs={setDelayEffectMs}
+          renderSkyline={$renderSkyline}
+        />
       </div>
       <div ref={cityWidthRef} className="absolute flex h-full w-1/2 items-end">
         <CityChunk
@@ -198,6 +203,8 @@ const Skyline = () => {
           forestData={$forestState.forestRight}
           direction={"right"}
           setDelayEffectMs={setDelayEffectMs}
+          
+          renderSkyline={$renderSkyline}
         />
       </div>
     </div>

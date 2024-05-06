@@ -1,37 +1,45 @@
 import React, { useState, useEffect } from "react";
+import { render } from "react-dom";
 
 type Props = {
   height: number;
   width: number;
   scaleX: number;
   scaleY: number;
-  style: {};
+  direction: "left" | "right";
+  offset: number;
+  transitionDelay: number;
+  renderSkyline: boolean;
 };
 
-const FirTree = ({ height, width, scaleX, scaleY, style }: Props) => {
+const FirTree = ({
+  height,
+  width,
+  scaleX,
+  scaleY,
+  direction,
+  offset,
+  transitionDelay,
+  renderSkyline,
+}: Props) => {
   const [grow, setGrow] = useState(false);
   useEffect(() => {
-    // sometimes transition doesn't fire, this hack seems to fix it.
-    // most likely caused by grow being set to true before react can render component in initial state.
-    // this means that no transition takes place, since the grow class is never added, it was there on the first render.
-    // this is likely correct behaviour, and the method of adding a class on initial rendering to trigger a transition is
-    // not a good practice on my part.
-    const pause = setTimeout(() => setGrow(true), 10);
-    () => clearTimeout(pause);
-  }, []);
+    const setTimeoutID = setTimeout(() => (renderSkyline ? setGrow(true) : setGrow(false)), transitionDelay);
+    () => clearTimeout(setTimeoutID);
+  }, [renderSkyline, transitionDelay]);
   return (
     <svg
-      height={`${height || 40}px`}
+      height={`${height || 70}px`}
       width={`${width}px`}
-      className={`tree ${grow && "grow"} absolute`}
+      className={`{${grow ? "scale-100" : "scale-0"} tree absolute transition-transform duration-[500ms]`}
       style={{
         fill: "#2b3c56",
         stroke: "#2b3c56",
         strokeMiterlimit: 10,
-        transform: grow && `scale(${scaleX}, ${scaleY})`,
+        transform: grow ? `scale(${scaleX}, ${scaleY})` : `scale(${scaleX / 4}, 0)`,
         transformBox: "fill-box",
         transformOrigin: "bottom",
-        ...style,
+        [direction]: `${offset}px`,
       }}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 898.57 583.99"
