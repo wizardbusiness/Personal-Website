@@ -62,7 +62,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     const chunk = [];
     let offset = 0;
     let currTree = 0;
-    while (offset + Math.round(width / 2) < chunkWidth) {
+    while (offset + width * 0.75 < chunkWidth) {
       const delay = treeDelay * currTree;
       const treeData = generateTreeData(
         height,
@@ -75,12 +75,12 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
         direction,
         delay,
       );
+      if (treeData.offset > chunkWidth) break;
       chunk.push(treeData);
       const offsetMod = randomElFromArray([2, 3]) as number;
       offset += Math.round(width / offsetMod);
       currTree++;
     }
-
     return chunk;
   };
 
@@ -340,8 +340,8 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     ["#39455e", "#2B3C56"], // color opts
     [1, 2, 3, 4, 5], // z index opts
     [-1, 1], // flip trunk
-    1000, // min delay
-    1220, // max delay
+    300, // min delay
+    500, // max delay
   ];
 
   const parkContainer: HTMLElement = document.querySelector("#city-park");
