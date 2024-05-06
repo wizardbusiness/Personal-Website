@@ -11,7 +11,7 @@ import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
 import { useStore } from "@nanostores/react";
-import { renderSkyline, cityParkState, cityBuildingsState } from "../../store";
+import { renderSkyline, forestState, cityParkState, cityBuildingsState } from "../../store";
 import "../../styles/tailwind.css";
 import { render } from "react-dom";
 
@@ -131,7 +131,11 @@ const CityChunk = ({ direction, chunkData, renderSkyline }: CityChunkProps) => {
     );
   });
 
-  return <div className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>{cityChunk}</div>;
+  return (
+    <div id={`city-${direction}`} className={`bottom-1 flex w-1/3 items-end justify-end gap-2`}>
+      {cityChunk}
+    </div>
+  );
 };
 
 type buildingData = {
@@ -154,6 +158,8 @@ const Skyline = () => {
   const cityWidthRef = useRef<HTMLDivElement>(null);
 
   const $renderSkyline = useStore(renderSkyline);
+  const $forestState = useStore(forestState);
+  console.log($forestState);
   const $cityParkState = useStore(cityParkState);
   const $cityBuildingsState = useStore(cityBuildingsState);
 
@@ -163,8 +169,12 @@ const Skyline = () => {
       onTransitionEnd={(e) => e.stopPropagation()}
       className="absolute bottom-0 -z-10 flex h-32 w-[var(--info-cont-width)] items-end justify-center"
     >
-      <div data-forest ref={forestWidthRef} className="absolute bottom-0 left-0 flex h-full w-1/4 items-end">
-        <Forest chunkWidth={forestWidth} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
+      <div
+        id="forest-left"
+        ref={forestWidthRef}
+        className="absolute bottom-0 left-0 flex h-full w-1/4 items-end"
+      >
+        <Forest forestData={$forestState.forestLeft} direction={"left"} setDelayEffectMs={setDelayEffectMs} />
       </div>
       <div ref={cityWidthRef} className="absolute flex h-full w-1/2 items-end">
         <CityChunk
@@ -183,8 +193,12 @@ const Skyline = () => {
           renderSkyline={$renderSkyline}
         />
       </div>
-      <div data-forest className="absolute -right-2 flex h-full w-1/4 items-end">
-        <Forest chunkWidth={forestWidth} direction={"right"} setDelayEffectMs={setDelayEffectMs} />
+      <div id="forest-right" className="absolute -right-2 flex h-full w-1/4 items-end">
+        <Forest
+          forestData={$forestState.forestRight}
+          direction={"right"}
+          setDelayEffectMs={setDelayEffectMs}
+        />
       </div>
     </div>
   );
