@@ -28,17 +28,14 @@ type treeProps = {
 const CityPark = ({ delayEffectMs, cityParkState, renderSkyline }) => {
   return (
     <div id="city-park" className="flex h-[40px] w-1/3 pl-2 pr-2">
-      {cityParkState.map((treeData, index) => {
-        console.log(treeData);
-        return (
-          <PineTree
-            {...treeData}
-            delayEffectMs={delayEffectMs}
-            renderSkyline={renderSkyline}
-            key={`tree-${index}`}
-          />
-        );
-      })}
+      {cityParkState.map((treeData, index) => (
+        <PineTree
+          {...treeData}
+          delayEffectMs={delayEffectMs}
+          renderSkyline={renderSkyline}
+          key={`tree-${index}`}
+        />
+      ))}
     </div>
   );
 };
