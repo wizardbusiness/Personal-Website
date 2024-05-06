@@ -10,15 +10,15 @@ const PineTree = ({
   color,
   zIndex,
   foliageTranslate,
-  randomDelay,
+  delay,
   delayEffectMs,
 }) => {
   const [grow, setGrow] = useState(false);
   useEffect(() => {
-    console.log(delayEffectMs + randomDelay);
-    const setTimeoutID = setTimeout(() => (renderSkyline ? setGrow(true) : setGrow(false)), randomDelay);
+    const totalDelay = delayEffectMs + delay;
+    const setTimeoutID = setTimeout(() => (renderSkyline ? setGrow(true) : setGrow(false)), totalDelay);
     return () => clearTimeout(setTimeoutID);
-  }, [renderSkyline, randomDelay]);
+  }, [renderSkyline, delay, delayEffectMs]);
 
   return (
     <svg
@@ -30,7 +30,7 @@ const PineTree = ({
       className={`${grow ? "scale-100" : "scale-0"} transition-transform duration-[500ms]`}
       style={{
         height: treeHeight,
-        width: treeWidth,
+        width: "treeWidth",
         fill: color,
         stroke: "#2b3c56",
         strokeMiterlimit: 10,
