@@ -50,46 +50,7 @@ module.exports = {
             opacity: 0.8,
           },
         },
-        floatup: {
-          "0%": {
-            transform: "translateY(0vh)",
-            transformOrigin: "bottom",
-          },
-          "10%": {
-            transform: "translateY(0vh) scaleY(110%) scaleX(100%)",
-            transformOrigin: "bottom",
-          },
-          "15%": {
-            transform: "translateY(-2vh) scaleY(90%) scaleX(110%)",
-            transformOrigin: "bottom",
-          },
-          "25%": {
-            transform: "translateY(-2vh)  scaleY(105%) scaleX(95%)",
-            transformOrigin: "bottom",
-          },
-          "100%": { transform: "translateY(-4vh) scaleY(100%) scaleX(100%)" },
-        },
-        floatupMore: {
-          "0%": {
-            transform: "translateY(0vh)",
-            transformOrigin: "bottom",
-          },
-          "100%": {
-            transform: "translateY(-3vh)",
-            transformOrigin: "bottom",
-          },
-        },
-        floatInPlace: {
-          "0%": {
-            transform: "translateY(-3vh)",
-          },
-          "50%": {
-            transform: "translateY(-2.5vh)",
-          },
-          "100%": {
-            transform: "translateY(-3vh)",
-          },
-        },
+
         bringDown: {
           "0%": {
             transform: "translateY(-5vh)",
@@ -172,26 +133,73 @@ module.exports = {
         },
         squelch: {
           "0%": {
+            backgroundColor: "#656c7d",
             transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
           },
-          "25%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(20%)",
+          "5%": {
+            backgroundColor: "#656c7d",
+            transform: "perspective(600px) rotateX(50deg) scaleY(4%)",
             transformOrigin: "bottom",
           },
-          "50%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(40%)",
+          "30%": {
+            transform: "perspective(600px) rotateX(50deg) scaleY(30%)",
+            transformOrigin: "bottom",
+          },
+          "80%": {
+            backgroundColor: "#656c7d",
+            transform: "perspective(600px) rotateX(40deg)",
+            transformOrigin: "bottom",
+          },
+          "100%": {
+            transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
             width: "var(--caption-width)",
             transformOrigin: "bottom",
           },
-          "75%": {
-            backgroundColor: "#656c7d",
+        },
+        floatup: {
+          "0%": {
+            transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
+            transformOrigin: "bottom",
+          },
+          "10%": {
+            transform: "translateY(0vh) scaleY(110%) scaleX(100%)",
+            transformOrigin: "bottom",
+          },
+          "15%": {
+            transform: "translateY(-3vh) scaleY(90%) scaleX(110%)",
+            transformOrigin: "bottom",
+          },
+          "25%": {
+            transform: "translateY(-3.5vh) scaleY(105%) scaleX(95%)",
+            transformOrigin: "bottom",
+          },
+          "35%": {
+            transform: "translateY(-4vh)",
+            transformOrigin: "bottom",
+          },
+          "100%": { transform: "translateY(-4.25vh) scaleY(100%) scaleX(100%)" },
+        },
+        floatupMore: {
+          "0%": {
+            transform: "translateY(0vh)",
+            transformOrigin: "bottom",
           },
           "100%": {
-            backgroundColor: "#656c7d",
-            transform: "perspective(600px) rotateX(0deg)",
+            transform: "translateY(-2vh)",
             transformOrigin: "bottom",
+          },
+        },
+        floatInPlace: {
+          "0%": {
+            transform: "translateY(-2vh)",
+          },
+          "50%": {
+            transform: "translateY(-2.5vh)",
+          },
+          "100%": {
+            transform: "translateY(-2vh)",
           },
         },
         grow: {
@@ -273,9 +281,9 @@ module.exports = {
         "slide-down": "slide-down 1.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
-        squelch: "squelch 0.6s forwards ease-in-out",
-        "float-up": "floatup 1.3s forwards ease-out",
-        "float-up-more": "floatupMore 5s ease-in forwards",
+        squelch: "squelch 1s forwards cubic-bezier(1,.34,.24,.79)",
+        "float-up": "floatup 1.2s forwards ease-in",
+        "float-up-more": "floatupMore 5s forwards cubic-bezier(.24,.39,.74,.68)",
         "float-in-place": "floatInPlace 3s forwards ease-in infinite",
         "bring-down": "bringDown 0.2s forwards",
         grow: "grow 0.5s forwards ease-out",
