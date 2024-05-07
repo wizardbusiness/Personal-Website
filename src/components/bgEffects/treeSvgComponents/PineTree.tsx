@@ -27,7 +27,7 @@ const PineTree = ({
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="0 0 340.6 200.07"
-      className={`${grow ? "scale-100" : "scale-0"} transition-transform duration-[500ms]`}
+      className={`${grow ? "scale-100" : "scale-0 opacity-0"} transition-all duration-[500ms]`}
       style={{
         height: treeHeight,
         width: "treeWidth",

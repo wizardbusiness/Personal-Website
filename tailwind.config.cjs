@@ -22,6 +22,7 @@ module.exports = {
       transitionTimingFunction: {
         "in-out-polar": "cubic-bezier(.53,1.21,.86,.13)",
         "out-expo": "cubic-bezier(0, 1, 1, 0)",
+        "quick-slow": "cubic-bezier(0,.53,1,0)",
       },
       backgroundImage: {
         "moonrise-gradient":
@@ -134,25 +135,23 @@ module.exports = {
         squelch: {
           "0%": {
             backgroundColor: "#656c7d",
-            transform: "perspective(600px) rotateX(0deg) scaleY(4%)",
+            transform: "perspective(600px) rotateX(30deg) scaleY(4%)",
             transformOrigin: "bottom",
             width: "var(--info-cont-width)",
           },
-          "5%": {
+          "50%": {
             backgroundColor: "#656c7d",
-            transform: "perspective(600px) rotateX(50deg) scaleY(4%)",
+            transform: "perspective(600px) rotateX(30deg) scaleY(4%)",
             transformOrigin: "bottom",
           },
-          "30%": {
-            transform: "perspective(600px) rotateX(50deg) scaleY(30%)",
-            transformOrigin: "bottom",
-          },
-          "80%": {
+          "70%": {
             backgroundColor: "#656c7d",
-            transform: "perspective(600px) rotateX(40deg)",
+            transform: "perspective(600px) rotateX(30deg) scaleY(10%)",
             transformOrigin: "bottom",
           },
           "100%": {
+            backgroundColor: "#656c7d",
+
             transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
             width: "var(--caption-width)",
             transformOrigin: "bottom",
@@ -160,6 +159,7 @@ module.exports = {
         },
         floatup: {
           "0%": {
+            backgroundColor: "#656c7d",
             transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
             transformOrigin: "bottom",
           },
@@ -172,6 +172,7 @@ module.exports = {
             transformOrigin: "bottom",
           },
           "25%": {
+            backgroundColor: "#7e8594a2",
             transform: "translateY(-3.5vh) scaleY(105%) scaleX(95%)",
             transformOrigin: "bottom",
           },
@@ -281,7 +282,7 @@ module.exports = {
         "slide-down": "slide-down 1.2s forwards",
         "squish-down-lg": "squish-lg 0.4s forwards",
         "squish-down-sm": "squish-sm 0.2s forwards ease-in",
-        squelch: "squelch 1s forwards cubic-bezier(1,.34,.24,.79)",
+        squelch: "squelch 1s forwards ease-in",
         "float-up": "floatup 1.2s forwards ease-in",
         "float-up-more": "floatupMore 5s forwards cubic-bezier(.24,.39,.74,.68)",
         "float-in-place": "floatInPlace 3s forwards ease-in infinite",

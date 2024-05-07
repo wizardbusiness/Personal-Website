@@ -67,18 +67,17 @@ const Windows = ({ shapeH, shapeW, delay }) => {
   return windows.sort((a, b) => (a < b ? 1 : -1));
 };
 
-const Building = ({ height, width, nodeVals, transitionDelay, renderSkyline }) => {
+const Building = ({ height, width, nodeVals, transitionDelay, delayEffectMs, renderSkyline }) => {
   const [build, setBuild] = useState(false);
-  const [, setTransitionEnd] = useState(false);
   const shapeRef = useRef(null);
 
   useEffect(() => {
     const setTimeoutID = setTimeout(
       () => (renderSkyline ? setBuild(true) : setBuild(false)),
-      transitionDelay,
+      renderSkyline ? transitionDelay : transitionDelay - 200,
     );
     return () => clearTimeout(setTimeoutID);
-  }, [renderSkyline, build]);
+  }, [renderSkyline, build, delayEffectMs]);
 
   const shapeStyles = {
     height: `${height}px`,
@@ -95,7 +94,7 @@ const Building = ({ height, width, nodeVals, transitionDelay, renderSkyline }) =
           build ? "scale-y-100" : "scale-y-0"
         } structure flex origin-bottom flex-wrap place-content-evenly
           gap-[2px] border ${build ? "border-slate-600 bg-slate-600" : "border-foggy-glass bg-foggy-glass"}  
-          transition-all duration-[200ms]`}
+          transition-all ${renderSkyline ? "duration-[200ms]" : "ease-quick-slow duration-[300ms]"} `}
       >
         <Windows shapeH={height} shapeW={width} delay={transitionDelay} />
       </div>
@@ -107,9 +106,10 @@ type CityChunkProps = {
   direction: "left" | "right";
   chunkData: any;
   renderSkyline: boolean;
+  delayEffectMs: number;
 };
 
-const CityChunk = ({ direction, chunkData, renderSkyline }: CityChunkProps) => {
+const CityChunk = ({ direction, chunkData, renderSkyline, delayEffectMs }: CityChunkProps) => {
   const sortedChunkData =
     direction === "left"
       ? chunkData.sort((a, b) => (a.transitionDelay < b.transitionDelay ? 1 : -1))
@@ -118,7 +118,7 @@ const CityChunk = ({ direction, chunkData, renderSkyline }: CityChunkProps) => {
   const transitionDelays = sortedChunkData.map((obj) => obj.transitionDelay);
   const sortedTransitionDelays = renderSkyline ? transitionDelays : transitionDelays.reverse();
   const cityChunk = sortedChunkData.map((obj, i) => {
-    const { nodeVals, width, height, transitionDelay } = obj;
+    const { nodeVals, width, height } = obj;
     return (
       <Building
         key={`struct${i}`}
@@ -126,6 +126,7 @@ const CityChunk = ({ direction, chunkData, renderSkyline }: CityChunkProps) => {
         width={width}
         height={height}
         transitionDelay={sortedTransitionDelays[i]}
+        delayEffectMs={delayEffectMs}
         renderSkyline={renderSkyline}
       />
     );
@@ -150,9 +151,6 @@ type cityData = {
 };
 
 const Skyline = () => {
-  const [forestWidth, setForestWidth] = useState<number>(0);
-  const [skylineWidth, setSkylineWidth] = useState("");
-  const [cityWidth, setCityWidth] = useState<number>(0);
   const [delayEffectMs, setDelayEffectMs] = useState<number>(0);
   const forestWidthRef = useRef<HTMLDivElement>(null);
   const cityWidthRef = useRef<HTMLDivElement>(null);
@@ -163,8 +161,8 @@ const Skyline = () => {
   const $cityBuildingsState = useStore(cityBuildingsState);
 
   useEffect(() => {
-    const delayParkEffectMs = $forestState.forestLeft[$forestState.forestRight.length - 1]?.transitionDelay;
-    setDelayEffectMs(delayParkEffectMs);
+    const delayEffectMs = $forestState.forestRight[$forestState.forestRight.length - 1]?.transitionDelay;
+    setDelayEffectMs(delayEffectMs);
   }, [$forestState]);
 
   return (
@@ -185,6 +183,7 @@ const Skyline = () => {
           direction="left"
           chunkData={$cityBuildingsState.cityBuildingsLeft}
           renderSkyline={$renderSkyline}
+          delayEffectMs={delayEffectMs}
         />
         <CityPark
           delayEffectMs={delayEffectMs}
@@ -195,6 +194,7 @@ const Skyline = () => {
           direction="right"
           chunkData={$cityBuildingsState.cityBuildingsRight}
           renderSkyline={$renderSkyline}
+          delayEffectMs={delayEffectMs}
         />
       </div>
       <div id="forest-right" className="absolute -right-2 flex h-full w-1/4 items-end">
