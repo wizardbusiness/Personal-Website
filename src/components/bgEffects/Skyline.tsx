@@ -95,7 +95,7 @@ const Building = ({ height, width, nodeVals, transitionDelay, delayEffectMs, ren
   useEffect(() => {
     const setTimeoutID = setTimeout(
       () => (renderSkyline ? setBuild(true) : setBuild(false)),
-      renderSkyline ? transitionDelay : transitionDelay - 200,
+      renderSkyline ? transitionDelay : transitionDelay + 100,
     );
     return () => clearTimeout(setTimeoutID);
   }, [renderSkyline, build, delayEffectMs]);
