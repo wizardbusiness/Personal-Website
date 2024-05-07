@@ -20,7 +20,7 @@ module.exports = {
         84: "21rem",
       },
       transitionTimingFunction: {
-        "in-out-polar": "cubic-bezier(.41,1.22,.41,.16)",
+        "in-out-polar": "cubic-bezier(.25,1.31,.68,0)",
         "out-expo": "cubic-bezier(0, 1, 1, 0)",
         "quick-slow": "cubic-bezier(0,.53,1,0)",
       },

@@ -494,8 +494,7 @@ function goToInfoSection() {
           callback: function (...args: [TransitionStep]) {
             const timeoutID = setTimeout(() => {
               setCurrTransitionStep(...args);
-              clearTimeout(timeoutID);
-            }, 1200);
+            }, 1700);
           },
         },
         {
