@@ -31,7 +31,7 @@ const CityPark = ({ delayEffectMs, cityParkState, renderSkyline }) => {
       {cityParkState.map((treeData, index) => (
         <PineTree
           {...treeData}
-          delayParkEffectMs={delayEffectMs}
+          delayEffectMs={delayEffectMs}
           renderSkyline={renderSkyline}
           key={`tree-${index}`}
         />
