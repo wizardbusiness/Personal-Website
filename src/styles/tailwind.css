@@ -32,15 +32,6 @@
 }
 
 @layer components {
-  .window {
-    visibility: hidden;
-    transition: all 100ms;
-  }
-
-  .window.show {
-    visibility: visible;
-  }
-
   .caret-posit-default {
     transform: translateY(-5vh);
     transition: transform 0.3s ease-out;
