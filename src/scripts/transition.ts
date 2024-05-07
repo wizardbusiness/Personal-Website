@@ -492,8 +492,9 @@ function goToInfoSection() {
           callbackArgs: ["c"],
           // LINK #translations
           callback: function (...args: [TransitionStep]) {
-            setTimeout(() => {
+            const timeoutID = setTimeout(() => {
               setCurrTransitionStep(...args);
+              clearTimeout(timeoutID);
             }, 1200);
           },
         },
@@ -514,8 +515,9 @@ function goToInfoSection() {
           callbackArgs: [infoSectionContentGroup],
           // LINK #translations
           callback: function (...contentGroup: [HTMLElement]) {
-            setTimeout(() => {
+            const timeoutId = setTimeout(() => {
               translateUp(...contentGroup);
+              clearTimeout(timeoutId);
             }, 1800);
           },
         },
@@ -639,7 +641,7 @@ function goToLandingSection() {
   // set up landing section
   setOpacity(landingSection, "opacity-0");
   // use delay to keep info section in view during info section transform
-  setTimeout(() => {
+  const timeoutID = setTimeout(() => {
     setCurrTransitionStep("f");
     showSection([landingSection]);
     landingSection.scrollIntoView();
@@ -664,7 +666,10 @@ function goToLandingSection() {
     clearAnimationProperties(captionComponentBg);
     clearAnimationProperties(captionComponentFg);
     setTranslateDistance(captionComponent, "translate-y-0");
-    setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[50vh]"), 20);
+    const timeoutID = setTimeout(() => {
+      setTranslateDistance(captionComponent, "translate-y-[50vh]");
+      clearTimeout(timeoutID);
+    }, 20);
   }
 
   function finishTransitionToLandingSection() {
@@ -762,10 +767,12 @@ const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
 document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
 document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
 // have to do this again to get mutation observer to fire for some unknown reason
-setTimeout(
+const clearTimeoutID = setTimeout(
   () => document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`),
   20,
 );
+
+clearTimeout(clearTimeoutID);
 
 // EVENT LISTENERS
 
