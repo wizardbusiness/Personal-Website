@@ -15,7 +15,8 @@ import { renderSkyline, forestState, cityParkState, cityBuildingsState } from ".
 import "../../styles/tailwind.css";
 import { render } from "react-dom";
 
-const Window = ({ showWindow }) => {
+const Window = ({ showWindow, delay, renderSkyline }) => {
+  const [show, setShow] = useState(false);
   const [lightOn, setLightOn] = useState(showWindow);
   const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
 
@@ -28,16 +29,22 @@ const Window = ({ showWindow }) => {
     return () => clearInterval(cycleLight);
   }, [lightOn, frequency]);
 
+  useEffect(() => {
+    const setTimeoutID = setTimeout(() => {
+      renderSkyline ? setShow(true) : setShow(false);
+    }, delay);
+  }, [renderSkyline]);
+
   return (
     <div
-      className={`window ${
+      className={`window ${show ? "opacity-1" : "opacity-0"} ${
         lightOn && "show"
-      } h-[3px] w-[3px] bg-gray-100 shadow-[0px_0px_2px_2px_rgba(232,232,232,0.3)]`}
+      } h-[3px] w-[3px] bg-gray-100 shadow-[0px_0px_2px_2px_rgba(232,232,232,0.3)] transition-opacity duration-100`}
     />
   );
 };
 
-const Windows = ({ shapeH, shapeW, delay }) => {
+const Windows = ({ shapeH, shapeW, delay, renderSkyline }) => {
   const rows = Math.floor(shapeH / 7.5);
   const columns = Math.floor(shapeW / 7.5);
   const totalWindows = rows * columns;
@@ -61,7 +68,9 @@ const Windows = ({ shapeH, shapeW, delay }) => {
         intervalCounter = 0;
       }
     }
-    windows.push(<Window key={`window${i}`} showWindow={showWindow} />);
+    windows.push(
+      <Window key={`window${i}`} showWindow={showWindow} delay={delay * i} renderSkyline={renderSkyline} />,
+    );
     i++;
   }
   return windows.sort((a, b) => (a < b ? 1 : -1));
@@ -96,7 +105,7 @@ const Building = ({ height, width, nodeVals, transitionDelay, delayEffectMs, ren
           gap-[2px] border ${build ? "border-slate-600 bg-slate-600" : "border-foggy-glass bg-foggy-glass"}  
           transition-all ${renderSkyline ? "duration-[200ms]" : "ease-quick-slow duration-[300ms]"} `}
       >
-        <Windows shapeH={height} shapeW={width} delay={transitionDelay} />
+        <Windows shapeH={height} shapeW={width} delay={40} renderSkyline={renderSkyline} />
       </div>
     </>
   );
