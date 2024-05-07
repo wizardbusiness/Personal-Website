@@ -150,7 +150,7 @@ module.exports = {
             transformOrigin: "bottom",
           },
           "100%": {
-            backgroundColor: "#656c7d",
+            backgroundColor: "#6f7989",
 
             transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
             width: "var(--caption-width)",
@@ -159,7 +159,7 @@ module.exports = {
         },
         floatup: {
           "0%": {
-            backgroundColor: "#656c7d",
+            backgroundColor: "#6f7989",
             transform: "perspective(600px) rotateX(-10deg) scaleY(100%)",
             transformOrigin: "bottom",
           },
