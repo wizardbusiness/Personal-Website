@@ -25,8 +25,9 @@ const FirTree = ({
   const [grow, setGrow] = useState(false);
   useEffect(() => {
     const setTimeoutID = setTimeout(() => (renderSkyline ? setGrow(true) : setGrow(false)), transitionDelay);
-    () => clearTimeout(setTimeoutID);
+    return () => clearTimeout(setTimeoutID);
   }, [renderSkyline, transitionDelay]);
+  
   return (
     <svg
       height={`${height || 70}px`}
