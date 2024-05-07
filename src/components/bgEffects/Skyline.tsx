@@ -8,11 +8,11 @@ import "../../styles/tailwind.css";
 
 const Window = ({ showWindow, delay, renderSkyline }) => {
   const [lightOn, setLightOn] = useState(false);
-  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
+  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 80000));
 
   useEffect(() => {
     const cycleLight = setInterval(() => {
-      setFrequency(randomIntFromInterval(10000, 150000));
+      setFrequency(randomIntFromInterval(3000, 80000));
       setLightOn(!lightOn);
     }, frequency);
 
@@ -23,6 +23,8 @@ const Window = ({ showWindow, delay, renderSkyline }) => {
     const setTimeoutID = setTimeout(() => {
       renderSkyline ? setLightOn(true) : setLightOn(false);
     }, delay);
+
+    return () => clearTimeout(setTimeoutID);
   }, [renderSkyline, delay]);
 
   return (
@@ -173,8 +175,6 @@ type cityData = {
 
 const Skyline = () => {
   const [delayEffectMs, setDelayEffectMs] = useState<number>(0);
-  const forestWidthRef = useRef<HTMLDivElement>(null);
-  const cityWidthRef = useRef<HTMLDivElement>(null);
 
   const $renderSkyline = useStore(renderSkyline);
   const $forestState = useStore(forestState);
@@ -182,7 +182,7 @@ const Skyline = () => {
   const $cityBuildingsState = useStore(cityBuildingsState);
 
   useEffect(() => {
-    const delayEffectMs = $forestState.forestRight[$forestState.forestRight.length - 1]?.transitionDelay;
+    const delayEffectMs = $forestState.forestRight[$forestState.forestRight.length - 1]?.transitionDelay || 0;
     setDelayEffectMs(delayEffectMs);
   }, [$forestState]);
 
@@ -192,14 +192,10 @@ const Skyline = () => {
       onTransitionEnd={(e) => e.stopPropagation()}
       className="absolute bottom-0 -z-10 flex h-32 w-[var(--info-cont-width)] items-end justify-center"
     >
-      <div
-        id="forest-left"
-        ref={forestWidthRef}
-        className="absolute bottom-0 left-0 flex h-full w-1/4 items-end"
-      >
-        <Forest forestData={$forestState.forestLeft} direction={"left"} renderSkyline={$renderSkyline} />
+      <div id="forest-left" className="absolute bottom-0 left-0 flex h-full w-1/4 items-end">
+        <Forest forestData={$forestState.forestLeft} renderSkyline={$renderSkyline} />
       </div>
-      <div ref={cityWidthRef} className="absolute flex h-full w-1/2 items-end">
+      <div className="absolute flex h-full w-1/2 items-end">
         <CityChunk
           direction="left"
           chunkData={$cityBuildingsState.cityBuildingsLeft}
@@ -219,7 +215,7 @@ const Skyline = () => {
         />
       </div>
       <div id="forest-right" className="absolute -right-2 flex h-full w-1/4 items-end">
-        <Forest forestData={$forestState.forestRight} direction={"right"} renderSkyline={$renderSkyline} />
+        <Forest forestData={$forestState.forestRight} renderSkyline={$renderSkyline} />
       </div>
     </div>
   );
