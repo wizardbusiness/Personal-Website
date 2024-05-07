@@ -1,23 +1,13 @@
-import React, {
-  useState,
-  useMemo,
-  useEffect,
-  useRef,
-  type Dispatch,
-  type SetStateAction,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
 import { useStore } from "@nanostores/react";
 import { renderSkyline, forestState, cityParkState, cityBuildingsState } from "../../store";
 import "../../styles/tailwind.css";
-import { render } from "react-dom";
 
 const Window = ({ showWindow, delay, renderSkyline }) => {
-  const [show, setShow] = useState(false);
-  const [lightOn, setLightOn] = useState(showWindow);
+  const [lightOn, setLightOn] = useState(false);
   const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 150000));
 
   useEffect(() => {
@@ -31,14 +21,14 @@ const Window = ({ showWindow, delay, renderSkyline }) => {
 
   useEffect(() => {
     const setTimeoutID = setTimeout(() => {
-      renderSkyline ? setShow(true) : setShow(false);
+      renderSkyline ? setLightOn(true) : setLightOn(false);
     }, delay);
-  }, [renderSkyline]);
+  }, [renderSkyline, delay]);
 
   return (
     <div
-      className={`window ${show ? "opacity-1" : "opacity-0"} ${
-        lightOn && "show"
+      className={`window ${
+        showWindow && lightOn ? "opacity-1" : "opacity-0"
       } h-[3px] w-[3px] bg-gray-100 shadow-[0px_0px_2px_2px_rgba(232,232,232,0.3)] transition-opacity duration-100`}
     />
   );
@@ -48,7 +38,7 @@ const Windows = ({ shapeH, shapeW, delay, renderSkyline }) => {
   const rows = Math.floor(shapeH / 7.5);
   const columns = Math.floor(shapeW / 7.5);
   const totalWindows = rows * columns;
-  const windows = [];
+  const windowsProps = [];
   let i = 0;
   let showWindow = Math.random() <= 0.5 ? true : false;
   let intervalCounter = 0;
@@ -68,12 +58,34 @@ const Windows = ({ shapeH, shapeW, delay, renderSkyline }) => {
         intervalCounter = 0;
       }
     }
-    windows.push(
-      <Window key={`window${i}`} showWindow={showWindow} delay={delay * i} renderSkyline={renderSkyline} />,
-    );
+    const totalDelay = delay * i;
+    windowsProps.push({ showWindow, totalDelay });
     i++;
   }
-  return windows.sort((a, b) => (a < b ? 1 : -1));
+
+  const delayEffectMsOnShow = windowsProps.map((windowProps) => windowProps.totalDelay).reverse();
+  const delayEffectMsOnHide = [...delayEffectMsOnShow].reverse();
+
+  const windows = windowsProps.map((windowProps, i) => {
+    const { showWindow } = windowProps;
+
+    return renderSkyline ? (
+      <Window
+        key={`window${i}`}
+        showWindow={showWindow}
+        delay={delayEffectMsOnShow[i]}
+        renderSkyline={renderSkyline}
+      />
+    ) : (
+      <Window
+        key={`window${i}`}
+        showWindow={showWindow}
+        delay={delayEffectMsOnHide[i]}
+        renderSkyline={renderSkyline}
+      />
+    );
+  });
+  return windows;
 };
 
 const Building = ({ height, width, nodeVals, transitionDelay, delayEffectMs, renderSkyline }) => {
@@ -103,7 +115,7 @@ const Building = ({ height, width, nodeVals, transitionDelay, delayEffectMs, ren
           build ? "scale-y-100" : "scale-y-0"
         } structure flex origin-bottom flex-wrap place-content-evenly
           gap-[2px] border ${build ? "border-slate-600 bg-slate-600" : "border-foggy-glass bg-foggy-glass"}  
-          transition-all ${renderSkyline ? "duration-[200ms]" : "ease-quick-slow duration-[300ms]"} `}
+          transition-all ${renderSkyline ? "duration-[200ms]" : "duration-[300ms] ease-quick-slow"} `}
       >
         <Windows shapeH={height} shapeW={width} delay={40} renderSkyline={renderSkyline} />
       </div>
