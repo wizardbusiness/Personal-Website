@@ -12,7 +12,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 
 <AboutSectionLayout data-info-page slot="info-section">
   <Nav slot="nav" location="info-section" />
-  <Skyline slot="skyline" client:load />
+  <Skyline slot="skyline" client:only />
   <ScrollCaret slot="caret" section="info" />
   <Bio slot="about" />
   <Portfolio slot="portfolio" />
@@ -58,7 +58,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     treeDelay: number,
     direction: "left" | "right",
   ) => {
-    const chunkWidth = element.getBoundingClientRect().width;
+    const chunkWidth = Math.round(element.getBoundingClientRect().width / 4);
     const chunk = [];
     let offset = 0;
     let currTree = 0;
@@ -97,11 +97,10 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     30, // tree delay
   ];
 
-  const forestLeftContainer: HTMLElement = document.querySelector("#forest-left");
-  const forestRightContainer: HTMLElement = document.querySelector("#forest-right");
+  const infoSectionContentGroup: HTMLElement = document.querySelector("#info-section-content-group");
 
-  const forestLeft = generateForestChunk(forestLeftContainer, ...forestSeedData, "left");
-  const forestRight = generateForestChunk(forestRightContainer, ...forestSeedData, "right");
+  const forestLeft = generateForestChunk(infoSectionContentGroup, ...forestSeedData, "left");
+  const forestRight = generateForestChunk(infoSectionContentGroup, ...forestSeedData, "right");
 
   forestState.set({ forestLeft, forestRight });
 
@@ -180,7 +179,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     maxWidth: number,
     delay: number,
   ) {
-    const containerElementWidth = containerElement.getBoundingClientRect().width;
+    const containerElementWidth = Math.round(containerElement.getBoundingClientRect().width / 6);
     const totalAvailableWidth = containerElementWidth;
     let chunkState = [];
     let currChunkWidth = 0;
@@ -215,11 +214,8 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     85, // delay
   ];
 
-  const cityLeftContainer: HTMLElement = document.querySelector("#city-left");
-  const cityRightContainer: HTMLElement = document.querySelector("#city-right");
-
-  const buildingsLeft = generateCityChunkState(cityLeftContainer, ...buildingSeedData);
-  const buildingsRight = generateCityChunkState(cityRightContainer, ...buildingSeedData);
+  const buildingsLeft = generateCityChunkState(infoSectionContentGroup, ...buildingSeedData);
+  const buildingsRight = generateCityChunkState(infoSectionContentGroup, ...buildingSeedData);
   cityBuildingsState.set({ cityBuildingsLeft: buildingsLeft, cityBuildingsRight: buildingsRight });
 
   function generateParkTreeState(
@@ -280,7 +276,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     minDelay: number,
     maxDelay: number,
   ) {
-    const parkWidth = Math.round(parkContainer.getBoundingClientRect().width);
+    const parkWidth = Math.round(parkContainer.getBoundingClientRect().width / 6);
     let currParkWidth = 0;
     const park = [];
     while (currParkWidth + treeWidth < parkWidth) {
@@ -343,7 +339,6 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
     500, // max delay
   ];
 
-  const parkContainer: HTMLElement = document.querySelector("#city-park");
-  const cityPark = generateParkState(parkContainer, ...parkSeedData);
+  const cityPark = generateParkState(infoSectionContentGroup, ...parkSeedData);
   cityParkState.set(cityPark);
 </script>
