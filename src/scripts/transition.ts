@@ -494,7 +494,7 @@ function goToInfoSection() {
           callback: function (...args: [TransitionStep]) {
             setTimeout(() => {
               setCurrTransitionStep(...args);
-            }, 1200);
+            }, 1700);
           },
         },
         {
