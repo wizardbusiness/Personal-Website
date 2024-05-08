@@ -1,5 +1,5 @@
 ---
-import AboutSectionLayout from "../layouts/about-section-layout.astro";
+import InfoSectionLayout from "../layouts/info-section-layout.astro";
 import ScrollCaret from "../components/ScrollCaret.astro";
 import Nav from "../components/Nav.astro";
 import Skyline from "../components/bgEffects/Skyline";
@@ -10,7 +10,7 @@ import IllHandleTheRest from "../components/flavorText/IllHandleTheRest.astro";
 import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
 ---
 
-<AboutSectionLayout data-info-page slot="info-section">
+<InfoSectionLayout data-info-page slot="info-section">
   <Nav slot="nav" location="info-section" />
   <Skyline slot="skyline" client:only />
   <ScrollCaret slot="caret" section="info" />
@@ -19,7 +19,7 @@ import YouDreamIt from "../components/flavorText/YouDreamIt.astro";
   <YouDreamIt slot="flav-text-a" />
   <Tech slot="tech" />
   <IllHandleTheRest slot="flav-text-b" />
-</AboutSectionLayout>
+</InfoSectionLayout>
 <script>
   import {
     randomIntFromInterval,
