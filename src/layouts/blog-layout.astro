@@ -1,0 +1,12 @@
+---
+import MainLayout from "./main-layout.astro";
+---
+
+<MainLayout>
+  <div id="blog" slot="page" class="flex h-full w-full justify-center">
+    <slot name="blog-nav" />
+    <section class="w-[80%] bg-blue-smoke">
+      <slot name="blog" />
+    </section>
+  </div>
+</MainLayout>
