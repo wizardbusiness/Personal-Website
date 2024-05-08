@@ -757,7 +757,12 @@ const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLand
 // DO STUFF HERE
 
 // start with scroll disabled
-disableScroll(true);
+
+window.addEventListener("beforeunload", () => {
+  showSection([landingSection]);
+  disableScroll(true);
+  window.scrollTo(0, 0);
+});
 
 // set css variables in advance - this lets them also be accessible to the skyline effect, which is a react component.
 const captionComponentWidth = captionComponent.getBoundingClientRect().width;
