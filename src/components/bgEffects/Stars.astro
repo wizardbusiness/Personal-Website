@@ -59,8 +59,8 @@
       };
       while (currCell < cellCount) {
         // x y is center of each cell.
-        const x = Math.round(currColumn * cellWidth + cellWidth / (window.innerWidth * 0.00105));
-        const y = Math.round(currRow * cellHeight + cellHeight / (window.innerWidth * 0.00105));
+        const x = Math.round(currColumn * cellWidth + cellWidth / 2);
+        const y = Math.round(currRow * cellHeight + cellHeight / 2);
         // use id to check which cells an object occupies
         const id = `c${currColumn}r${currRow}`;
         const cell = createCell(id, x, y, cellWidth, cellHeight);
@@ -162,6 +162,7 @@
       starCount: number,
       context: CanvasRenderingContext2D,
       screenWidth: number,
+      screenHeight: number,
     ): Star[] => {
       const stars = [];
       // cache an area, so that any coords that fall within the same area are rerun.
@@ -169,10 +170,12 @@
       const collisionMap = {};
       // preload collision map with any divs you want to avoid collisions with.
       divCollisionObjs.forEach((obj) => handleCollisions(grid, obj, collisionMap)());
-      const minStarWidth = screenWidth * 0.0026;
-      const meanStarWidth = screenWidth * 0.0026;
-      const variance = screenWidth * 0.0026;
-      const maxStarWidth = screenWidth * 0.013;
+      const minStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.003472, 5);
+      console.log(minStarWidth);
+      const meanStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0036, 5);
+      const maxStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.017, 25);
+      console.log(maxStarWidth);
+      const variance = 5;
       for (let i = 0; i < starCount; i++) {
         const width = Math.floor(
           generateWeightedRandomInRange(minStarWidth, maxStarWidth, meanStarWidth, variance),
@@ -203,7 +206,8 @@
     };
     const starCount = Math.floor((window.innerHeight * window.innerWidth) / (window.innerWidth * 1.82));
     const screenWidth = window.innerWidth;
-    const stars: Star[] = generateStars(starCount, context, screenWidth);
+    const screenHeight = window.innerHeight;
+    const stars: Star[] = generateStars(starCount, context, screenWidth, screenHeight);
     const starTrailCanvas: HTMLCanvasElement = document.querySelector("#canvas2");
     const starTrailContext = starTrailCanvas.getContext("2d");
     const starTrailCanvasHeight = window.innerHeight * pixelRatio;
