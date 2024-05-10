@@ -170,10 +170,10 @@
       const collisionMap = {};
       // preload collision map with any divs you want to avoid collisions with.
       divCollisionObjs.forEach((obj) => handleCollisions(grid, obj, collisionMap)());
-      const minStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.003472, 5);
+      const minStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0035, 5);
       console.log(minStarWidth);
-      const meanStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0036, 5);
-      const maxStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.017, 25);
+      const meanStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0037, 5);
+      const maxStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.018, 25);
       console.log(maxStarWidth);
       const variance = 5;
       for (let i = 0; i < starCount; i++) {
