@@ -1,10 +1,7 @@
-import { slide } from "astro/transitions";
-import CaptionContainer from "../components/CaptionContainer.astro";
 import disableScroll from "./disableScroll";
 import { renderSkyline } from "../store";
 
 // elements
-const root: HTMLElement = document.querySelector(":root");
 const body: HTMLElement = document.querySelector("body");
 const main: HTMLElement = document.querySelector("main");
 const landingSection: HTMLElement = document.querySelector("#landing");
