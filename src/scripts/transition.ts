@@ -466,7 +466,7 @@ function handleUserOnLandingSection(e: Event, deltaY: number) {
 function goToInfoSection() {
   setCurrTransitionStep("b");
   setTransitionTiming(captionComponent, "ease-in-out-polar");
-  setTransitionDuration(captionComponent, "duration-[3500ms]");
+  setTransitionDuration(captionComponent, "duration-[3000ms]");
   setTranslateDistance(captionComponent, "translate-y-[0vh]");
 
   const finishTransitionToInfoSection = () => {
@@ -651,7 +651,7 @@ function goToLandingSection() {
     document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
     captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
     // add in new transition properties
-    setTransitionDuration(captionComponent, "duration-[4000ms]");
+    setTransitionDuration(captionComponent, "duration-[3000ms]");
     setTransitionTiming(captionComponent, "ease-in-out");
     // clear animation on caption component (if present, will interfere with translate transform)
     clearAnimationProperties(captionComponent);
