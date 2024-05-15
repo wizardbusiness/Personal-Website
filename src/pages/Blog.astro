@@ -1,8 +1,12 @@
 ---
 import BlogLayout from "../layouts/blog-layout.astro";
-import blogNav from "../components/blog/blogNav.astro";
+import BlogHeader from "../components/blog/BlogHeader.astro";
+import BlogContent from "../components/blog/BlogContent.astro";
+import BlogNav from "../components/blog/BlogNav.astro";
 ---
 
 <BlogLayout>
-  <div class="h-full w-full" slot="blog">Blog</div>
+  <BlogHeader slot="blog-header" />
+  <BlogNav slot="blog-nav" />
+  <BlogContent slot="blog-content" />
 </BlogLayout>

@@ -3,10 +3,17 @@ import MainLayout from "./main-layout.astro";
 ---
 
 <MainLayout>
-  <div id="blog" slot="page" class="flex h-full w-full justify-center">
-    <slot name="blog-nav" />
-    <section class="w-[80%] bg-blue-smoke">
-      <slot name="blog" />
+  <div id="blog" slot="page" class="flex h-full w-full flex-col items-center justify-center">
+    <section class="h-full w-[80%]">
+      <slot name="blog-header" />
+      <div class="flex h-full w-full gap-[5%] bg-blue-smoke p-10">
+        <div class="w-[10%] flex-grow">
+          <slot name="blog-nav" />
+        </div>
+        <div class="w-[90%] flex-shrink">
+          <slot name="blog-content" />
+        </div>
+      </div>
     </section>
   </div>
 </MainLayout>
