@@ -40,13 +40,6 @@ function addCSSClass(freshClass: string) {
     element.classList.add(freshClass);
   };
 }
-// ******************************************************************************************************
-
-function resetAllStyleProperties() {
-  return (element: HTMLElement) => {
-    element.attributeStyleMap.clear();
-  };
-}
 
 // ******************************************************************************************************
 
@@ -134,8 +127,6 @@ const floatUpMore = animateElement("animate-float-up-more");
 const floatInPlace = animateElement("animate-float-in-place");
 const bringDown = animateElement("animate-bring-down");
 const slideDown = animateElement("animate-slide-down");
-const schoochUp = animateElement("animate-scooch-up");
-const pulse = animateElement("animate-pulse");
 
 // ******************************************************************************************************
 
@@ -156,20 +147,6 @@ function translateElement(staleTranslation: Translations, freshTranslation: Tran
 const translateUp = translateElement("translate-y-[100vh]", "translate-y-[0vh]");
 const translateDown = translateElement("translate-y-[0vh]", "translate-y-[100vh]");
 // ******************************************************************************************************
-
-function clearPropertyFromEachElement(
-  elements: NodeListOf<HTMLElement>,
-  cssClass: string,
-  action: "remove" | "add",
-) {
-  elements.forEach((element) => {
-    if (action === "add") {
-      element.classList.add(cssClass);
-    } else if (action === "remove") {
-      element.classList.remove(cssClass);
-    }
-  });
-}
 
 function clearPropertiesAndSetNew(classRootStrs: string[]) {
   return (element: HTMLElement, freshClass?: string) => {
@@ -755,11 +732,23 @@ const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLand
 
 // start with scroll disabled
 
-window.addEventListener("beforeunload", () => {
+function handleBeforeUnload() {
   showSection([landingSection]);
   disableScroll(true);
   window.scrollTo(0, 0);
-});
+  window.removeEventListener("beforeunload", handleBeforeUnload);
+  main.removeEventListener("wheel", preventScrollOnMain);
+  main.removeEventListener("touchmove", preventTouchOnMain);
+  landingSection.removeEventListener("wheel", handleScrollOnLandingSection);
+  landingSection.removeEventListener("touchstart", handleSwipeOnLandingSection);
+  myTitle.removeEventListener("animationend", handleMyTitleAnimationEnd);
+  infoSectionPreNavArea.removeEventListener("transitionend", handlePreNavTransitionEnd);
+  infoSectionNavBar.removeEventListener("transitionend", handleNavBarTransitionEnd);
+  infoSectionContentGroup.removeEventListener("transitionend", handleInfoSectionContentTransitionEnd);
+  
+}
+
+window.addEventListener("beforeunload", handleBeforeUnload);
 
 // set css variables in advance - this lets them also be accessible to the skyline effect, which is a react component.
 const captionComponentWidth = captionComponent.getBoundingClientRect().width;
@@ -777,29 +766,25 @@ clearTimeout(clearTimeoutID);
 
 // EVENT LISTENERS
 
-main.addEventListener(
-  "wheel",
-  (e) => {
-    const inTransition = checkIfInTransition();
-    if (inTransition) {
-      e.preventDefault();
-      disableScroll(true);
-    }
-  },
-  { passive: false },
-);
+function preventScrollOnMain(e: WheelEvent) {
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+    disableScroll(true);
+  }
+}
 
-main.addEventListener(
-  "touchmove",
-  (e) => {
-    const inTransition = checkIfInTransition();
-    if (inTransition) {
-      e.preventDefault();
-      disableScroll(true);
-    }
-  },
-  { passive: false },
-);
+main.addEventListener("wheel", preventScrollOnMain, { passive: false });
+
+function preventTouchOnMain(e: TouchEvent) {
+  const inTransition = checkIfInTransition();
+  if (inTransition) {
+    e.preventDefault();
+    disableScroll(true);
+  }
+}
+
+main.addEventListener("touchmove", preventTouchOnMain, { passive: false });
 
 landingSection.addEventListener("wheel", handleScrollOnLandingSection, { passive: false });
 landingSection.addEventListener("touchstart", handleSwipeOnLandingSection, { passive: false });
@@ -809,24 +794,28 @@ const handleScrollOnInfoSection = handleScroll(infoSection, handleUserOnInfoSect
 infoSection.addEventListener("touchstart", handleSwipeOnInfoSection, { passive: false });
 infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: false });
 
-myTitle.addEventListener("animationend", () => {
+function handleMyTitleAnimationEnd() {
   if (myTitle.classList.contains("animate-slide-down")) {
     setCurrTransitionStep("");
     setInTransition(false);
     setOpacity(landingSectionCaret, "opacity-1");
   }
-});
+}
 
-captionComponent.addEventListener("transitionend", () => {
+myTitle.addEventListener("animationend", handleMyTitleAnimationEnd);
+
+function handleCaptionComponentTransitionEnd() {
   const currSection = getCurrSection();
   const inTransition = checkIfInTransition();
   const currTransitionStep = getCurrTransitionStep();
   if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
   }
-});
+}
 
-infoSectionPreNavArea.addEventListener("transitionend", () => {
+captionComponent.addEventListener("transitionend", handleCaptionComponentTransitionEnd);
+
+function handlePreNavTransitionEnd() {
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
   if (preNavOpening) {
@@ -837,13 +826,16 @@ infoSectionPreNavArea.addEventListener("transitionend", () => {
     setPreNavOpen(false);
     disableScroll(false);
   }
-});
+}
+infoSectionPreNavArea.addEventListener("transitionend", handlePreNavTransitionEnd);
 
-infoSectionNavBar.addEventListener("transitionend", (e: TransitionEvent) => {
+function handleNavBarTransitionEnd(e: TransitionEvent) {
   e.stopPropagation();
-});
+}
 
-infoSectionContentGroup.addEventListener("transitionend", () => {
+infoSectionNavBar.addEventListener("transitionend", handleNavBarTransitionEnd);
+
+function handleInfoSectionContentTransitionEnd() {
   const inTransition = checkIfInTransition();
   const currSection = getCurrSection();
   if (inTransition && currSection === "info") {
@@ -854,7 +846,9 @@ infoSectionContentGroup.addEventListener("transitionend", () => {
     infoSection.scrollIntoView();
     disableScroll(false);
   }
-});
+}
+
+infoSectionContentGroup.addEventListener("transitionend", handleInfoSectionContentTransitionEnd);
 
 let options = {
   root: null,
