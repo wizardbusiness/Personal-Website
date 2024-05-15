@@ -618,6 +618,7 @@ function goToLandingSection() {
     setCurrTransitionStep("f");
     showSection([landingSection]);
     landingSection.scrollIntoView();
+    clearTimeout(timeoutID);
   }, 500);
 
   function setupCaptionComponentForMoveToLanding() {
@@ -736,7 +737,6 @@ function handleBeforeUnload() {
   showSection([landingSection]);
   disableScroll(true);
   window.scrollTo(0, 0);
-  window.removeEventListener("beforeunload", handleBeforeUnload);
   main.removeEventListener("wheel", preventScrollOnMain);
   main.removeEventListener("touchmove", preventTouchOnMain);
   landingSection.removeEventListener("wheel", handleScrollOnLandingSection);
@@ -745,7 +745,7 @@ function handleBeforeUnload() {
   infoSectionPreNavArea.removeEventListener("transitionend", handlePreNavTransitionEnd);
   infoSectionNavBar.removeEventListener("transitionend", handleNavBarTransitionEnd);
   infoSectionContentGroup.removeEventListener("transitionend", handleInfoSectionContentTransitionEnd);
-  
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 }
 
 window.addEventListener("beforeunload", handleBeforeUnload);
