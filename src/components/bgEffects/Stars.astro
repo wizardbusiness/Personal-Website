@@ -172,10 +172,8 @@
       // preload collision map with any divs you want to avoid collisions with.
       divCollisionObjs.forEach((obj) => handleCollisions(grid, obj, collisionMap)());
       const minStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0035, 5);
-      console.log(minStarWidth);
       const meanStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.0037, 5);
       const maxStarWidth = Math.max(Math.sqrt(screenWidth * screenHeight) * 0.018, 25);
-      console.log(maxStarWidth);
       const variance = 5;
       for (let i = 0; i < starCount; i++) {
         const width = Math.floor(
@@ -235,13 +233,13 @@
   };
 
   const renderShootingStars = () => {
-    const canvas2: HTMLCanvasElement = document.querySelector("#shooting-stars");
-    const context = canvas2.getContext("2d");
+    const shootingStarCanvas: HTMLCanvasElement = document.querySelector("#shooting-stars");
+    const context = shootingStarCanvas.getContext("2d");
     const pixelRatio = window.devicePixelRatio || 1;
     const height = window.innerHeight * pixelRatio;
     const width = window.innerWidth * pixelRatio;
-    canvas2.height = height;
-    canvas2.width = width;
+    shootingStarCanvas.height = height;
+    shootingStarCanvas.width = width;
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     const shootingStar = new ShootingStar(context);
     shootingStar.drawShootingStar();
@@ -379,7 +377,6 @@
       );
 
       const brightness = this.stepBetweenValues(0.5, 0.7, 0.003);
-      // console.log(brightness);
 
       gradient.addColorStop(0, "rgb(242, 242, 242, 0)");
       gradient.addColorStop(0.07, `rgb(242, 242, 242, ${brightness})`);
@@ -478,35 +475,46 @@
     }
 
     getNewEndpoint() {
-      const x = Math.round(this.origin.x - this.length * Math.cos(this.theta));
-      const y = Math.round(this.origin.y - this.length * Math.sin(this.theta));
+      const x = Math.round(this.origin.x + this.length * Math.cos(this.theta));
+      const y = Math.round(this.origin.y + this.length * Math.sin(this.theta));
       return {x, y}
     }
 
     drawShootingStar() {
       console.log(this.origin, this.endPoint)
       const gradient = this.context.createRadialGradient(
+      this.endPoint.x, // x end
+        this.endPoint.y, // y end
+        
+        25, // r origin 
         this.origin.x, // x origin
         this.origin.y, // y origin
-        25, // r origin 
-        this.endPoint.x, // x end
-        this.endPoint.y, // y end
         75, // r end
       );
 
       gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
-      // gradient.addColorStop(0.07, `rgb(242, 242, 242, 0.5)`);
-      // gradient.addColorStop(0.1, "rgb(242, 242, 242, 0)");
-      // gradient.addColorStop(0.5, "rgb(242, 242, 242, 0.5)");
       gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
+      // this.context.lineCap = "round";
+      this.context.beginPath();
+      this.context.moveTo(this.origin.x, this.origin.y);
+      this.context.lineWidth = this.width;
+      
+      this.context.lineTo(this.endPoint.x, this.endPoint.y);
+      this.context.strokeStyle = gradient;
+      this.context.stroke();
 
 
       this.context.beginPath();
-      this.context.moveTo(this.origin.x, this.origin.y);
-      this.context.lineTo(this.endPoint.x, this.endPoint.y);
-      this.context.lineWidth = this.width
-      this.context.strokeStyle = gradient
-      this.context.stroke();
+      this.context.moveTo(this.endPoint.x, this.endPoint.y);
+      this.context.arc(this.endPoint.x, this.endPoint.y, Math.floor(this.width / 2), 0, 2 * Math.PI)
+      this.context.fillStyle = "rgba(242, 242, 242, 1)";
+      this.context.fill();
+
+      // this.context.lineWidth = this.width;
+      // this.context.lineCap = "round";
+      // this.context.lineTo(this.endPoint.x + 400, this.endPoint.y);
+      // this.context.strokeStyle = gradient;
+      // this.context.stroke();
     }
   }
   renderShootingStars();
