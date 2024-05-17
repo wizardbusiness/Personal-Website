@@ -452,18 +452,16 @@
     public length: number;
     public width: number;
     public context: CanvasRenderingContext2D;
-    public origin: {x: number, y: number}
-    public endPoint: {x: number, y: number};
     public boundingWidth: number;
     public boundingHeight: number;
     public boundingBoxSides: {up: number, right: number, down: number, left: number}
+    public currEndPoint: {x: number, y: number}
     constructor(context: CanvasRenderingContext2D) {
-      this.theta = randomIntFromInterval(0, 270) * Math.PI / 180; // derive radians from degrees
-      this.length = randomIntFromInterval(400, 600);
       this.context = context
+      this.length = randomIntFromInterval(400, 600);
+      this.width = randomIntFromInterval(2, 5);
       this.boundingHeight = window.innerHeight;
       this.boundingWidth = window.innerWidth
-      this.width = randomIntFromInterval(2, 5);
       this.boundingBoxSides = {up: 0, right: window.innerWidth, down: window.innerHeight, left: 0 }
     }
 
