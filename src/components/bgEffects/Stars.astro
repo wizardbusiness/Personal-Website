@@ -456,65 +456,105 @@
     public endPoint: {x: number, y: number};
     public boundingWidth: number;
     public boundingHeight: number;
+    public boundingBoxSides: {up: number, right: number, down: number, left: number}
     constructor(context: CanvasRenderingContext2D) {
-      this.theta = randomIntFromInterval(20, 160) * Math.PI / 180; // derive radians from degrees
-      this.length = randomIntFromInterval(400, 800);
+      this.theta = randomIntFromInterval(0, 270) * Math.PI / 180; // derive radians from degrees
+      this.length = randomIntFromInterval(400, 600);
       this.context = context
       this.boundingHeight = window.innerHeight;
       this.boundingWidth = window.innerWidth
       this.width = randomIntFromInterval(2, 5);
-      this.origin = this.getNewStartPoint();
-      this.endPoint = this.getNewEndpoint();
-      
+      this.boundingBoxSides = {up: 0, right: window.innerWidth, down: window.innerHeight, left: 0 }
     }
 
-    getNewStartPoint() {
+    genNewOrigin() {
       const x = randomIntFromInterval(0, this.boundingWidth);
       const y = randomIntFromInterval(0, this.boundingHeight)
-      return {x, y};
+      return {x, y}
     }
 
-    getNewEndpoint() {
-      const x = Math.round(this.origin.x + this.length * Math.cos(this.theta));
-      const y = Math.round(this.origin.y + this.length * Math.sin(this.theta));
+    getThetaRange(origin: {x: number, y: number}) {
+      let degMin: number;
+      let degMax: number 
+      // check for collisions with bounding box sides by sending out collision rays the length of the shooting star
+      const collisions = {
+        up: (origin.y - this.length) < this.boundingBoxSides.up, 
+        right: (origin.x + this.length) > this.boundingBoxSides.right, 
+        down: (origin.y + this.length) > this.boundingBoxSides.down, 
+        left: (origin.x - this.length) < this.boundingBoxSides.left
+      };
+      // subtract quadrants in bb which contain collisions
+      if (collisions.up) {
+        if (collisions.up && collisions.right) {
+          console.log("up right")
+          degMin = 90;
+          degMax = 180;
+        } else if (collisions.up && collisions.left) {
+          console.log("up left")
+          degMin = 0;
+          degMax = 90;
+        } else {
+          console.log('up')
+          degMin = 0;
+          degMax = 180;
+        }
+      } else if (collisions.down) {
+        if (collisions.down && collisions.right) {
+          degMin = 180;
+          degMax = 270;
+        } else if (collisions.down && collisions.left) {
+          degMin = -90;
+          degMax = 0;
+        } else {
+          degMin = 180;
+          degMax = 360;
+        }
+      } else {
+        degMin = 0;
+        degMax = 360
+      }
+
+      const theta = randomIntFromInterval(degMin, degMax) / 180 * Math.PI;
+      return theta;
+    }
+
+
+    genNewEndpoint(origin: {x: number, y: number}) {   
+      const theta = this.getThetaRange(origin)
+      console.log("theta", theta)
+      const x = Math.round(origin.x + this.length * Math.cos(theta));
+      const y = Math.round(origin.y + this.length * Math.sin(theta));
       return {x, y}
     }
 
     drawShootingStar() {
-      console.log(this.origin, this.endPoint)
+      const origin = this.genNewOrigin()
+      const endPoint = this.genNewEndpoint(origin);
+
       const gradient = this.context.createRadialGradient(
-      this.endPoint.x, // x end
-        this.endPoint.y, // y end
-        
+        endPoint.x, // x end
+        endPoint.y, // y end
         25, // r origin 
-        this.origin.x, // x origin
-        this.origin.y, // y origin
+        origin.x, // x origin
+        origin.y, // y origin
         75, // r end
       );
 
       gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
       gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
-      // this.context.lineCap = "round";
       this.context.beginPath();
-      this.context.moveTo(this.origin.x, this.origin.y);
+      this.context.moveTo(endPoint.x, endPoint.y);
       this.context.lineWidth = this.width;
       
-      this.context.lineTo(this.endPoint.x, this.endPoint.y);
+      this.context.lineTo(origin.x, origin.y);
       this.context.strokeStyle = gradient;
       this.context.stroke();
 
-
       this.context.beginPath();
-      this.context.moveTo(this.endPoint.x, this.endPoint.y);
-      this.context.arc(this.endPoint.x, this.endPoint.y, Math.floor(this.width / 2), 0, 2 * Math.PI)
+      this.context.moveTo(endPoint.x, endPoint.y);
+      this.context.arc(endPoint.x, endPoint.y, Math.floor(this.width / 2), 0, 2 * Math.PI)
       this.context.fillStyle = "rgba(242, 242, 242, 1)";
       this.context.fill();
-
-      // this.context.lineWidth = this.width;
-      // this.context.lineCap = "round";
-      // this.context.lineTo(this.endPoint.x + 400, this.endPoint.y);
-      // this.context.strokeStyle = gradient;
-      // this.context.stroke();
     }
   }
   renderShootingStars();
