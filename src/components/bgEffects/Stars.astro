@@ -540,42 +540,46 @@
 
         const currTimeMs = Date.now();
         const elapsedMs = currTimeMs - prevTimeMs;
-        const interval = 10;
+        const interval = 14;
         if ( elapsedMs >= interval) { 
           prevTimeMs = currTimeMs;
           this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-          this.context.beginPath();
-          this.context.moveTo(origin.x, origin.y)
-          this.context.arc(origin.x, origin.y, 10, 0, Math.PI * 2);
-          this.context.fillStyle = "green";
-          this.context.fill()
-          this.context.closePath();
+          // this.context.beginPath();
+          // this.context.moveTo(origin.x, origin.y)
+          // this.context.arc(origin.x, origin.y, 10, 0, Math.PI * 2);
+          // this.context.fillStyle = "green";
+          // this.context.fill()
+          // this.context.closePath();
 
-          this.context.beginPath();
-          this.context.moveTo(endPoint.x, endPoint.y)
-          this.context.arc(endPoint.x, endPoint.y, 10, 0, Math.PI * 2);
-          this.context.fillStyle = "red";
-          this.context.fill()
-          this.context.closePath();
+          // this.context.beginPath();
+          // this.context.moveTo(endPoint.x, endPoint.y)
+          // this.context.arc(endPoint.x, endPoint.y, 10, 0, Math.PI * 2);
+          // this.context.fillStyle = "red";
+          // this.context.fill()
+          // this.context.closePath();
 
           const currRun = currX - origin.x;
           const currRise = currY - origin.y
-          const currLength = Math.sqrt(currRun ** 2 + currRise ** 2); // find current length of shooting star
+          const currDistance = Math.sqrt(currRun ** 2 + currRise ** 2); // find current length of shooting star
 
-          currX += (distance / interval) * Math.cos(theta)
-          currY += (distance / interval) * Math.sin(theta)
+          if (currDistance < distance) {
+            currX += (distance / interval) * Math.cos(theta)
+            currY += (distance / interval) * Math.sin(theta)
+          }
+
+          
           
           const gradient = this.context.createRadialGradient(
-            currX, // x end
-            currY, // y end
-            currLength * ( 1 / 40), // r origin 
             origin.x, // x origin
             origin.y, // y origin
-            currLength * ( 3 / 16 ), // r end
+            0, // r origin 
+            currX, // x end
+            currY, // y end
+            currDistance * (3/16), // r end
         );
 
-        gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
-        gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
+        gradient.addColorStop(0, "rgb(242, 242, 242, 0)");
+        gradient.addColorStop(1, "rgb(242, 242, 242, 1)");
 
         this.context.lineWidth = this.width;
         this.context.strokeStyle = gradient;
