@@ -510,13 +510,12 @@
       }
 
       const theta = randomIntFromInterval(degMin, degMax) / 180 * Math.PI;
-      return theta;
+      return Math.floor(theta * 100) / 100; // round to two decimals;
     }
 
 
     genNewEndpoint(origin: {x: number, y: number}) {   
       const theta = this.getThetaRange(origin)
-      console.log("theta", theta)
       const x = Math.round(origin.x + this.length * Math.cos(theta));
       const y = Math.round(origin.y + this.length * Math.sin(theta));
       return {x, y}
@@ -529,7 +528,7 @@
       const endPoint = this.genNewEndpoint(origin);
       const rise = (endPoint.y - origin.y)
       const run = (endPoint.x - origin.x)
-      const slope = rise / run
+      const slope = Math.round((rise / run) * 100) / 100;
     
       const draw = () => {
         this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -538,7 +537,7 @@
         // else {
           console.log("run", run, "slope", slope, "currX", currX," currY", currY, "endX", endPoint.x, "endY", endPoint.y)
           currX += 1;
-          currY += slope;
+          currY += Math.round(slope);
         // };
         const currRun = currX - origin.x;
         const currRise = currY - origin.y
