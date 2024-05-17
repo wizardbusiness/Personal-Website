@@ -529,16 +529,26 @@
       const rise = (endPoint.y - origin.y)
       const run = (endPoint.x - origin.x)
       const slope = Math.round((rise / run) * 100) / 100;
-    
+      console.log("slope", slope, "rise", rise, "run", run)
+      
       const draw = () => {
         this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        // if (slope < 0 && currY < endPoint.y) return;
-        // else if (slope > 0 && currY > endPoint.y) return;
-        // else {
-          console.log("run", run, "slope", slope, "currX", currX," currY", currY, "endX", endPoint.x, "endY", endPoint.y)
-          currX += 1;
-          currY += Math.round(slope);
-        // };
+        this.context.beginPath();
+        this.context.moveTo(origin.x, origin.y)
+        this.context.arc(origin.x, origin.y, 10, 0, Math.PI * 2);
+        this.context.fillStyle = "green";
+        this.context.fill()
+        this.context.closePath();
+
+        this.context.beginPath();
+        this.context.moveTo(endPoint.x, endPoint.y)
+        this.context.arc(endPoint.x, endPoint.y, 10, 0, Math.PI * 2);
+        this.context.fillStyle = "red";
+        this.context.fill()
+        this.context.closePath();
+
+        currX += run > 0 ? 1 : -1;
+        currY += run > 0 ? slope : -slope;
         const currRun = currX - origin.x;
         const currRise = currY - origin.y
         const currLength = Math.sqrt(currRun ** 2 + currRise ** 2); // find current length of shooting star
