@@ -510,29 +510,29 @@
       // subtract quadrants in bb which contain collisions
       if (collisions.up) {
         if (collisions.up && collisions.right) {
-          degMin = 90;
+          degMin = 110;
           degMax = 180;
         } else if (collisions.up && collisions.left) {
-          degMin = 1;
+          degMin = 20;
           degMax = 90;
         } else {
-          degMin = 1;
-          degMax = 180;
+          degMin = 20;
+          degMax = 170;
         }
       } else if (collisions.down) {
         if (collisions.down && collisions.right) {
-          degMin = 180;
+          degMin = 200;
           degMax = 270;
         } else if (collisions.down && collisions.left) {
-          degMin = -90;
-          degMax = 1;
+          degMin = -70;
+          degMax = -20;
         } else {
-          degMin = 180;
-          degMax = 360;
+          degMin = 200;
+          degMax = 340;
         }
       } else {
-        degMin = 1;
-        degMax = 360
+        degMin = 20;
+        degMax = 340
       }
 
       const theta = randomIntFromInterval(degMin, degMax) / 180 * Math.PI;
@@ -609,7 +609,6 @@
 
         gradient.addColorStop(fallOff, "rgb(242, 242, 242, 0)");
         gradient.addColorStop(1, `rgb(242, 242, 242, ${brightness})`);
-
 
         this.context.lineWidth = this.width;
         this.context.strokeStyle = gradient;
