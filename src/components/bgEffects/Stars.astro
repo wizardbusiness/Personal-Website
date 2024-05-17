@@ -233,6 +233,7 @@
   };
 
   const renderShootingStars = () => {
+    const body: HTMLElement = document.querySelector("body");
     const shootingStarCanvas: HTMLCanvasElement = document.querySelector("#shooting-stars");
     const context = shootingStarCanvas.getContext("2d");
     const pixelRatio = window.devicePixelRatio || 1;
@@ -241,8 +242,33 @@
     shootingStarCanvas.height = height;
     shootingStarCanvas.width = width;
     context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    const shootingStar = new ShootingStar(context);
-    shootingStar.drawShootingStar();
+    let firstLoop = true;
+    let startTimeMs = Date.now();
+    const drawOnInterval = () => {
+      let currTimeMs = Date.now();
+      let elapsedMs = currTimeMs - startTimeMs;
+      let interval = firstLoop === true ? randomIntFromInterval(1000, 2000) : randomIntFromInterval(5000, 50000);
+      
+      if (elapsedMs >= interval) {
+
+        firstLoop = false;
+
+        startTimeMs = currTimeMs;
+
+        const inTransition = body.getAttribute("data-in-transition");
+        if (inTransition === "true") {
+          requestAnimationFrame(drawOnInterval)
+          return;
+        }
+
+        const shootingStar = new ShootingStar(context);
+        shootingStar.drawShootingStar();
+      }
+      requestAnimationFrame(drawOnInterval)
+    }
+
+    drawOnInterval();
+    
   };
 
   class Star {
@@ -552,19 +578,6 @@
         if ( elapsedMs >= interval) { 
           prevTimeMs = currTimeMs;
           this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-          // this.context.beginPath();
-          // this.context.moveTo(origin.x, origin.y)
-          // this.context.arc(origin.x, origin.y, 10, 0, Math.PI * 2);
-          // this.context.fillStyle = "green";
-          // this.context.fill()
-          // this.context.closePath();
-
-          // this.context.beginPath();
-          // this.context.moveTo(endPoint.x, endPoint.y)
-          // this.context.arc(endPoint.x, endPoint.y, 10, 0, Math.PI * 2);
-          // this.context.fillStyle = "red";
-          // this.context.fill()
-          // this.context.closePath();
 
           const currRun = currX - originX;
           const currRise = currY - originY
