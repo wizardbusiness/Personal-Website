@@ -540,13 +540,17 @@
           currX += 1;
           currY += slope;
         // };
+        const currRun = currX - origin.x;
+        const currRise = currY - origin.y
+        const currLength = Math.sqrt(currRun ** 2 + currRise ** 2); // find current length of shooting star
+        
         const gradient = this.context.createRadialGradient(
           currX, // x end
           currY, // y end
-          25, // r origin 
+          currLength * ( 1 / 40), // r origin 
           origin.x, // x origin
           origin.y, // y origin
-          75, // r end
+          currLength * ( 3 / 16 ), // r end
         );
 
         gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
@@ -567,6 +571,7 @@
         this.context.arc(currX, currY, Math.floor(this.width / 2), 0, 2 * Math.PI)
         this.context.fillStyle = "rgba(242, 242, 242, 1)";
         this.context.fill();
+        this.context.closePath();
 
         requestAnimationFrame(draw)
       }
