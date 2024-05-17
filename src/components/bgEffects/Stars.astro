@@ -594,8 +594,8 @@
           } else {
             currX += (distance / (interval * 2)) * Math.cos(theta);
             currY += (distance / (interval * 2)) * Math.sin(theta);
-            fallOff += fallOff < 1 ? 0.05 : 0;
-            brightness -= 0.0005;
+            fallOff += fallOff < 0.95 ? 0.08 : 0;
+            brightness -= 0.05;
           }
           
           const gradient = this.context.createRadialGradient(
