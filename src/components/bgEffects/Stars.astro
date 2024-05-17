@@ -454,11 +454,11 @@
     public context: CanvasRenderingContext2D;
     public boundingWidth: number;
     public boundingHeight: number;
-    public boundingBoxSides: {up: number, right: number, down: number, left: number}
-    public currEndPoint: {x: number, y: number}
+    public boundingBoxSides: {up: number, right: number, down: number, left: number};
+    public currEndPoint: {x: number, y: number};
     constructor(context: CanvasRenderingContext2D) {
-      this.context = context
-      this.length = randomIntFromInterval(400, 600);
+      this.context = context;
+      this.length = randomIntFromInterval(400, 800);
       this.width = randomIntFromInterval(2, 5);
       this.boundingHeight = window.innerHeight;
       this.boundingWidth = window.innerWidth
@@ -467,8 +467,8 @@
 
     genNewOrigin() {
       const x = randomIntFromInterval(0, this.boundingWidth);
-      const y = randomIntFromInterval(0, this.boundingHeight / 2)
-      return {x, y}
+      const y = randomIntFromInterval(0, this.boundingHeight / 2);
+      return {x, y};
     }
 
     getThetaRange(origin: {x: number, y: number}) {
@@ -487,10 +487,10 @@
           degMin = 90;
           degMax = 180;
         } else if (collisions.up && collisions.left) {
-          degMin = 0;
+          degMin = 1;
           degMax = 90;
         } else {
-          degMin = 0;
+          degMin = 1;
           degMax = 180;
         }
       } else if (collisions.down) {
@@ -499,13 +499,13 @@
           degMax = 270;
         } else if (collisions.down && collisions.left) {
           degMin = -90;
-          degMax = 0;
+          degMax = 1;
         } else {
           degMin = 180;
           degMax = 360;
         }
       } else {
-        degMin = 0;
+        degMin = 1;
         degMax = 360
       }
 
@@ -524,33 +524,56 @@
 
     drawShootingStar() {
       const origin = this.genNewOrigin()
+      let currX = origin.x;
+      let currY = origin.y;
       const endPoint = this.genNewEndpoint(origin);
+      const rise = (endPoint.y - origin.y)
+      const run = (endPoint.x - origin.x)
+      const slope = rise / run
+    
+      const draw = () => {
+        this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        // if (slope < 0 && currY < endPoint.y) return;
+        // else if (slope > 0 && currY > endPoint.y) return;
+        // else {
+          console.log("run", run, "slope", slope, "currX", currX," currY", currY, "endX", endPoint.x, "endY", endPoint.y)
+          currX += 1;
+          currY += slope;
+        // };
+        const gradient = this.context.createRadialGradient(
+          currX, // x end
+          currY, // y end
+          25, // r origin 
+          origin.x, // x origin
+          origin.y, // y origin
+          75, // r end
+        );
 
-      const gradient = this.context.createRadialGradient(
-        endPoint.x, // x end
-        endPoint.y, // y end
-        25, // r origin 
-        origin.x, // x origin
-        origin.y, // y origin
-        75, // r end
-      );
+        gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
+        gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
 
-      gradient.addColorStop(0, "rgb(242, 242, 242, 1)");
-      gradient.addColorStop(1, "rgb(242, 242, 242, 0)");
-      this.context.beginPath();
-      this.context.moveTo(endPoint.x, endPoint.y);
-      this.context.lineWidth = this.width;
-      
-      this.context.lineTo(origin.x, origin.y);
-      this.context.strokeStyle = gradient;
-      this.context.stroke();
+        this.context.lineWidth = this.width;
+        this.context.strokeStyle = gradient;
 
-      this.context.beginPath();
-      this.context.moveTo(endPoint.x, endPoint.y);
-      this.context.arc(endPoint.x, endPoint.y, Math.floor(this.width / 2), 0, 2 * Math.PI)
-      this.context.fillStyle = "rgba(242, 242, 242, 1)";
-      this.context.fill();
+        this.context.beginPath();
+        this.context.moveTo(origin.x, origin.y);
+        this.context.lineTo(currX, currY);
+        
+        this.context.stroke();
+        this.context.closePath();
+
+        this.context.beginPath();
+        this.context.moveTo(currX, currY);
+        this.context.arc(currX, currY, Math.floor(this.width / 2), 0, 2 * Math.PI)
+        this.context.fillStyle = "rgba(242, 242, 242, 1)";
+        this.context.fill();
+
+        requestAnimationFrame(draw)
+      }
+      draw()
     }
+
+    
   }
   renderShootingStars();
 </script>
