@@ -574,7 +574,7 @@
 
         const currTimeMs = Date.now();
         const elapsedMs = currTimeMs - prevTimeMs;
-        
+        if (brightness < 0) return;
         if ( elapsedMs >= interval) { 
           prevTimeMs = currTimeMs;
           this.context.clearRect(0, 0, window.innerWidth, window.innerHeight);
