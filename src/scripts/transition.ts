@@ -850,10 +850,20 @@ function handleInfoSectionContentTransitionEnd() {
 
 infoSectionContentGroup.addEventListener("transitionend", handleInfoSectionContentTransitionEnd);
 
+function getObserverThreshold(section: HTMLElement) {
+  const sectionHeight = section.getBoundingClientRect().height;
+  const windowHeight = window.innerHeight;
+  const ratio = Math.floor((windowHeight / sectionHeight) * 100) / 100;
+  const threshold = ratio < 1 ? ratio : 1;
+  return threshold;
+}
+
+console.log(getObserverThreshold(infoSection))
+
 let options = {
   root: null,
   rootMargin: "0px",
-  threshold: 0.4,
+  threshold: getObserverThreshold(infoSection)
 };
 
 function observeSection(callback: Function) {
