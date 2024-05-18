@@ -5,7 +5,7 @@
   <canvas id="shooting-stars" class="fixed left-0 top-0 z-10 h-full w-full animate-fade-in object-contain"></canvas>
 </div>
 <script>
-  import {
+import {
     generateWeightedRandomInRange,
     generatedWeightedCoords,
     randomElFromArray,
@@ -484,11 +484,26 @@
     public currEndPoint: {x: number, y: number};
     constructor(context: CanvasRenderingContext2D) {
       this.context = context;
-      this.length = randomIntFromInterval(400, 600);
-      this.width = generateWeightedRandomInRange(1, 5, 1, 1);
       this.boundingHeight = window.innerHeight;
       this.boundingWidth = window.innerWidth
       this.boundingBoxSides = {up: 0, right: window.innerWidth, down: window.innerHeight, left: 0 }
+      this.length = this.genNewLength();
+      this.width = generateWeightedRandomInRange(1, 5, 1, 1);
+    }
+
+    genNewLength() {
+      const smallDevicesLen = randomIntFromInterval(Math.round(this.boundingWidth / 4), Math.round(this.boundingWidth / 2));
+      const medDevicesLen = randomIntFromInterval(300, 500);
+      const lgDevicesLen = randomIntFromInterval(Math.round(this.boundingWidth / 8), Math.round(this.boundingWidth / 4));
+      const deviceWidth = this.boundingWidth;
+
+      if (deviceWidth < 1000) {
+        return smallDevicesLen;
+      } else if (deviceWidth >= 1000 && deviceWidth < 2400) {
+        return medDevicesLen
+      } else if (deviceWidth >= 2400) {
+        return lgDevicesLen
+      }
     }
 
     genNewOrigin() {
