@@ -858,8 +858,6 @@ function getObserverThreshold(section: HTMLElement) {
   return threshold;
 }
 
-console.log(getObserverThreshold(infoSection))
-
 let options = {
   root: null,
   rootMargin: "0px",
