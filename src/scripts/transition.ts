@@ -460,7 +460,6 @@ function goToInfoSection() {
     {
       observedElOne: captionComponent,
       observedElTwo: myTitle,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
       forModificationOnObservedOverlap: [
         {
           callbackArgs: ["c"],
@@ -468,7 +467,9 @@ function goToInfoSection() {
           callback: function (...args: [TransitionStep]) {
             const timeoutID = setTimeout(() => {
               setCurrTransitionStep(...args);
+              clearTimeout(timeoutID)
             }, 1700);
+            
           },
         },
         {
@@ -482,7 +483,6 @@ function goToInfoSection() {
     {
       observedElOne: captionComponent,
       observedElTwo: captionLandingContainer,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
       forModificationOnObservedOverlap: [
         {
           callbackArgs: [infoSectionContentGroup],
@@ -757,12 +757,15 @@ const infoSectionWidth = infoSectionContentGroup.getBoundingClientRect().width;
 document.documentElement.style.setProperty("--caption-width", `${captionComponentWidth}px`);
 document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`);
 // have to do this again to get mutation observer to fire for some unknown reason
-const clearTimeoutID = setTimeout(
-  () => document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`),
+const timeoutID = setTimeout(
+  () => {
+    document.documentElement.style.setProperty("--info-cont-width", `${infoSectionWidth}px`)
+    clearTimeout(timeoutID)
+  },
   20,
 );
 
-clearTimeout(clearTimeoutID);
+
 
 // EVENT LISTENERS
 
