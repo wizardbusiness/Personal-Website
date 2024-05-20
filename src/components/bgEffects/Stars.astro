@@ -15,7 +15,7 @@ import {
   const transitionStep = ["", "a", "b", "c", "d", "e", "f", "g"] as const;
   type TransitionStep = (typeof transitionStep)[number];
 
-  const renderCanvas1 = () => {
+  const renderStarsCanvas = () => {
     const canvas: HTMLCanvasElement = document.querySelector("#canvas1");
     const context = canvas.getContext("2d");
 
@@ -471,7 +471,7 @@ import {
     }
   }
 
-  renderCanvas1();
+  renderStarsCanvas();
 
   class ShootingStar {
     public theta: number;
