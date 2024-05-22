@@ -1,3 +1,5 @@
+import { transform } from 'lodash';
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
@@ -51,6 +53,12 @@ module.exports = {
             opacity: 0.8,
           },
         },
+        pulseLg: {
+          "0%": {opacity: 0.5},
+          "50%": {opacity: 1, transform: "scale(103%)"},
+          "100%": {opacity: 0.5}
+
+        },
 
         bringDown: {
           "0%": {
@@ -76,9 +84,15 @@ module.exports = {
           },
         },
         scoochup: {
-          "0%": { transform: "translateY(0)", opacity: "0.5" },
-          "50%": { opacity: "0.8", transform: "translateY(-5px)" },
-          "100%": { transform: "translateY(0px)", opacity: "0.5" },
+          // "0%": { transform: "translateY(0)", opacity: "0.8" },
+          "0%": { transform: "translateY(0vh)", opacity: "0" },
+          "30%": {transform: "translateY(0vh)", opacity: "0.8",  },
+          "80%": { transform: "translateY(-4vh)", opacity: "0" },
+
+          
+          // "50%": { opacity: "1", transform: "translateY(-5px)" },
+          // "100%": { transform: "translateY(0px)", opacity: "0.8" },
+          "100%": { transform: "translateY(-4vh)", opacity: "0" },
         },
         collision: {
           "0%": {
@@ -294,7 +308,8 @@ module.exports = {
         "fade-in-resume": "fade-in-resume 0.6s forwards ease",
         "fade-out": "fadeout 0.2s forwards ease",
         "fade-out-slow": "fadeout 0.4s forwards ease",
-        "scooch-up": "scoochup 1.2s infinite",
+        "scooch-up": "scoochup 2.2s infinite ease-out",
+        "pulse-lg": "pulseLg 1.5s infinite",
         "long-blink": "longblink 1s forwards",
       },
       gridTemplateColumns: {
