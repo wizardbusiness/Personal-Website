@@ -104,7 +104,6 @@ async function playAnimationsInSequence(animations) {
       currAnimation(currElement);
       await waitForAnimationToFinish(currElement, "animationend");
     } catch (error) {
-      console.log("break");
       break;
     }
   }
@@ -232,8 +231,10 @@ function changeElementParent(oldParent: HTMLElement, newParent: HTMLElement) {
 }
 
 const changeParentToLandingContainerFromBody = changeElementParent(body, captionLandingContainer);
-const changeParentToinfoContainer = changeElementParent(captionLandingContainer, captionInfoContainer);
+const changeParentToInfoContainerFromBody = changeElementParent(body, captionInfoContainer);
 const changeParentToBodyFromInfoContainer = changeElementParent(captionInfoContainer, body);
+const changeParentToBodyFromLandingContainer = changeElementParent(captionLandingContainer, body);
+
 // ******************************************************************************************************
 
 function changeElementPositionType(
@@ -423,28 +424,56 @@ function setPreNavClosing(Closing: boolean) {
 
 // WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
 
-function handleUserOnLandingSection(e: Event, deltaY: number) {
+function handleUserOnLandingSection(deltaY: number, _e: WheelEvent | TouchEvent) {
   const inTransition = checkIfInTransition();
-  if (inTransition) {
-    e.preventDefault();
-    disableScroll(true);
-  } else if (!inTransition && deltaY >= 0) {
+  if (!inTransition && deltaY >= 0) {
     setCurrTransitionStep("a");
     setInTransition(true);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
-    setTranslateDistance(captionComponent, "-translate-y-[80vh]");
+    setTranslateDistance(captionComponent, "-translate-y-[80vh]")
     setTransitionDuration(captionComponent, "duration-[800ms]");
     setTransitionTiming(captionComponent, "ease-out");
-    // captionComponentBg.classList.replace("bg-foggy-glass", "bg-[#656C7D]");
     [...landingSectionContentGroup, landingSectionCaret].forEach((element) => slideUpAndFade(element));
   }
 }
 
+function handleSwipe(section: HTMLElement, callback) {
+  return (e: TouchEvent) => {
+    const startClientY = e.touches[0].clientY;
+    let deltaY = 0;
+    function getCurrClientY(e: TouchEvent) {
+      const currClientY = e.touches[0].clientY;
+      deltaY = startClientY - currClientY;
+      callback(deltaY, e);
+    }
+    function removeTouchListeners() {
+      section.removeEventListener("touchmove", getCurrClientY);
+      section.removeEventListener("touchend", removeTouchListeners);
+    }
+    section.addEventListener("touchmove", getCurrClientY, { passive: false });
+    section.addEventListener("touchend", removeTouchListeners);
+  };
+}
+
+function handleScroll(section: HTMLElement, callback) {
+  return (e: WheelEvent) => {
+    callback(e.deltaY);
+  };
+}
+
+const handleScrollOnLandingSection = handleScroll(landingSection, handleUserOnLandingSection);
+const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLandingSection);
+
 function goToInfoSection() {
   setCurrTransitionStep("b");
+  const ccBoundingRect = captionComponent.getBoundingClientRect()
+  document.documentElement.style.setProperty("--caption-container-top", `${Math.round(ccBoundingRect.top)}px`);
+  document.documentElement.style.setProperty("--caption-container-left", `${Math.round(ccBoundingRect.left)}px`);
+  captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
+  changeParentToBodyFromLandingContainer(captionComponent);
   setTransitionTiming(captionComponent, "ease-in-out-polar");
   setTransitionDuration(captionComponent, "duration-[3000ms]");
-  setTranslateDistance(captionComponent, "translate-y-[0vh]");
+  setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[80vh]"), 10);
 
   const finishTransitionToInfoSection = () => {
     setTranslateDistance(captionComponent, "translate-y-[0vh]");
@@ -475,7 +504,10 @@ function goToInfoSection() {
         {
           callbackArgs: [],
           // LINK #translations
-          callback: () => infoSection.scrollIntoView({ behavior: "smooth" }),
+          callback: () => {
+            disableScroll(true)
+            infoSection.scrollIntoView({ behavior: "smooth" })
+          }
         },
       ],
       entryProcessed: false,
@@ -520,13 +552,8 @@ function goToInfoSection() {
         {
           callbackArgs: [captionComponent],
           // LINK #animations
-          callback: changeParentToinfoContainer,
+          callback: changeParentToInfoContainerFromBody,
         },
-        // {
-        //   callbackArgs: [captionComponent, "translate-y-[0vh]"],
-        //   // LINK #animations
-        //   callback: setTranslateDistance,
-        // },
         {
           callbackArgs: [captionComponentBg],
           // LINK #animations
@@ -543,14 +570,14 @@ function goToInfoSection() {
   ]);
 }
 
-function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
+function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
   const preNavOpen = checkIfPreNavOpen();
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
-  const inTransition = checkIfInTransition();
 
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
+    e.preventDefault();
     clearAnimationProperties(captionComponent);
   }
   if (!preNavOpen && deltaY < 0) {
@@ -560,8 +587,9 @@ function handleUserOnInfoSection(e: WheelEvent, deltaY: number) {
     setScale(infoSectionCaret, "scale-75");
   }
 
-  if (preNavOpening || preNavClosing || inTransition) {
+  if (preNavOpening || preNavClosing) {
     e.preventDefault();
+    return;
   } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
     e.preventDefault();
     setPreNavOpening(true);
@@ -701,44 +729,11 @@ function goToLandingSection() {
   ]);
 }
 
-function handleSwipe(section: HTMLElement, callback) {
-  return (e: TouchEvent) => {
-    const startClientY = e.touches[0].clientY;
-    let deltaY = 0;
-    function getCurrClientY(e: TouchEvent) {
-      const currClientY = e.touches[0].clientY;
-      deltaY = startClientY - currClientY;
-      callback(e, deltaY);
-    }
-    function removeTouchListeners() {
-      section.removeEventListener("touchmove", getCurrClientY);
-      section.removeEventListener("touchend", removeTouchListeners);
-    }
-    section.addEventListener("touchmove", getCurrClientY, { passive: false });
-    section.addEventListener("touchend", removeTouchListeners);
-  };
-}
 
-function handleScroll(section: HTMLElement, callback) {
-  return (e: WheelEvent) => {
-    callback(e, e.deltaY);
-  };
-}
-
-const handleScrollOnLandingSection = handleScroll(landingSection, handleUserOnLandingSection);
-const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLandingSection);
-
-// ******************************************************************************************************
-// DO STUFF HERE
-
-// start with scroll disabled
 
 function handleBeforeUnload() {
   showSection([landingSection]);
-  disableScroll(true);
   window.scrollTo(0, 0);
-  main.removeEventListener("wheel", preventScrollOnMain);
-  main.removeEventListener("touchmove", preventTouchOnMain);
   landingSection.removeEventListener("wheel", handleScrollOnLandingSection);
   landingSection.removeEventListener("touchstart", handleSwipeOnLandingSection);
   myTitle.removeEventListener("animationend", handleMyTitleAnimationEnd);
@@ -747,6 +742,98 @@ function handleBeforeUnload() {
   infoSectionContentGroup.removeEventListener("transitionend", handleInfoSectionContentTransitionEnd);
   window.removeEventListener("beforeunload", handleBeforeUnload);
 }
+
+function handlePreNavTransitionEnd() {
+  const preNavOpening = checkIfPreNavOpening();
+  const preNavClosing = checkIfPreNavClosing();
+  if (preNavOpening) {
+    setPreNavOpening(false);
+    setPreNavOpen(true);
+  } else if (preNavClosing) {
+    setPreNavClosing(false);
+    setPreNavOpen(false);
+  }
+}
+
+function handleCaptionComponentTransitionEnd() {
+  const currSection = getCurrSection();
+  const inTransition = checkIfInTransition();
+  const currTransitionStep = getCurrTransitionStep();
+  if (currSection === "landing" && inTransition && currTransitionStep === "a") {
+    goToInfoSection();
+  }
+}
+
+// end transition back to landing
+function handleMyTitleAnimationEnd() {
+  if (myTitle.classList.contains("animate-slide-down")) {
+    setCurrTransitionStep("");
+    setInTransition(false);
+    setOpacity(landingSectionCaret, "opacity-1");
+  }
+}
+
+function handleInfoSectionContentTransitionEnd() {
+  const inTransition = checkIfInTransition();
+  const currSection = getCurrSection();
+  if (inTransition && currSection === "info") {
+    setCurrTransitionStep("");
+    setInTransition(false);
+    changeElementOpacityToOne(infoSectionNavBar);
+    hideSection([landingSection]);
+    infoSection.scrollIntoView();
+  }
+}
+
+const handleSwipeOnInfoSection = handleSwipe(infoSection, handleUserOnInfoSection);
+const handleScrollOnInfoSection = handleScroll(infoSection, handleUserOnInfoSection);
+
+
+function observeSection(callback: Function) {
+  return (entries: IntersectionObserverEntry[]) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting === true) {
+        callback();
+      }
+    });
+  };
+}
+
+
+function observeIfInTransition(mutationList: MutationRecord[], _observer: MutationObserver) {
+  for (const mutation of mutationList) {
+    if (mutation.type === "attributes") {
+      const inTransition = body.getAttribute("data-in-transition");
+      const currSection = body.getAttribute("data-section");
+      if (inTransition === "true" || currSection === "landing") {
+        disableScroll(true);
+      } else if (inTransition === "false" && currSection === "info") {
+        disableScroll(false)
+      }
+    }
+  }
+}
+
+landingSection.addEventListener("touchmove", (e) => e.preventDefault)
+infoSection.addEventListener("touchmove", (e) => e.preventDefault)
+
+
+const mutationObserverConfig = {
+  attributes: true,
+  // attributeFilter: ["data-in-transition"]
+}
+
+const transitionObserver = new MutationObserver(observeIfInTransition)
+transitionObserver.observe(body, mutationObserverConfig);
+
+
+// ******************************************************************************************************
+// DO STUFF HERE
+
+// start with scroll disabled
+
+
+disableScroll(true);
 
 window.addEventListener("beforeunload", handleBeforeUnload);
 
@@ -765,71 +852,19 @@ const timeoutID = setTimeout(
   20,
 );
 
-
-
 // EVENT LISTENERS
 
-function preventScrollOnMain(e: WheelEvent) {
-  const inTransition = checkIfInTransition();
-  if (inTransition) {
-    e.preventDefault();
-    disableScroll(true);
-  }
-}
-
-main.addEventListener("wheel", preventScrollOnMain, { passive: false });
-
-function preventTouchOnMain(e: TouchEvent) {
-  const inTransition = checkIfInTransition();
-  if (inTransition) {
-    e.preventDefault();
-    disableScroll(true);
-  }
-}
-
-main.addEventListener("touchmove", preventTouchOnMain, { passive: false });
-
 landingSection.addEventListener("wheel", handleScrollOnLandingSection, { passive: false });
-landingSection.addEventListener("touchstart", handleSwipeOnLandingSection, { passive: false });
+landingSection.addEventListener("touchmove", handleSwipeOnLandingSection, { passive: false });
 
-const handleSwipeOnInfoSection = handleSwipe(infoSection, handleUserOnInfoSection);
-const handleScrollOnInfoSection = handleScroll(infoSection, handleUserOnInfoSection);
-infoSection.addEventListener("touchstart", handleSwipeOnInfoSection, { passive: false });
+infoSection.addEventListener("touchmove", handleSwipeOnInfoSection, { passive: false });
 infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: false });
-
-function handleMyTitleAnimationEnd() {
-  if (myTitle.classList.contains("animate-slide-down")) {
-    setCurrTransitionStep("");
-    setInTransition(false);
-    setOpacity(landingSectionCaret, "opacity-1");
-  }
-}
 
 myTitle.addEventListener("animationend", handleMyTitleAnimationEnd);
 
-function handleCaptionComponentTransitionEnd() {
-  const currSection = getCurrSection();
-  const inTransition = checkIfInTransition();
-  const currTransitionStep = getCurrTransitionStep();
-  if (currSection === "landing" && inTransition && currTransitionStep === "a") {
-    goToInfoSection();
-  }
-}
-
 captionComponent.addEventListener("transitionend", handleCaptionComponentTransitionEnd);
 
-function handlePreNavTransitionEnd() {
-  const preNavOpening = checkIfPreNavOpening();
-  const preNavClosing = checkIfPreNavClosing();
-  if (preNavOpening) {
-    setPreNavOpening(false);
-    setPreNavOpen(true);
-  } else if (preNavClosing) {
-    setPreNavClosing(false);
-    setPreNavOpen(false);
-    disableScroll(false);
-  }
-}
+
 infoSectionPreNavArea.addEventListener("transitionend", handlePreNavTransitionEnd);
 
 function handleNavBarTransitionEnd(e: TransitionEvent) {
@@ -838,18 +873,7 @@ function handleNavBarTransitionEnd(e: TransitionEvent) {
 
 infoSectionNavBar.addEventListener("transitionend", handleNavBarTransitionEnd);
 
-function handleInfoSectionContentTransitionEnd() {
-  const inTransition = checkIfInTransition();
-  const currSection = getCurrSection();
-  if (inTransition && currSection === "info") {
-    setCurrTransitionStep("");
-    setInTransition(false);
-    changeElementOpacityToOne(infoSectionNavBar);
-    hideSection([landingSection]);
-    infoSection.scrollIntoView();
-    disableScroll(false);
-  }
-}
+
 
 infoSectionContentGroup.addEventListener("transitionend", handleInfoSectionContentTransitionEnd);
 
@@ -866,16 +890,6 @@ let options = {
   rootMargin: "0px",
   threshold: getObserverThreshold(infoSection)
 };
-
-function observeSection(callback: Function) {
-  return (entries: IntersectionObserverEntry[]) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting === true) {
-        callback();
-      }
-    });
-  };
-}
 
 const observeLandingSection = observeSection(() => {
   setCurrSection("landing");
