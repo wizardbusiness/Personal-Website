@@ -476,6 +476,7 @@ function goToInfoSection() {
   setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[80vh]"), 10);
 
   const finishTransitionToInfoSection = () => {
+    captionComponent.classList.remove("top-[--caption-container-top]", "left-[--caption-container-left]");
     setTranslateDistance(captionComponent, "translate-y-[0vh]");
     setTranslateDistance(captionComponentFg, "-translate-y-[4vh]");
     setTranslateDistance(captionComponentBg, "translate-y-[0vh]");
