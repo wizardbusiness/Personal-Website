@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { randomIntFromInterval } from "../../scripts/randomFromInterval";
+import { randomBool, randomElFromArray, randomIntFromInterval } from "../../scripts/randomFromInterval";
 import Forest from "./Forest";
 import CityPark from "./CityPark";
 import { useStore } from "@nanostores/react";
@@ -7,21 +7,23 @@ import { renderSkyline, forestState, cityParkState, cityBuildingsState } from ".
 import "../../styles/tailwind.css";
 
 const Window = ({ showWindow, delay, renderSkyline }) => {
-  const [lightOn, setLightOn] = useState(false);
-  const [frequency, setFrequency] = useState(randomIntFromInterval(3000, 80000));
+  // use to keep light off 
+  const [initiallyOff, setInitialOff] = useState(true)
+  const [lightOn, setLightOn] = useState<boolean>(showWindow);
+  const [frequency, ] = useState(randomIntFromInterval(10000, 80000));
 
   useEffect(() => {
     const cycleLight = setInterval(() => {
-      setFrequency(randomIntFromInterval(3000, 80000));
+      // setFrequency(randomIntFromInterval(3000, 60000));
       setLightOn(!lightOn);
     }, frequency);
 
     return () => clearInterval(cycleLight);
-  }, [lightOn, frequency]);
+  }, [lightOn, frequency, showWindow]);
 
   useEffect(() => {
     const setTimeoutID = setTimeout(() => {
-      renderSkyline ? setLightOn(true) : setLightOn(false);
+      renderSkyline ? setInitialOff(false) : setInitialOff(true);
     }, delay);
 
     return () => clearTimeout(setTimeoutID);
@@ -30,7 +32,7 @@ const Window = ({ showWindow, delay, renderSkyline }) => {
   return (
     <div
       className={`window ${
-        showWindow && lightOn ? "opacity-1" : "opacity-0"
+        !initiallyOff && lightOn ? "opacity-1" : "opacity-0"
       } h-[3px] w-[3px] bg-gray-100 shadow-[0px_0px_2px_2px_rgba(232,232,232,0.3)] transition-opacity duration-100`}
     />
   );
@@ -70,7 +72,6 @@ const Windows = ({ shapeH, shapeW, delay, renderSkyline }) => {
 
   const windows = windowsProps.map((windowProps, i) => {
     const { showWindow } = windowProps;
-
     return renderSkyline ? (
       <Window
         key={`window${i}`}
