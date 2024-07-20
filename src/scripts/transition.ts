@@ -302,8 +302,8 @@ type TweakOverlapValueBy = {
 };
 
 type OverlapObserverEntry = {
-  observedElOne: HTMLElement;
-  observedElTwo: HTMLElement;
+  observedEl: HTMLElement;
+  observedPosition: number | HTMLElement;
   tweakOverlapValueBy?: TweakOverlapValueBy;
   forModificationOnObservedOverlap: ModifyElementEntry[];
   entryProcessed: boolean;
@@ -318,25 +318,28 @@ function observeTargetsOverlap(
   direction: "up" | "down",
 ): boolean {
   overlapObserverEntries.forEach((observerEntry) => {
-    const firstElTop =
-      observerEntry.observedElOne.getBoundingClientRect().top +
+    const observedElTop =
+      observerEntry.observedEl.getBoundingClientRect().top +
       (observerEntry.tweakOverlapValueBy?.elOne?.top || 0);
     const firstElBottom =
-      observerEntry.observedElOne.getBoundingClientRect().bottom +
+      observerEntry.observedEl.getBoundingClientRect().bottom +
       (observerEntry.tweakOverlapValueBy?.elOne?.bottom || 0);
-    const secondElTop =
-      observerEntry.observedElTwo.getBoundingClientRect().top +
+
+    let observedPosition;
+    if (typeof observerEntry.observedPosition === 'number') {
+      observedPosition =
+      observerEntry.observedPosition +
       (observerEntry.tweakOverlapValueBy?.elTwo?.top || 0);
-    const secondElBottom =
-      observerEntry.observedElTwo.getBoundingClientRect().bottom +
-      (observerEntry.tweakOverlapValueBy?.elTwo?.bottom || 0);
+    } else {
+      observedPosition = observerEntry.observedPosition.getBoundingClientRect().top
+    }
+
     const entryProcessed = observerEntry.entryProcessed;
     if (
       (!entryProcessed &&
         direction === "down" &&
-        firstElBottom >= secondElTop &&
-        firstElTop <= secondElBottom) ||
-      (!entryProcessed && direction === "up" && firstElTop >= secondElTop && firstElTop <= secondElBottom)
+        firstElBottom >= observedPosition) ||
+      (!entryProcessed && direction === "up" && observedElTop <= observedPosition)
     ) {
       observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
         entry.callback(...entry.callbackArgs);
@@ -488,8 +491,8 @@ function goToInfoSection() {
   // ANCHOR[id=moveElementToinfoCall]
   moveElement(captionComponent, "down", finishTransitionToInfoSection, [
     {
-      observedElOne: captionComponent,
-      observedElTwo: myTitle,
+      observedEl: captionComponent,
+      observedPosition: myTitle.getBoundingClientRect().top,
       forModificationOnObservedOverlap: [
         {
           callbackArgs: ["c"],
@@ -499,7 +502,7 @@ function goToInfoSection() {
               setCurrTransitionStep(...args);
               clearTimeout(timeoutID)
             }, 1700);
-            
+            hideSection([landingSection]);
           },
         },
         {
@@ -507,15 +510,14 @@ function goToInfoSection() {
           // LINK #translations
           callback: () => {
             disableScroll(true)
-            infoSection.scrollIntoView({ behavior: "smooth" })
           }
         },
       ],
       entryProcessed: false,
     },
     {
-      observedElOne: captionComponent,
-      observedElTwo: captionLandingContainer,
+      observedEl: captionComponent,
+      observedPosition: captionLandingContainer.getBoundingClientRect().top,
       forModificationOnObservedOverlap: [
         {
           callbackArgs: [infoSectionContentGroup],
@@ -531,9 +533,8 @@ function goToInfoSection() {
       entryProcessed: false,
     },
     {
-      observedElOne: captionComponent,
-      observedElTwo: infoSectionContentGroup,
-      tweakOverlapValueBy: { elOne: { bottom: 0 } },
+      observedEl: captionComponent,
+      observedPosition: infoSectionContentGroup,
       forModificationOnObservedOverlap: [
         {
           callbackArgs: ["d"],
@@ -686,8 +687,8 @@ function goToLandingSection() {
   // ANCHOR[id=moveElementToLandingCall]
   moveElement(captionComponent, "up", finishTransitionToLandingSection, [
     {
-      observedElOne: captionComponent,
-      observedElTwo: captionLandingContainer,
+      observedEl: captionComponent,
+      observedPosition: captionLandingContainer.getBoundingClientRect().top,
       forModificationOnObservedOverlap: [
         {
           callbackArgs: ["g"],
@@ -781,7 +782,6 @@ function handleInfoSectionContentTransitionEnd() {
     setCurrTransitionStep("");
     setInTransition(false);
     changeElementOpacityToOne(infoSectionNavBar);
-    hideSection([landingSection]);
     infoSection.scrollIntoView();
   }
 }
