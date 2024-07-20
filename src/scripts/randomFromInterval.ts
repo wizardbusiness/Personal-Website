@@ -15,6 +15,12 @@ export const randomElFromArray = (elArray: elArray): (number | string) | FC => {
   return elArray[randomIndex];
 };
 
+
+export const randomBool = (): boolean => {
+  console.log(Math.random())
+  return Math.random() < 0.5 ? true : false
+}
+
 export const generateWeightedRandomInRange = (min: number, max: number, mean: number, variance: number) => {
   const u1 = Math.random();
   const u2 = Math.random();
