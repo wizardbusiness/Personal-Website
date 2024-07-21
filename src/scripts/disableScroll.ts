@@ -2,6 +2,7 @@ import checkSupportsPassiveEvent from "./checkSupportsPassiveEvent";
 
 function preventDefault(e: Event) {
   e.preventDefault();
+  return;
 }
 
 // disable touch scroll
@@ -10,6 +11,7 @@ function preventDefaultForScrollKeys(e: KeyboardEvent) {
   const scrollKeys = { 37: 1, 38: 1, 39: 1, 40: 1 };
   if (e.key in scrollKeys) {
     e.preventDefault();
+    return;
   }
   return false;
 }
@@ -22,6 +24,7 @@ function disableScrollOnAllDevices() {
   window.addEventListener("touchmove", preventDefault, wheelOpt);
   window.addEventListener("keydown", preventDefaultForScrollKeys, false);
 }
+
 function enableScrollOnAllDevices() {
   window.removeEventListener("wheel", preventDefault);
   window.removeEventListener("touchmove", preventDefault);
