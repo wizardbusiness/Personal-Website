@@ -473,10 +473,12 @@ function goToInfoSection() {
   document.documentElement.style.setProperty("--caption-container-top", `${Math.round(ccBoundingRect.top)}px`);
   document.documentElement.style.setProperty("--caption-container-left", `${Math.round(ccBoundingRect.left)}px`);
   captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
+  setTranslateDistance(captionComponent, "translate-y-[0vh]")
   changeParentToBodyFromLandingContainer(captionComponent);
   setTransitionTiming(captionComponent, "ease-in-out-polar");
-  setTransitionDuration(captionComponent, "duration-[3000ms]");
-  setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[80vh]"), 10);
+  setTransitionDuration(captionComponent, "duration-[2500ms]");
+  // need delay to reset caption position after switch to body parent
+  setTimeout(() => setTranslateDistance(captionComponent, "translate-y-[100vh]"), 10);
 
   const finishTransitionToInfoSection = () => {
     captionComponent.classList.remove("top-[--caption-container-top]", "left-[--caption-container-left]");
@@ -523,10 +525,7 @@ function goToInfoSection() {
           callbackArgs: [infoSectionContentGroup],
           // LINK #translations
           callback: function (...contentGroup: [HTMLElement]) {
-            const timeoutId = setTimeout(() => {
               translateUp(...contentGroup);
-              clearTimeout(timeoutId);
-            }, 1800);
           },
         },
       ],
@@ -763,6 +762,11 @@ function handleCaptionComponentTransitionEnd() {
   const currTransitionStep = getCurrTransitionStep();
   if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
+    
+    
+
+
+
   }
 }
 
