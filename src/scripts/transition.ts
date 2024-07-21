@@ -460,7 +460,7 @@ function handleSwipe(section: HTMLElement, callback) {
 
 function handleScroll(section: HTMLElement, callback) {
   return (e: WheelEvent) => {
-    callback(e.deltaY);
+    callback(e.deltaY, e);
   };
 }
 
@@ -578,7 +578,6 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
 
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
-    e.preventDefault();
     clearAnimationProperties(captionComponent);
   }
   if (!preNavOpen && deltaY < 0) {
