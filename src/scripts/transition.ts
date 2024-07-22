@@ -576,6 +576,8 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
 
+  const inTransition = checkIfInTransition();
+
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
     clearAnimationProperties(captionComponent);
@@ -590,8 +592,9 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
   if (preNavOpening || preNavClosing) {
     e.preventDefault();
     return;
-  } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25) {
+  } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25 && !inTransition) {
     e.preventDefault();
+    console.log(preNavOpen)
     setPreNavOpening(true);
     renderSkyline.set(false);
     increaseHeight(infoSectionPreNavArea);
@@ -645,7 +648,7 @@ function goToLandingSection() {
   const timeoutID = setTimeout(() => {
     setCurrTransitionStep("f");
     showSection([landingSection]);
-    landingSection.scrollIntoView();
+    hideSection([infoSection])
     clearTimeout(timeoutID);
   }, 500);
 
@@ -657,19 +660,18 @@ function goToLandingSection() {
     document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
     captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
     // add in new transition properties
-    setTransitionDuration(captionComponent, "duration-[3000ms]");
+    setTransitionDuration(captionComponent, "duration-[2000ms]");
     setTransitionTiming(captionComponent, "ease-in-out");
     // clear animation on caption component (if present, will interfere with translate transform)
     clearAnimationProperties(captionComponent);
+    clearAnimationProperties(captionComponentFg);
+    clearAnimationProperties(captionComponentBg);
+    // clear transition properties
     clearTransitionProperties(captionComponentFg);
     clearTransitionProperties(captionComponentBg);
-
-    clearAnimationProperties(captionComponent);
-    clearAnimationProperties(captionComponentBg);
-    clearAnimationProperties(captionComponentFg);
     setTranslateDistance(captionComponent, "translate-y-0");
     const timeoutID = setTimeout(() => {
-      setTranslateDistance(captionComponent, "translate-y-[50vh]");
+      setTranslateDistance(captionComponent, "translate-y-[80vh]");
       clearTimeout(timeoutID);
     }, 20);
   }
