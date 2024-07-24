@@ -694,7 +694,7 @@ function goToLandingSection() {
     setOpacity(infoSectionCaret, "opacity-0");
     clearTransitionProperties(captionComponent)
     clearPlacementProperties(captionComponent);
-    showSection([infoSection])
+    showSection([infoSection]);
   }
   // LINK #moveElement
   // ANCHOR[id=moveElementToLandingCall]
