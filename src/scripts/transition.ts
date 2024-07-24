@@ -427,8 +427,8 @@ function checkIfPreNavClosing(): boolean {
   return preNavClosing === "true" ? true : false;
 }
 
-function setPreNavClosing(Closing: boolean) {
-  infoSectionPreNavArea.setAttribute("data-pre-nav-closing", String(Closing));
+function setPreNavClosing(closing: boolean) {
+  infoSectionPreNavArea.setAttribute("data-pre-nav-closing", String(closing));
 }
 // ------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------
@@ -483,7 +483,6 @@ function goToInfoSection() {
   captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
   setTranslateDistance(captionComponent, "translate-y-[0vh]")
   changeParentToBodyFromLandingContainer(captionComponent);
-  console.log(captionComponent.classList)
   setTransitionTiming(captionComponent, "ease-in-out-polar");
   setTransitionDuration(captionComponent, "duration-[2500ms]");
   // need delay to reset caption position after switch to body parent
@@ -557,10 +556,7 @@ function goToInfoSection() {
         {
           callbackArgs: [captionComponent, "-bottom-1"],
           // LINK #animations
-          callback: () => {
-            console.log('d')
-            setBottom
-          },
+          callback: setBottom
         },
         {
           callbackArgs: [captionComponent],
@@ -592,14 +588,17 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
 
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
+    e.preventDefault();
     clearAnimationProperties(captionComponent);
+    return
   }
+
   if (!preNavOpen && deltaY < 0) {
     setOpacity(infoSectionCaret, "opacity-75");
   } else if (!preNavOpen && deltaY > 0) {
     setOpacity(infoSectionCaret, "opacity-0");
     setScale(infoSectionCaret, "scale-75");
-  }
+  } 
 
   if (preNavOpening || preNavClosing) {
     e.preventDefault();
@@ -761,9 +760,11 @@ function handleBeforeUnload() {
 function handlePreNavTransitionEnd() {
   const preNavOpening = checkIfPreNavOpening();
   const preNavClosing = checkIfPreNavClosing();
+  
   if (preNavOpening) {
     setPreNavOpening(false);
     setPreNavOpen(true);
+
   } else if (preNavClosing) {
     setPreNavClosing(false);
     setPreNavOpen(false);
