@@ -321,25 +321,33 @@ function observeTargetsOverlap(
     const observedElTop =
       observerEntry.observedEl.getBoundingClientRect().top +
       (observerEntry.tweakOverlapValueBy?.elOne?.top || 0);
-    const firstElBottom =
-      observerEntry.observedEl.getBoundingClientRect().bottom +
+    const observedElBottom =
+      Math.round(observerEntry.observedEl.getBoundingClientRect().bottom) +
       (observerEntry.tweakOverlapValueBy?.elOne?.bottom || 0);
 
-    let observedPosition;
+    let observedPosition: number;
     if (typeof observerEntry.observedPosition === 'number') {
       observedPosition =
       observerEntry.observedPosition +
       (observerEntry.tweakOverlapValueBy?.elTwo?.top || 0);
     } else {
-      observedPosition = observerEntry.observedPosition.getBoundingClientRect().top
+      if (direction === "up") {
+        observedPosition = Math.round(observerEntry.observedPosition.getBoundingClientRect().bottom) +
+        (observerEntry.tweakOverlapValueBy?.elTwo?.top || 0);
+      } else if (direction === "down") {
+        observedPosition = Math.round(observerEntry.observedPosition.getBoundingClientRect().top) + 
+        (observerEntry.tweakOverlapValueBy?.elTwo?.top || 0);
+      }
     }
 
     const entryProcessed = observerEntry.entryProcessed;
     if (
       (!entryProcessed &&
         direction === "down" &&
-        firstElBottom >= observedPosition) ||
-      (!entryProcessed && direction === "up" && observedElTop <= observedPosition)
+        observedElBottom >= observedPosition) ||
+      (!entryProcessed && direction === "up" 
+        && observedElBottom >= observedPosition
+        && observedPosition !== 0)
     ) {
       observerEntry.forModificationOnObservedOverlap.forEach((entry) => {
         entry.callback(...entry.callbackArgs);
@@ -475,6 +483,7 @@ function goToInfoSection() {
   captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
   setTranslateDistance(captionComponent, "translate-y-[0vh]")
   changeParentToBodyFromLandingContainer(captionComponent);
+  console.log(captionComponent.classList)
   setTransitionTiming(captionComponent, "ease-in-out-polar");
   setTransitionDuration(captionComponent, "duration-[2500ms]");
   // need delay to reset caption position after switch to body parent
@@ -548,7 +557,10 @@ function goToInfoSection() {
         {
           callbackArgs: [captionComponent, "-bottom-1"],
           // LINK #animations
-          callback: setBottom,
+          callback: () => {
+            console.log('d')
+            setBottom
+          },
         },
         {
           callbackArgs: [captionComponent],
@@ -594,7 +606,6 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
     return;
   } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25 && !inTransition) {
     e.preventDefault();
-    console.log(preNavOpen)
     setPreNavOpening(true);
     renderSkyline.set(false);
     increaseHeight(infoSectionPreNavArea);
@@ -650,7 +661,7 @@ function goToLandingSection() {
     showSection([landingSection]);
     hideSection([infoSection])
     clearTimeout(timeoutID);
-  }, 500);
+  }, 800);
 
   function setupCaptionComponentForMoveToLanding() {
     const ccBoundingRect = getBoundingClientRect(captionComponentFg);
@@ -660,7 +671,7 @@ function goToLandingSection() {
     document.documentElement.style.setProperty("--caption-container-left", `${ccBoundingRect.left}px`);
     captionComponent.classList.add("top-[--caption-container-top]", "left-[--caption-container-left]");
     // add in new transition properties
-    setTransitionDuration(captionComponent, "duration-[2000ms]");
+    setTransitionDuration(captionComponent, "duration-[2500ms]");
     setTransitionTiming(captionComponent, "ease-in-out");
     // clear animation on caption component (if present, will interfere with translate transform)
     clearAnimationProperties(captionComponent);
@@ -681,14 +692,16 @@ function goToLandingSection() {
       (element) => clearAnimationProperties(element),
     );
     setOpacity(infoSectionCaret, "opacity-0");
+    clearTransitionProperties(captionComponent)
     clearPlacementProperties(captionComponent);
+    showSection([infoSection])
   }
   // LINK #moveElement
   // ANCHOR[id=moveElementToLandingCall]
   moveElement(captionComponent, "up", finishTransitionToLandingSection, [
     {
       observedEl: captionComponent,
-      observedPosition: captionLandingContainer.getBoundingClientRect().top,
+      observedPosition: captionLandingContainer,
       forModificationOnObservedOverlap: [
         {
           callbackArgs: ["g"],
@@ -763,11 +776,6 @@ function handleCaptionComponentTransitionEnd() {
   const currTransitionStep = getCurrTransitionStep();
   if (currSection === "landing" && inTransition && currTransitionStep === "a") {
     goToInfoSection();
-    
-    
-
-
-
   }
 }
 
