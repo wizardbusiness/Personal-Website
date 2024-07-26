@@ -27,6 +27,7 @@ const categories = {
   const techContainer = document.querySelector("#tech-section");
   const flavorText = document.querySelector("[data-flavor-text]");
   const openAllBtn: HTMLButtonElement = document.querySelector("[data-open-all]");
+  const body = document.querySelector('body');
   techContainer.addEventListener("animationstart", () => {
     const openAll = openAllBtn.dataset.openAll;
     openAll
@@ -34,6 +35,8 @@ const categories = {
       : flavorText.classList.remove("animate-long-blink");
   });
   techContainer.addEventListener("animationend", () => {
+    // if in transition back to landing page, don't scroll to the current open accordion
+    if (body.getAttribute("data-in-transition") === "true") return;
     techContainer.scrollIntoView({ behavior: "smooth", block: "end" });
   });
 </script>
