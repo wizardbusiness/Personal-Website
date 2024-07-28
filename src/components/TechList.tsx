@@ -30,7 +30,6 @@ const TechList = ({ categories }: TechList) => {
 
   const handleSetOpenAll = () => {
     setOpenAll(!openAll);
-    // setOpenItems((prev) => (prev.length === 0 ? allValues : []));
   };
   const list = Object.keys(categories).map((category: string, index: number) => (
     <AccordionedList
