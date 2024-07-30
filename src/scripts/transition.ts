@@ -1,5 +1,6 @@
 import disableScroll from "./disableScroll";
 import { renderSkyline } from "../store";
+import { check } from "astro/jsx/server.js";
 
 // elements
 const body: HTMLElement = document.querySelector("body");
@@ -435,9 +436,9 @@ function setPreNavClosing(closing: boolean) {
 
 // WHEEL AND TOUCH MOVE EVENT LISTENER CALLBACKS
 
-function handleUserOnLandingSection(deltaY: number, _e: WheelEvent | TouchEvent) {
+function handleUserOnLandingSection(yMagnitude: number, _e: WheelEvent | TouchEvent) {
   const inTransition = checkIfInTransition();
-  if (!inTransition && deltaY >= 0) {
+  if (!inTransition && yMagnitude < 0) {
     setCurrTransitionStep("a");
     setInTransition(true);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
@@ -448,21 +449,27 @@ function handleUserOnLandingSection(deltaY: number, _e: WheelEvent | TouchEvent)
   }
 }
 
-function handleSwipe(section: HTMLElement, callback) {
+function handleSwipe(section: HTMLElement, callback: (deltaY: number, e: Event) => void) {
+  // let allowScrolling = true;
+  // touch start event
+  let startClientY: number;
+  let endClientY: number;
+
   return (e: TouchEvent) => {
-    const startClientY = e.touches[0].clientY;
-    let deltaY = 0;
-    function getCurrClientY(e: TouchEvent) {
-      const currClientY = e.touches[0].clientY;
-      deltaY = startClientY - currClientY;
-      callback(deltaY, e);
+    startClientY = e.changedTouches[0].clientY;
+    const handleTouchMove = (e: TouchEvent) => {
+      endClientY = e.changedTouches[0].clientY;
+      const yMagnitude = endClientY - startClientY;
+      callback(yMagnitude, e);
     }
-    function removeTouchListeners() {
-      section.removeEventListener("touchmove", getCurrClientY);
-      section.removeEventListener("touchend", removeTouchListeners);
+
+    const removeTouchMoveListener = () => {
+      section.removeEventListener("touchmove", handleTouchMove);
+      section.removeEventListener("touchend", removeTouchMoveListener)
     }
-    section.addEventListener("touchmove", getCurrClientY, { passive: false });
-    section.addEventListener("touchend", removeTouchListeners);
+
+    section.addEventListener("touchmove", handleTouchMove);
+    section.addEventListener("touchend", removeTouchMoveListener);
   };
 }
 
@@ -474,7 +481,7 @@ function handleScroll(section: HTMLElement, callback) {
 
 const handleScrollOnLandingSection = handleScroll(landingSection, handleUserOnLandingSection);
 const handleSwipeOnLandingSection = handleSwipe(landingSection, handleUserOnLandingSection);
-
+4337
 function goToInfoSection() {
   setCurrTransitionStep("b");
   const ccBoundingRect = captionComponent.getBoundingClientRect()
@@ -588,9 +595,9 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
 
   // clear float animation from captionComponent, but not animations on child elements
   if (preNavClosing) {
-    e.preventDefault();
-    clearAnimationProperties(captionComponent);
-    return
+      e.preventDefault();
+      clearAnimationProperties(captionComponent);
+      return;
   }
 
   if (!preNavOpen && deltaY < 0) {
@@ -603,8 +610,8 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
   if (preNavOpening || preNavClosing) {
     e.preventDefault();
     return;
-  } else if (!preNavOpen && deltaY < 0 && window.scrollY <= 25 && !inTransition) {
-    e.preventDefault();
+  } 
+  if (!preNavOpen && deltaY > 0 && window.scrollY <= 0 && !inTransition) {
     setPreNavOpening(true);
     renderSkyline.set(false);
     increaseHeight(infoSectionPreNavArea);
@@ -616,7 +623,7 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
       [floatUpMore, captionComponent],
       [floatInPlace, captionComponent],
     ]);
-  } else if ((preNavOpen && deltaY > 0) || (preNavOpening && deltaY > 0)) {
+  } else if ((preNavOpen && deltaY < 0) || (preNavOpening && deltaY < 0)) {
     e.preventDefault();
     setPreNavClosing(true);
     setPreNavOpening(false);
@@ -631,7 +638,7 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
       [squish, captionComponentBg],
     ]);
     squish(captionComponentBg);
-  } else if (preNavOpen && deltaY <= 25) {
+  } else if (preNavOpen && deltaY > 0) {
     // hide nav bar from user
     setOpacity(infoSectionNavBar, "opacity-0");
     // slide info section content down to simulate caption component moving away from section
@@ -870,9 +877,10 @@ const timeoutID = setTimeout(
 // EVENT LISTENERS
 
 landingSection.addEventListener("wheel", handleScrollOnLandingSection, { passive: false });
-landingSection.addEventListener("touchmove", handleSwipeOnLandingSection, { passive: false });
+landingSection.addEventListener("touchstart", handleSwipeOnLandingSection, { passive: false });
 
-infoSection.addEventListener("touchmove", handleSwipeOnInfoSection, { passive: false });
+infoSection.addEventListener("touchstart", handleSwipeOnInfoSection, { passive: false });
+// need touchstart to cancel swipe since touchmove isnt cancelable for performance reasons
 infoSection.addEventListener("wheel", handleScrollOnInfoSection, { passive: false });
 
 myTitle.addEventListener("animationend", handleMyTitleAnimationEnd);
