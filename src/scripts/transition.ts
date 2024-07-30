@@ -465,11 +465,11 @@ function handleSwipe(section: HTMLElement, callback: (deltaY: number, e: Event) 
 
     const removeTouchMoveListener = () => {
       section.removeEventListener("touchmove", handleTouchMove);
-      section.removeEventListener("touchend", removeTouchMoveListener)
+      section.removeEventListener("scrollend", removeTouchMoveListener)
     }
 
     section.addEventListener("touchmove", handleTouchMove);
-    section.addEventListener("touchend", removeTouchMoveListener);
+    section.addEventListener("scrollend", removeTouchMoveListener);
   };
 }
 
