@@ -438,7 +438,7 @@ function setPreNavClosing(closing: boolean) {
 
 function handleUserOnLandingSection(yMagnitude: number, _e: WheelEvent | TouchEvent) {
   const inTransition = checkIfInTransition();
-  if (!inTransition && yMagnitude < 0) {
+  if (!inTransition) {
     setCurrTransitionStep("a");
     setInTransition(true);
     setupElementForMove(captionComponent, changeElementPositionToFixed);
@@ -471,11 +471,11 @@ function handleSwipe(section: HTMLElement, callback: (deltaY: number, e: Event) 
     section.addEventListener("touchmove", handleTouchMove);
     section.addEventListener("scrollend", removeTouchMoveListener);
   };
-}
+};
 
 function handleScroll(section: HTMLElement, callback) {
   return (e: WheelEvent) => {
-    callback(e.deltaY, e);
+    callback(-e.deltaY, e);
   };
 }
 
