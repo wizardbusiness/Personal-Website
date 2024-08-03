@@ -71,6 +71,7 @@ const animationLib = [
   "animate-scooch-up",
   "animate-long-blink",
   "animate-pulse",
+  "animate-pulse-lg"
 ] as const;
 
 type Animations = (typeof animationLib)[number];
@@ -127,6 +128,7 @@ const floatUpMore = animateElement("animate-float-up-more");
 const floatInPlace = animateElement("animate-float-in-place");
 const bringDown = animateElement("animate-bring-down");
 const slideDown = animateElement("animate-slide-down");
+const pulse = animateElement("animate-pulse");
 
 // ******************************************************************************************************
 
@@ -600,13 +602,6 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
       return;
   }
 
-  if (!preNavOpen && deltaY < 0) {
-    setOpacity(infoSectionCaret, "opacity-75");
-  } else if (!preNavOpen && deltaY > 0) {
-    setOpacity(infoSectionCaret, "opacity-0");
-    setScale(infoSectionCaret, "scale-75");
-  } 
-
   if (preNavOpening || preNavClosing) {
     e.preventDefault();
     return;
@@ -616,7 +611,9 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
     renderSkyline.set(false);
     increaseHeight(infoSectionPreNavArea);
     setOpacity(infoSectionNavBar, "opacity-0");
+    setOpacity(infoSectionCaret, "opacity-75")
     setScale(infoSectionCaret, "scale-100");
+    pulse(infoSectionCaret);
     playAnimationsInSequence([
       [squelch, captionComponentBg],
       [floatUp, captionComponentBg],
@@ -628,8 +625,9 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
     setPreNavClosing(true);
     setPreNavOpening(false);
     renderSkyline.set(true);
-    setOpacity(infoSectionCaret, "opacity-0");
+    removeAllAnimationsFromElement(infoSectionCaret);
     setScale(infoSectionCaret, "scale-75");
+    setOpacity(infoSectionCaret, "opacity-20")
     setOpacity(infoSectionNavBar, "opacity-1");
     decreaseHeight(infoSectionPreNavArea);
     clearAnimationProperties(captionComponent);
@@ -639,6 +637,8 @@ function handleUserOnInfoSection(deltaY: number, e: WheelEvent | TouchEvent) {
     ]);
     squish(captionComponentBg);
   } else if (preNavOpen && deltaY > 0) {
+    removeAllAnimationsFromElement(infoSectionCaret);
+    setOpacity(infoSectionCaret, "opacity-0");
     // hide nav bar from user
     setOpacity(infoSectionNavBar, "opacity-0");
     // slide info section content down to simulate caption component moving away from section
@@ -652,7 +652,6 @@ function goToLandingSection() {
   setInTransition(true);
   // clean up info section
   setPreNavOpen(false);
-  slideUpAndFade(infoSectionCaret);
   decreaseHeight(infoSectionPreNavArea);
   setOpacity(infoSectionNavBar, "opacity-0");
   setOpacity(landingSectionCaret, "opacity-0");
@@ -802,6 +801,8 @@ function handleInfoSectionContentTransitionEnd() {
   if (inTransition && currSection === "info") {
     setCurrTransitionStep("");
     setInTransition(false);
+    setScale(infoSectionCaret, "scale-75")
+    setOpacity(infoSectionCaret, "opacity-50")
     changeElementOpacityToOne(infoSectionNavBar);
     infoSection.scrollIntoView();
   }
