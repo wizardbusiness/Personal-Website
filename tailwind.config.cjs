@@ -8,6 +8,7 @@ module.exports = {
       screens: {
         xl: "2160px",
         "2xl": "3000px",
+        
       },
       colors: {
         "foggy-glass": "#E5E7EB50",
